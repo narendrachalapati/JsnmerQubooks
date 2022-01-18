@@ -47,6 +47,10 @@
         <value xsi:nil="true"/>
     </values>
     <values>
+        <field>Unique_Name__c</field>
+        <value xsi:type="xsd:string">CustomParent</value>
+    </values>
+    <values>
         <field>isInboundList__c</field>
         <value xsi:type="xsd:boolean">false</value>
     </values>

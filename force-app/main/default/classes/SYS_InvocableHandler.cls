@@ -11,15 +11,18 @@ global class SYS_InvocableHandler {
         global sObject newVal;
 
         @InvocableVariable(label= 'Integration Setting' required = true)
-        global String integrationSetting; 
+        global String integrationSetting;
+        
+        @InvocableVariable(label= 'Object Setting' required = true)
+        global String objectSetting; 
 
         @InvocableVariable(label= 'Operation Type' required = true)
         global String operationType;
     }
     
     //TODO - remove descriptio
-    @InvocableMethod(label='Old and Current Value' description='Print Old and Current Values')
-    global static void printOldAndCurrentValues(List<MyInvocableVariable> myInvocableVariableList) {
+    @InvocableMethod(label='Capture Request for Outbound' description='To capture outbound request and create a SYS_IntegrationLog record for Municorn')
+    global static void captureOutboundRequest(List<MyInvocableVariable> myInvocableVariableList) {
     	List<sObject> newList = new List<sObject>();
         List<sObject> oldList = new List<sObject>();
         
@@ -33,27 +36,34 @@ global class SYS_InvocableHandler {
             oldList.add(itr.oldVal);
             SYS_Constants.INT_TYPE = itr.integrationSetting;
         } 
-        Map<Id, String> newjson = SYS_Transformer.getRequestJson(newList);
+        Map<Id, String> jsonListForOutbound = SYS_Transformer.getRequestJson(newList);
         List<SYS_IntegrationLog__c> insertSysLog = new List<SYS_IntegrationLog__c>();
        
-        if(newjson.values().size() > 0){
-            for(Id iter:newjson.keyset()){ 
-                system.debug('iter123'+iter);
-                String addrChange;
+        if(jsonListForOutbound.values().size() > 0){
+            for(Id jsonRecordId:jsonListForOutbound.keyset()){ 
+                system.debug('Id:'+jsonRecordId);
+                String finalJsonForOutbound;
                 
-                addrChange = newjson.get(iter).replace('\n',' ');
-                 system.debug('i123'+addrChange);
+
+                /*
+                Pre-processing each transformed JSON record. Default is to remove newlines.
+                For Custom pre-processing override sanitizeJSONForOutbound() method in SYS_ApplicationService
+                by creating an extension class. Configure the new extended class in ObjectSettings metadata
+                */
+
+                SYS_ApplicationService appService = (SYS_ApplicationService)Type.forName('SYS_ApplicationService').newInstance();
+
+                finalJsonForOutbound = appService.sanitizeJSONForOutbound(jsonListForOutbound.get(jsonRecordId));
+                System.debug('cleanJSON'+finalJsonForOutbound);
 
                 //TODO - QB specific change for bundle product  
-                
-                
-                
-                SYS_IntegrationLog__c  newSysLog = new SYS_IntegrationLog__c();//-- Deployment Fix SYS_integrationLogHandler.getLogsToInsert(addrChange);
+
+                SYS_IntegrationLog__c  newSysLog = appService.getLogsToInsert(finalJsonForOutbound);
                 newSysLog.Status__c = 'NEW';
                 newSysLog.Type__c = 'OUTBOUND';
                 newSysLog.SYS_IntegrationSettings__c = SYS_Constants.INT_TYPE;
                 newSysLog.SYS_Operation_Type__c = operationType;
-                newSysLog.whatid__c = iter;
+                newSysLog.whatid__c = jsonRecordId;
                 insertSysLog.add(newSysLog);   
             }
             if(!insertSysLog.isEmpty() && SYS_DataCache.enableCheck.get(SYS_Constants.INT_TYPE.toUpperCase())){ 
