@@ -15,7 +15,7 @@ public class SYS_HttpBuilder {
             }
         }
         return req;
-    }*/
+    }
 
     public static HttpRequest getHttpRequestGET() {
         HttpRequest req = new HttpRequest();
@@ -58,4 +58,5 @@ public class SYS_HttpBuilder {
         SYS_debug.log('resource url---'+resourceUrl);
         return resourceUrl;
     }
+    */
 }

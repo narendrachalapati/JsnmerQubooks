@@ -16,6 +16,13 @@ public class SYS_DataCache {
         get{ return context;}
         //set{context = value;}
     }
+
+    /******* NEW VARIABLES START*******/
+
+    public static String INT_TYPE;
+    public static String OBJ_TYPE;
+
+    /******* NEW VARIABLES END*********/
 	
     //TODO - add a method checkAndLoad , called from every getter, single query on grand child and get 
     //all meta data records from 
@@ -54,15 +61,19 @@ public class SYS_DataCache {
             }
         }
     }
-    public static List<IntegrationSetting__mdt> intMap;
-    public static List<IntegrationSetting__mdt> integrationSetting {
+    public static Map<String,IntegrationSetting__mdt> intMap;
+    public static Map<String,IntegrationSetting__mdt> integrationSetting {
         get{
             if(integrationSetting == null){
-                intMap = new List<IntegrationSetting__mdt>();
-                intMap = [SELECT Id, DeveloperName, Label, UpdateMethod__c, DebugCheck__c,
+                intMap = new Map<String,IntegrationSetting__mdt>();
+                for(IntegrationSetting__mdt is : [SELECT Id, DeveloperName, Label, UpdateMethod__c, DebugCheck__c,
                                      AuthenticationType__c, BaseAPIEndPoint__c, 
                                      QualifiedApiName, EscapeCharacter__c FROM IntegrationSetting__mdt 
-                                     WHERE developername = : SYS_Constants.INT_TYPE LIMIT 1];
+                                     LIMIT 100]){
+
+                    intMap.put(is.DeveloperName,is);
+
+                }
             }
             return intMap;
         }
@@ -74,7 +85,7 @@ public class SYS_DataCache {
                 headerMetadata = new List<HttpHeaders__mdt>();
                 headerMetadata = [SELECT Id, MasterLabel, Label, IntegrationType__c, Value__c 
                                     FROM HttpHeaders__mdt 
-                                    WHERE IntegrationType__c =: integrationSetting[0].id];
+                                    WHERE IntegrationType__c =:(integrationSetting.get(INT_TYPE)).id];
             }
             System.debug('header=='+ headerMetadata);
             return headerMetadata;
@@ -98,7 +109,7 @@ public class SYS_DataCache {
                 mappings = [Select Id,masterlabel, ObjectSetting__r.masterlabel , StaticValue__c,IsChild__c, ObjectSetting__r.ObjectApiName__c, ObjectApiName__c, FieldApiName__c , Key__c, RestResource__c, Direction__c, ParentField__c, ChildRootElement__c,
                             ObjectSetting__r.Direction__c,ObjectSetting__r.Trigger_Condition__c,ObjectSetting__r.TriggerEvents__c, ObjectSetting__r.ResourcePath__c , ObjectSetting__r.ApexHandler__c 
                             from FieldSetting__mdt /*where Is_Active__c=true where FieldApiName__c != null*/
-                            WHERE ObjectSetting__r.IntegrationType__r.MasterLabel = : SYS_Constants.INT_TYPE AND Direction__c != 'INBOUND'];
+                            WHERE ObjectSetting__r.IntegrationType__r.developername = : SYS_DataCache.INT_TYPE AND Direction__c != 'INBOUND'];
                 System.debug('Field Settings #### 2:'+mappings);
                 for(FieldSetting__mdt item : mappings) {
                     System.debug('Field Settings #### 3:'+item);
@@ -117,15 +128,15 @@ public class SYS_DataCache {
         get {
             if(mappingOut == null) { 
                 mappingOut = new List<FieldSetting__mdt>();
-                String intType = SYS_Constants.INT_TYPE;
+                String intType = SYS_DataCache.INT_TYPE;
                 // mappingOut = [SELECT Id, ChildFieldApiName__c, FieldApiName__c, ObjectApiName__c,Key__c, RestResource__c, Direction__c, ChildRootElement__c,
                 //             ObjectSetting__r.Object__r.QualifiedApiName , ObjectSetting__r.Direction__c, ObjectSetting__r.ResourcePath__c , ObjectSetting__r.ApexHandler__c 
                 //             from FieldSetting__mdt /*where Is_Active__c=true where FieldApiName__c != null*/
-                //             WHERE ObjectSetting__r.IntegrationType__r.MasterLabel = : SYS_Constants.INT_TYPE AND Direction__c != 'OUTBOUND'];
+                //             WHERE ObjectSetting__r.IntegrationType__r.developername = : SYS_DataCache.INT_TYPE AND Direction__c != 'OUTBOUND'];
                 String query = 'SELECT Id, ChildFieldApiName__c, FieldApiName__c, ObjectApiName__c,Key__c, RestResource__c, Direction__c, ChildRootElement__c,' +                
                 ' ObjectSetting__r.Object__r.QualifiedApiName , ObjectSetting__r.Direction__c, ObjectSetting__r.ResourcePath__c , ObjectSetting__r.ApexHandler__c ' + 
                 ' from FieldSetting__mdt '+
-                ' WHERE ObjectSetting__r.IntegrationType__r.MasterLabel = :intType AND Direction__c != \'OUTBOUND\' '; 
+                ' WHERE ObjectSetting__r.IntegrationType__r.developername = :intType AND Direction__c != \'OUTBOUND\' '; 
                 
                 mappingOut = Database.query(query);
                 for(FieldSetting__mdt item : mappingOut) {
@@ -235,7 +246,7 @@ public class SYS_DataCache {
                 }
             }
             // SYS_debug.log('escape char is==' + escCharMap);
-            return escCharMap.get(SYS_Constants.INT_TYPE);
+            return escCharMap.get(SYS_DataCache.INT_TYPE);
         }
     }
     public static void load(){ 
@@ -348,7 +359,7 @@ public class SYS_DataCache {
                                     ObjectApiName__c,Object__c,QualifiedApiName,ResourcePath__c FROM ObjectSetting__mdt LIMIT 10000];
                 
                 for(ObjectSetting__mdt obj : objMap) {
-                    objectSettingInit.put(obj.ObjectApiName__c, obj);
+                    objectSettingInit.put(obj.DeveloperName, obj);
                 }
             }
             return objectSettingInit;
@@ -439,7 +450,7 @@ public class SYS_DataCache {
                 debug = [SELECT Id, DeveloperName, Label, UpdateMethod__c, DebugCheck__c,
                                      AuthenticationType__c, BaseAPIEndPoint__c, 
                                      QualifiedApiName, EscapeCharacter__c FROM IntegrationSetting__mdt 
-                                     WHERE developername = :SYS_Constants.INT_TYPE LIMIT 1][0].DebugCheck__c;
+                                     WHERE developername = :SYS_DataCache.INT_TYPE LIMIT 1][0].DebugCheck__c;
             }*/
             //return debug;
             return true;
@@ -489,7 +500,7 @@ public class SYS_DataCache {
     public static String webhookToken {
         get {
             if(token == '') {
-                List<IntegrationSetting__mdt> intSetting = [SELECT Id, developername, webhookToken__c FROM IntegrationSetting__mdt WHERE developername = :SYS_Constants.INT_TYPE];
+                List<IntegrationSetting__mdt> intSetting = [SELECT Id, developername, webhookToken__c FROM IntegrationSetting__mdt WHERE developername = :SYS_DataCache.INT_TYPE];
                 if(intSetting.size() > 0) {
                     token = intSetting[0].webhookToken__c;
                     return token;

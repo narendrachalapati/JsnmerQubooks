@@ -34,7 +34,8 @@ global class SYS_InvocableHandler {
             objectApiName = ((Id)itr.recId).getSobjectType() + '';
             newList.add(itr.newVal);   
             oldList.add(itr.oldVal);
-            SYS_Constants.INT_TYPE = itr.integrationSetting;
+            SYS_DataCache.INT_TYPE = itr.integrationSetting;
+            SYS_DataCache.OBJ_TYPE = itr.objectSetting;
             SYS_DataCache.objectApiName = objectApiName;
             System.debug('SYS_DataCache.objectApiName:'+SYS_DataCache.objectApiName);
         } 
@@ -63,12 +64,13 @@ global class SYS_InvocableHandler {
                 SYS_IntegrationLog__c  newSysLog = appService.getLogsToInsert(finalJsonForOutbound);
                 newSysLog.Status__c = 'NEW';
                 newSysLog.Type__c = 'OUTBOUND';
-                newSysLog.SYS_IntegrationSettings__c = SYS_Constants.INT_TYPE;
+                newSysLog.SYS_IntegrationSettings__c = SYS_DataCache.INT_TYPE;
                 newSysLog.SYS_Operation_Type__c = operationType;
                 newSysLog.whatid__c = jsonRecordId;
-                insertSysLog.add(newSysLog);   
+                newSysLog.ObjectSettingId__c = SYS_DataCache.OBJ_TYPE;
+                insertSysLog.add(newSysLog);
             }
-            if(!insertSysLog.isEmpty() && SYS_DataCache.enableCheck.get(SYS_Constants.INT_TYPE.toUpperCase())){ 
+            if(!insertSysLog.isEmpty() && SYS_DataCache.enableCheck.get(SYS_DataCache.INT_TYPE.toUpperCase())){ 
                 SYS_debug.log('inside insert'+insertSysLog.size());
                 insert insertSysLog;
                 system.debug('insertSysLog=='+insertSysLog);
