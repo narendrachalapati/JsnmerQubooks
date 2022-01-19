@@ -3,6 +3,27 @@ global virtual class SYS_ApplicationService {
 
     }
 
+    /* ------------------------------------------------------------------------ */ 
+
+    global virtual void doInbound(List<SYS_IntegrationLog__c> newList) {
+        String jsonBody = '';
+        for(SYS_IntegrationLog__c log : newList) {
+            jsonBody = log.data0__c != null ? log.data0__c : '' +
+                            log.data1__c != null ? log.data1__c : '' +
+                            log.data2__c != null ? log.data2__c : '' +
+                            log.data3__c != null ? log.data3__c : '' +
+                            log.data4__c != null ? log.data4__c : '' +
+                            log.data5__c != null ? log.data5__c : '' +
+                            log.data6__c != null ? log.data6__c : '' +
+                            log.data7__c != null ? log.data7__c : '' +
+                            log.data8__c != null ? log.data8__c : '' +
+                            log.data9__c != null ? log.data9__c : '' ; 
+            
+                //--M SYS_integrationLogHandler.transformGETResponseAndUpsertQB( jsonBody , log.WhatId__c); 
+        }
+    }
+    /* ------------------------------------------------------------------------ */
+
     /* ------------------------------------------------------------------------ */
 
     global virtual HttpResponse doOutbound(SYS_IntegrationLog__c log){
@@ -42,9 +63,9 @@ global virtual class SYS_ApplicationService {
     }
     /* ------------------------------------------------------------------------ */
 
-    global virtual SYS_IntegrationLog__c processOutboundResult(HttpResponse resp,SYS_IntegrationLog__c log){
+    global virtual SYS_IntegrationLog__c logOutboundResult(HttpResponse resp,SYS_IntegrationLog__c log){
 
-        SYS_IntegrationLog__c logResp = new SYS_IntegrationLog__c();//--M SYS_integrationLogHandler.getLogsToInsert(resp.getBody());
+        SYS_IntegrationLog__c logResp = getLogsToInsert(resp.getBody());
         if(resp.getStatusCode() != 201){
             SYS_debug.log('#### resp status: '+resp.getStatus());
             SYS_debug.log('#### resp code: '+resp.getStatusCode()); 
@@ -52,23 +73,23 @@ global virtual class SYS_ApplicationService {
 
             
             if (Schema.sObjectType.SYS_IntegrationLog__c.fields.Status__c.isCreateable()) {
-            logResp.Status__c = 'ERROR';
+                logResp.Status__c = 'ERROR';
             }
             if (Schema.sObjectType.SYS_IntegrationLog__c.fields.SYS_Http_Status__c.isCreateable()) {
-            logresp.SYS_Http_Status__c = integer.valueOf(resp.getStatusCode());
+                logresp.SYS_Http_Status__c = integer.valueOf(resp.getStatusCode());
             }
             if (Schema.sObjectType.SYS_IntegrationLog__c.fields.SYS_RequestId__c.isCreateable()) {
-            logResp.SYS_RequestId__c = log.Id;
+                logResp.SYS_RequestId__c = log.Id;
             }
             if (Schema.sObjectType.SYS_IntegrationLog__c.fields.WhatId__c.isCreateable()) {
-            logResp.WhatId__c = log.WhatId__c;
+                logResp.WhatId__c = log.WhatId__c;
             }
             
             if (Schema.sObjectType.SYS_IntegrationLog__c.fields.Type__c.isCreateable()) {
-            logResp.Type__c = 'INBOUND';
+                logResp.Type__c = 'INBOUND';
             }
             if (Schema.sObjectType.SYS_IntegrationLog__c.fields.SYS_Operation_Type__c.isCreateable()) {
-            logResp.SYS_Operation_Type__c = 'RESPONSE';
+                logResp.SYS_Operation_Type__c = 'RESPONSE';
             }
             if (Schema.sObjectType.SYS_IntegrationLog__c.fields.SYS_Operation_Type__c.isCreateable()) {
                 logResp.SYS_IntegrationSettings__c = SYS_DataCache.INT_TYPE;
@@ -78,22 +99,22 @@ global virtual class SYS_ApplicationService {
         else{
             
             if (Schema.sObjectType.SYS_IntegrationLog__c.fields.SYS_Http_Status__c.isCreateable()) {
-            logresp.SYS_Http_Status__c = Integer.valueOf(resp.getStatusCode());
+                logresp.SYS_Http_Status__c = Integer.valueOf(resp.getStatusCode());
             }
             if (Schema.sObjectType.SYS_IntegrationLog__c.fields.SYS_RequestId__c.isCreateable()) {
-            logResp.SYS_RequestId__c = log.Id;
+                logResp.SYS_RequestId__c = log.Id;
             }
             if (Schema.sObjectType.SYS_IntegrationLog__c.fields.WhatId__c.isCreateable()) {
-            logResp.WhatId__c = log.WhatId__c;
+                logResp.WhatId__c = log.WhatId__c;
             }
             if (Schema.sObjectType.SYS_IntegrationLog__c.fields.Type__c.isCreateable()) {
-            logResp.Type__c = 'INBOUND';
+                logResp.Type__c = 'INBOUND';
             }
             if (Schema.sObjectType.SYS_IntegrationLog__c.fields.SYS_Operation_Type__c.isCreateable()) {
                 logResp.SYS_IntegrationSettings__c = SYS_DataCache.INT_TYPE;
             }
             if (Schema.sObjectType.SYS_IntegrationLog__c.fields.SYS_Operation_Type__c.isCreateable()) {
-            logResp.SYS_Operation_Type__c = 'RESPONSE';
+                logResp.SYS_Operation_Type__c = 'RESPONSE';
             }
         }
 
@@ -109,8 +130,8 @@ global virtual class SYS_ApplicationService {
     }
 
     /* ------------------------------------------------------------------------ */
-
-    public virtual void processLogAfterInsert(List<SYS_IntegrationLog__c> newLogList){
+    //[DEPRECATED]
+    public virtual void router(List<SYS_IntegrationLog__c> newLogList){
         List<Id> newLogsFirst = new List<Id>();
         List<Id> newLogsSecond = new List<Id>();
         List<Id> newInboundFirst = new List<Id>(); 
@@ -164,11 +185,10 @@ global virtual class SYS_ApplicationService {
   
          }
     }
-    /* ------------------------------------------------------------------------ */
-
-
-
+    
+    
     /************************** C O N C R E T E    M E T H O D S    S T A R T **************************/
+
 
     /* ------------------------------------------------------------------------ */
     public SYS_IntegrationLog__c getLogsToInsert(String requestBody) {
@@ -216,23 +236,5 @@ global virtual class SYS_ApplicationService {
 
     /************************** C O N C R E T E    M E T H O D S    E N D *****************************/
 
-    /* ------------------------------------------------------------------------ */  
-    public static void processInboundResponse(List<SYS_IntegrationLog__c> newList) {
-        String jsonBody = '';
-        for(SYS_IntegrationLog__c log : newList) {
-            jsonBody = log.data0__c != null ? log.data0__c : '' +
-                            log.data1__c != null ? log.data1__c : '' +
-                            log.data2__c != null ? log.data2__c : '' +
-                            log.data3__c != null ? log.data3__c : '' +
-                            log.data4__c != null ? log.data4__c : '' +
-                            log.data5__c != null ? log.data5__c : '' +
-                            log.data6__c != null ? log.data6__c : '' +
-                            log.data7__c != null ? log.data7__c : '' +
-                            log.data8__c != null ? log.data8__c : '' +
-                            log.data9__c != null ? log.data9__c : '' ; 
-            
-                //--M SYS_integrationLogHandler.transformGETResponseAndUpsertQB( jsonBody , log.WhatId__c); 
-        }
-    }
-    /* ------------------------------------------------------------------------ */
+    
 }
