@@ -344,7 +344,7 @@ public class SYS_DataCache {
     public static map<String, ObjectSetting__mdt> objectSettingMap {
         get{
             if( objectSettingInit.isEmpty()) {
-                List<ObjectSetting__mdt> objMap = [SELECT DeveloperName, BypassTrigger__c, ExternalFieldApi__c,Id,IntegrationType__r.developername , QueryClause__c,
+                List<ObjectSetting__mdt> objMap = [SELECT DeveloperName, ApexHandler__c,BypassTrigger__c, ExternalFieldApi__c,Id,IntegrationType__r.developername , QueryClause__c,
                                     ObjectApiName__c,Object__c,QualifiedApiName,ResourcePath__c FROM ObjectSetting__mdt LIMIT 10000];
                 
                 for(ObjectSetting__mdt obj : objMap) {

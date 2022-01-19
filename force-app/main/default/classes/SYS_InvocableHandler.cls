@@ -35,6 +35,8 @@ global class SYS_InvocableHandler {
             newList.add(itr.newVal);   
             oldList.add(itr.oldVal);
             SYS_Constants.INT_TYPE = itr.integrationSetting;
+            SYS_DataCache.objectApiName = objectApiName;
+            System.debug('SYS_DataCache.objectApiName:'+SYS_DataCache.objectApiName);
         } 
         Map<Id, String> jsonListForOutbound = SYS_Transformer.getRequestJson(newList);
         List<SYS_IntegrationLog__c> insertSysLog = new List<SYS_IntegrationLog__c>();
