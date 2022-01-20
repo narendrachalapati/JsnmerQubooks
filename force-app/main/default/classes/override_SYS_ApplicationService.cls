@@ -26,4 +26,33 @@ public class override_SYS_ApplicationService extends SYS_ApplicationService {
         return req;
     }
 
+    public override sObject processFieldMapping(FieldSetting__mdt mapping,sObject sObj,Object value, String sObjectApiName){
+
+        SObjectType r = ((SObject)(Type.forName('Schema.'+sObjectApiName).newInstance())).getSObjectType();
+        DescribeSObjectResult d = r.getDescribe();
+                
+        String fieldType = d.fields
+                            .getMap()
+                            .get(mapping.FieldApiName__c)
+                            .getDescribe()
+                            .getType()+'';
+
+        
+        //TODO add other field types
+        if(fieldType=='DATE'){
+            try{
+                sObj.put(mapping.FieldApiName__c, date.valueOf((String)value));
+            }catch(Exception e){
+                
+            }
+        } else if (fieldType == 'STRING') {
+            sObj.put(mapping.FieldApiName__c, String.valueof(value)+':This is from extended handler');
+        }
+        else{
+            sObj.put(mapping.FieldApiName__c, value);
+        }
+
+        return sObj;
+    }
+
 }

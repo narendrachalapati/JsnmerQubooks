@@ -456,6 +456,7 @@ public virtual class SYS_Transformer {
     //
     public static sObject parseJsonToObject(String jsonObj, String sObjectApiName, Map<String, FieldSetting__mdt> mapOfPaths) {
         Map<String, Object> flatKeyMap = makeJsonIntoKeyValuePairs(jsonObj);
+        sObject sObj = Schema.getGlobalDescribe().get(sObjectApiName).newSObject();
         if(SYS_Transformer.isChild){
         	System.debug('\n\n++++++++++++ flatKeyMap: '+flatKeyMap);
             System.debug('\n\n++++++++++++ mapOfPaths: '+mapOfPaths);
@@ -484,7 +485,7 @@ public virtual class SYS_Transformer {
         //sObjectApiName is still empty means there are no outbound fields for the object as part of array processing
         if(sObjectApiName=='' || sObjectApiName==null) return null;
         
-        sObject sObj = Schema.getGlobalDescribe().get(sObjectApiName).newSObject();
+        
         System.debug('flatKeyMap=='+JSON.serialize(flatKeyMap));
         System.debug('mapofPath=='+JSON.serialize(mapOfPaths));
         for(String key : mapOfPaths.keySet()) {
@@ -495,38 +496,22 @@ public virtual class SYS_Transformer {
             System.debug('\n\nRunning for '+mapping.FieldApiName__c+' on:'+sObjectApiName + ' '+fieldObj+ 'key=='+key);
             
             if(mapping.FieldApiName__c==null){
-                
                 continue;
             }
    
             if(fieldObj == sObjectApiName && !SYS_Transformer.isChild){
-                SObjectType r = ((SObject)(Type.forName('Schema.'+sObjectApiName).newInstance())).getSObjectType();
-                DescribeSObjectResult d = r.getDescribe();
-                System.debug('\n\nField Type for if '+mapping.FieldApiName__c);
-                String fieldType = d.fields
-                        .getMap()
-                        .get(mapping.FieldApiName__c)
-                        .getDescribe()
-                        .getType()+'';
-                System.debug('\n\nField Type for '+mapping.FieldApiName__c+' :'+fieldType);
-                System.debug('\n flatmap=='+flatKeyMap.get(key) + 'key =='+key);
-                //TODO add other field types
-                if(fieldType=='DATE'){
-                    try{
-                    	sObj.put(mapping.FieldApiName__c, date.valueOf((String)flatKeyMap.get(key)));
-                    }catch(Exception e){
-                        
-                    }
-                } else if (fieldType == 'STRING') {
-                    sObj.put(mapping.FieldApiName__c, String.valueof(flatKeyMap.get(key)));
+
+                String fieldMappingHandler = 'SYS_ApplicationService';
+                if(mapping.Field_Mapping_Handler__c != '' && mapping.Field_Mapping_Handler__c != NULL){
+                    fieldMappingHandler = mapping.Field_Mapping_Handler__c;
                 }
-                else{
-                    sObj.put(mapping.FieldApiName__c, flatKeyMap.get(key));
-                }
+
+                SYS_ApplicationService appService = (SYS_ApplicationService)Type.forName(fieldMappingHandler).newInstance();
+                appService.processFieldMapping(mapping,sObj,flatKeyMap.get(key),sObjectApiName);
+
+                
             } 
             
-            
-            //TODO - make sure that external id is filled - Done with a new fieldsetting metada record
         }
         return sObj;
     }

@@ -106,7 +106,7 @@ public class SYS_DataCache {
             if(mappings == null){
                 mappings = new List<FieldSetting__mdt>();
                 System.debug('Field Settings #### 1:'+mappings);
-                mappings = [Select Id,masterlabel, ObjectSetting__r.masterlabel , StaticValue__c,IsChild__c, ObjectSetting__r.ObjectApiName__c, ObjectApiName__c, FieldApiName__c , Key__c, RestResource__c, Direction__c, ParentField__c, ChildRootElement__c,
+                mappings = [Select Id,masterlabel,Field_Mapping_Handler__c, ObjectSetting__r.masterlabel , StaticValue__c,IsChild__c, ObjectSetting__r.ObjectApiName__c, ObjectApiName__c, FieldApiName__c , Key__c, RestResource__c, Direction__c, ParentField__c, ChildRootElement__c,
                             ObjectSetting__r.Direction__c,ObjectSetting__r.Trigger_Condition__c,ObjectSetting__r.TriggerEvents__c, ObjectSetting__r.ResourcePath__c , ObjectSetting__r.ApexHandler__c 
                             from FieldSetting__mdt /*where Is_Active__c=true where FieldApiName__c != null*/
                             WHERE ObjectSetting__r.IntegrationType__r.developername = : SYS_DataCache.INT_TYPE AND Direction__c != 'INBOUND'];
@@ -133,7 +133,7 @@ public class SYS_DataCache {
                 //             ObjectSetting__r.Object__r.QualifiedApiName , ObjectSetting__r.Direction__c, ObjectSetting__r.ResourcePath__c , ObjectSetting__r.ApexHandler__c 
                 //             from FieldSetting__mdt /*where Is_Active__c=true where FieldApiName__c != null*/
                 //             WHERE ObjectSetting__r.IntegrationType__r.developername = : SYS_DataCache.INT_TYPE AND Direction__c != 'OUTBOUND'];
-                String query = 'SELECT Id, ChildFieldApiName__c, FieldApiName__c, ObjectApiName__c,Key__c, RestResource__c, Direction__c, ChildRootElement__c,' +                
+                String query = 'SELECT Id, ChildFieldApiName__c,Field_Mapping_Handler__c, FieldApiName__c, ObjectApiName__c,Key__c, RestResource__c, Direction__c, ChildRootElement__c,' +                
                 ' ObjectSetting__r.Object__r.QualifiedApiName , ObjectSetting__r.Direction__c, ObjectSetting__r.ResourcePath__c , ObjectSetting__r.ApexHandler__c ' + 
                 ' from FieldSetting__mdt '+
                 ' WHERE ObjectSetting__r.IntegrationType__r.developername =\''+SYS_DataCache.INT_TYPE+'\' AND Direction__c != \'OUTBOUND\' '; 
@@ -225,7 +225,7 @@ public class SYS_DataCache {
     public static void load(String primaryObj,List<sObject> objsList) {
             //String primaryObj; //TODO-fix this
             if(objectFieldSettingMap == null || objectFieldSettingMap.keySet().size() == 0) {
-                List<FieldSetting__mdt> mappings = [Select Id,IsChild__c, ObjectApiName__c, FieldApiName__c , Key__c, RestResource__c, Direction__c, ParentField__c, 
+                List<FieldSetting__mdt> mappings = [Select Id,IsChild__c, Field_Mapping_Handler__c,ObjectApiName__c, FieldApiName__c , Key__c, RestResource__c, Direction__c, ParentField__c, 
                                            ObjectSetting__r.Direction__c, ObjectSetting__r.ResourcePath__c , ObjectSetting__r.ApexHandler__c 
                                            from FieldSetting__mdt where ObjectSetting__r.ObjectApiName__c = :primaryObj and FieldApiName__c != null];
                 
