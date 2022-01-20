@@ -45,7 +45,7 @@ public class SYS_IntegrationLogOutboundQueueable implements Queueable, Database.
                     continue;
                 }
                 HttpResponse outboundResponse = appService.doOutbound(log);
-                outboundResultLogs.add(appService.logOutboundResult(outboundResponse,log));
+                outboundResultLogs.add(appService.generatelogForOutboundResult(outboundResponse,log));
             }
             else{
                 pendingProcessLogs.add(log.Id);
@@ -63,7 +63,7 @@ public class SYS_IntegrationLogOutboundQueueable implements Queueable, Database.
         
         if(outboundResultLogs.size() > 0){
 
-            SYS_ApplicationService.doDML(outboundResultLogs, 'INSERT',NULL);
+            SYS_ApplicationService.doDML(outboundResultLogs, 'UPSERT',NULL);
             
         } 
         

@@ -8,12 +8,8 @@ public class SYS_IntegrationLogInboundImmediate{
 
     public void execute(){
         
-        List<sObject> inboundRecordsForInsert = new List<sObject>();
-        List<sObject> inboundRecordsForUpdate = new List<sObject>();
-        List<sObject> inboundRecordsForDelete = new List<sObject>();
-        Map<String,List<sObject>> inboundRecordsForUpsertMap = new Map<String,List<sObject>>();
-        
-
+        List<sObject> inboundResultLogs = new List<sObject>();
+    
         List<SYS_IntegrationLog__c> sysLogs = 
                                             [SELECT 
                                                 id,
@@ -27,7 +23,7 @@ public class SYS_IntegrationLogInboundImmediate{
                                                 data7__c,
                                                 data8__c,
                                                 data9__c,
-                                                How_to_process__c,Custom_Apex_Handler__c,SYS_Operation_Type__c,
+                                                How_to_process__c,Custom_Apex_Handler__c,SYS_Operation_Type__c,Flat_Key_for_Resource__c,
                                                 Type__c,WhatId__c,Parent__c,Order__c,ObjectSettingId__c,SYS_IntegrationSettings__c
                                             FROM SYS_IntegrationLog__c 
                                             WHERE Id in:sysLogIds];
@@ -51,7 +47,10 @@ public class SYS_IntegrationLogInboundImmediate{
                 continue;
             }
 
-            
+            Boolean dmlResult = appService.doInbound(log);
+            inboundResultLogs.add(appService.generatelogForInboundResult(dmlResult,log));
+
+            /*
             if(log.SYS_Operation_Type__c.toUpperCase()=='INSERT'){
                 inboundRecordsForInsert.add(appService.doInbound(log));   
             }
@@ -78,13 +77,15 @@ public class SYS_IntegrationLogInboundImmediate{
             else{
                 // Non DML Operation Type. Handle DMLs; if any, in the extended class. 
             }
+            */
             
         }
 
-        if(inboundRecordsForInsert.size()>0){
-            SYS_ApplicationService.doDML(inboundRecordsForInsert,'INSERT',NULL);  
+        if(inboundResultLogs.size()>0){
+            SYS_ApplicationService.doDML(inboundResultLogs,'UPSERT',NULL);  
         }
 
+        /*
         //TODO - upsert against external id - DONE
         //TODO - Check DML Limits
 
@@ -106,6 +107,7 @@ public class SYS_IntegrationLogInboundImmediate{
         if(inboundRecordsForDelete.size()>0){
             SYS_ApplicationService.doDML(inboundRecordsForDelete,'DELETE',NULL);  
         }
+        */
         
         
     

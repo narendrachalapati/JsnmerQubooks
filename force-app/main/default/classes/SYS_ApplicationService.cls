@@ -6,7 +6,7 @@ global virtual class SYS_ApplicationService {
     
     /* ------------------------------------------------------------------------ */ 
 
-    global virtual sObject doInbound(SYS_IntegrationLog__c log) {
+    global virtual Boolean doInbound(SYS_IntegrationLog__c log) {
         String jsonBody = '';
         
         jsonBody =  log.data0__c != null ? log.data0__c : '' +
@@ -27,11 +27,8 @@ global virtual class SYS_ApplicationService {
     }
     /* ------------------------------------------------------------------------ */
 
-    global virtual HttpResponse doOutbound(SYS_IntegrationLog__c log){
-
-        Http http = new Http();
+    global virtual HttpRequest buildOutboundHttpRequest(){
         HttpRequest req = new HttpRequest();
-
         IntegrationSetting__mdt integrationSetting = SYS_DataCache.integrationSetting.get(SYS_Datacache.INT_TYPE);
         String baseEndpoint = integrationSetting.BaseAPIEndPoint__c;
 
@@ -41,7 +38,21 @@ global virtual class SYS_ApplicationService {
             SYS_debug.log('header is = '+head.MasterLabel + ''+head.Value__c);
             req.setHeader(String.valueOf(head.MasterLabel), String.valueOf(head.Value__c));
                 
-        } 
+        }
+        String resourceUrl = integrationSetting.BaseAPIEndPoint__c+SYS_DataCache.objectSettingMap.get(SYS_DataCache.OBJ_TYPE).ResourcePath__c;
+        req.setEndpoint(resourceUrl);
+        return req;
+    }
+
+    /* ------------------------------------------------------------------------ */
+
+    global virtual HttpResponse doOutbound(SYS_IntegrationLog__c log){
+
+        Http http = new Http();
+        HttpRequest req = buildOutboundHttpRequest();
+        
+
+        
         String body = log.data0__c != null ? log.data0__c : '' +
                             log.data1__c != null ? log.data1__c : '' +
                             log.data2__c != null ? log.data2__c : '' +
@@ -53,8 +64,7 @@ global virtual class SYS_ApplicationService {
                             log.data8__c != null ? log.data8__c : '' +
                             log.data9__c != null ? log.data9__c : '' ; 
         
-        String resourceUrl = integrationSetting.BaseAPIEndPoint__c+SYS_DataCache.objectSettingMap.get(SYS_DataCache.OBJ_TYPE).ResourcePath__c;
-        req.setEndpoint(resourceUrl);
+        
         req.setBody(body);
         system.debug('body'+body);
          
@@ -62,9 +72,55 @@ global virtual class SYS_ApplicationService {
         return response;
         
     }
+
     /* ------------------------------------------------------------------------ */
 
-    global virtual SYS_IntegrationLog__c logOutboundResult(HttpResponse resp,SYS_IntegrationLog__c log){
+    global virtual SYS_IntegrationLog__c generatelogForInboundResult(Boolean result,SYS_IntegrationLog__c log){
+
+        SYS_IntegrationLog__c logResp = new SYS_IntegrationLog__c();
+
+        if(!result){
+            
+            String errorMessage = 'The following error has occurred.';
+            /*
+            String errorMessage = 'The following error has occurred.';
+            for(Database.Error err : result.getErrors()) {
+                errorMessage += err.getStatusCode() + ': ' + err.getMessage();
+                SYS_debug.log('Fields affected are: ' + err.getFields());
+            }
+            errorMessage += 'Fields affected are: ' + err.getFields();
+            */
+
+            if (Schema.sObjectType.SYS_IntegrationLog__c.fields.Status__c.isCreateable()) {
+                logResp.Status__c = 'FAIL';
+            }
+
+            if (Schema.sObjectType.SYS_IntegrationLog__c.fields.Message__c.isCreateable()) {
+                logResp.Message__c = errorMessage;
+            }
+            
+            logResp.Id = log.Id;
+            
+        }
+        else{
+            
+            if (Schema.sObjectType.SYS_IntegrationLog__c.fields.Status__c.isCreateable()) {
+                logResp.Status__c = 'DONE';
+            }
+
+            if (Schema.sObjectType.SYS_IntegrationLog__c.fields.Message__c.isCreateable()) {
+                logResp.Message__c = 'Record created successfully';
+            }
+            
+            logResp.Id = log.Id;
+        }
+
+        return logResp;
+    }
+
+    /* ------------------------------------------------------------------------ */
+
+    global virtual SYS_IntegrationLog__c generatelogForOutboundResult(HttpResponse resp,SYS_IntegrationLog__c log){
 
         SYS_IntegrationLog__c logResp = getLogsToInsert(resp.getBody());
         if(resp.getStatusCode() != 201){
