@@ -5,6 +5,26 @@ global virtual class SYS_ApplicationService {
 
     /* ------------------------------------------------------------------------ */ 
 
+    global virtual SYS_IntegrationLog__c generateLogForWebhookReq() {
+        String requestBody = RestContext.request.requestBody.toString();
+        
+        System.debug('\n****** WS requestBody:'+requestBody);
+        SYS_IntegrationLog__c log = SYS_ApplicationService.getLogsToInsert(requestBody);
+        log.Type__c = 'INBOUND';
+        log.SYS_Operation_Type__c = 'INSERT';
+        log.Flat_Key_for_Resource__c = 'attributes.type';
+        log.SYS_IntegrationSettings__c = 'SFsource';
+        log.Status__c = 'NEW';
+        log.External_Id_Field_API_Name__c = 'SYS_Key__c';
+        log.How_to_process__c = 'use_custom_apex_handler';
+        log.Custom_Apex_Handler__c = 'SYS_ApplicationService';
+
+        return log;
+    }
+    
+
+    /* ------------------------------------------------------------------------ */ 
+
     // For Outbound. Called from doInbound() in ApplicationService
     global virtual List<sObject> transformJsonToSObject(String jsonBody,String resource) {
         return SYS_Transformer.getSObjectsToUpsert(new List<String>{jsonBody},resource);
