@@ -63,7 +63,7 @@ public class SYS_IntegrationLogOutboundQueueable implements Queueable, Database.
         
         if(outboundResultLogs.size() > 0){
 
-            SYS_ApplicationService.doDML(outboundResultLogs, 'UPSERT',NULL);
+            SYS_ApplicationService.doDML(outboundResultLogs, 'UPSERT','');
             
         } 
         

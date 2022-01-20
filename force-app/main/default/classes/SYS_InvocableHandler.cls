@@ -39,7 +39,10 @@ global class SYS_InvocableHandler {
             SYS_DataCache.objectApiName = objectApiName;
             System.debug('SYS_DataCache.objectApiName:'+SYS_DataCache.objectApiName);
         } 
-        Map<Id, String> jsonListForOutbound = SYS_Transformer.getRequestJson(newList);
+        
+        SYS_ApplicationService appService = (SYS_ApplicationService)Type.forName(SYS_DataCache.objectSettingMap.get(SYS_DataCache.OBJ_TYPE).ApexHandler__c).newInstance();
+        
+        Map<Id, String> jsonListForOutbound = appService.transformSObjectToJson(newList);
         List<SYS_IntegrationLog__c> insertSysLog = new List<SYS_IntegrationLog__c>();
        
         if(jsonListForOutbound.values().size() > 0){
@@ -54,14 +57,14 @@ global class SYS_InvocableHandler {
                 by creating an extension class. Configure the new extended class in ObjectSettings metadata
                 */
 
-                SYS_ApplicationService appService = (SYS_ApplicationService)Type.forName('SYS_ApplicationService').newInstance();
+                
 
                 finalJsonForOutbound = appService.sanitizeJSONForOutbound(jsonListForOutbound.get(jsonRecordId));
                 System.debug('cleanJSON'+finalJsonForOutbound);
 
                 //TODO - QB specific change for bundle product  
 
-                SYS_IntegrationLog__c  newSysLog = appService.getLogsToInsert(finalJsonForOutbound);
+                SYS_IntegrationLog__c  newSysLog = SYS_ApplicationService.getLogsToInsert(finalJsonForOutbound);
                 newSysLog.Status__c = 'NEW';
                 newSysLog.Type__c = 'OUTBOUND';
                 newSysLog.SYS_IntegrationSettings__c = SYS_DataCache.INT_TYPE;

@@ -3,7 +3,49 @@ global virtual class SYS_ApplicationService {
 
     }
 
-    
+    /* ------------------------------------------------------------------------ */ 
+
+    // For Outbound. Called from doInbound() in ApplicationService
+    global virtual List<sObject> transformJsonToSObject(String jsonBody,String resource) {
+        return SYS_Transformer.getSObjectsToUpsert(new List<String>{jsonBody},resource);
+    }
+
+    // For Outbound. Called from Invocable Handler
+    global virtual Map<Id,String> transformSObjectToJson(List<sObject> newSObjectList) {
+        return SYS_Transformer.getRequestJson(newSObjectList);
+    }
+
+    /* ------------------------------------------------------------------------ */ 
+
+    global virtual String preprocessJSONForInbound(String jsonBody) {
+
+        return jsonBody;
+    }
+
+    global virtual String preprocessJSONForOutbound(String jsonBody) {
+
+        return jsonBody;
+    }
+
+    global virtual String getResourceFromJSON(SYS_IntegrationLog__c log,String jsonBody){
+
+        String resource = '';
+        if(log.Flat_Key_for_Resource__c == NULL || log.Flat_Key_for_Resource__c == ''){
+            //Root element identifies Resource
+            Object responseType = JSON.deserializeUntyped(jsonBody);
+            if(responseType instanceof Map<String,Object>){
+                resource = new List<String>(((Map<String, Object>)responseType).keySet())[0];
+            }
+        }
+        else{
+            //Key mentioned in Flat_Key_for_Resource__c identifies Resource
+            Map<String, Object> flatKeyMap = SYS_Transformer.makeJsonIntoKeyValuePairs(jsonBody);
+            resource = (String)flatKeyMap.get(log.Flat_Key_for_Resource__c);
+        }
+
+        return resource;
+    }
+
     /* ------------------------------------------------------------------------ */ 
 
     global virtual Boolean doInbound(SYS_IntegrationLog__c log) {
@@ -18,16 +60,24 @@ global virtual class SYS_ApplicationService {
                     log.data6__c != null ? log.data6__c : '' +
                     log.data7__c != null ? log.data7__c : '' +
                     log.data8__c != null ? log.data8__c : '' +
-                    log.data9__c != null ? log.data9__c : '' ; 
-            
-        //--M SYS_integrationLogHandler.transformGETResponseAndUpsertQB( jsonBody , log.WhatId__c);
-       
+                    log.data9__c != null ? log.data9__c : '' ;
 
-        return null;
+        jsonBody = preprocessJSONForInbound(jsonBody);
+        List<sObject> sObjectsToDML = transformJsonToSObject(jsonBody, getResourceFromJSON(log,jsonBody));
+
+        System.debug('\n\n ------------------------------- \n\n Application Service sObjects to DML:'+sObjectsToDML);
+
+        String externalIdFieldAPIName = log.External_Id_Field_API_Name__c;
+        Schema.SObjectField externalIdField = Schema.getGlobalDescribe().get(SYS_DataCache.sObjectApiName).getDescribe().fields.getMap().get(externalIdFieldAPIName);
+
+        //TODO DML Based on log operation type
+        Database.UpsertResult[] results = Database.upsert(sObjectsToDML,externalIdField, false);
+               
+        return results[0].isSuccess();
     }
     /* ------------------------------------------------------------------------ */
 
-    global virtual HttpRequest buildOutboundHttpRequest(){
+    global virtual HttpRequest buildOutboundHttpRequest(SYS_IntegrationLog__c log){
         HttpRequest req = new HttpRequest();
         IntegrationSetting__mdt integrationSetting = SYS_DataCache.integrationSetting.get(SYS_Datacache.INT_TYPE);
         String baseEndpoint = integrationSetting.BaseAPIEndPoint__c;
@@ -49,7 +99,7 @@ global virtual class SYS_ApplicationService {
     global virtual HttpResponse doOutbound(SYS_IntegrationLog__c log){
 
         Http http = new Http();
-        HttpRequest req = buildOutboundHttpRequest();
+        HttpRequest req = buildOutboundHttpRequest(log);
         
 
         
@@ -64,9 +114,9 @@ global virtual class SYS_ApplicationService {
                             log.data8__c != null ? log.data8__c : '' +
                             log.data9__c != null ? log.data9__c : '' ; 
         
-        
+        body = preprocessJSONForOutbound(body);
         req.setBody(body);
-        system.debug('body'+body);
+        System.debug('body:'+body);
          
         HttpResponse response = http.send(req);
         return response;
@@ -123,7 +173,7 @@ global virtual class SYS_ApplicationService {
     global virtual SYS_IntegrationLog__c generatelogForOutboundResult(HttpResponse resp,SYS_IntegrationLog__c log){
 
         SYS_IntegrationLog__c logResp = getLogsToInsert(resp.getBody());
-        if(resp.getStatusCode() != 201){
+        if(resp.getStatusCode() != 201 && resp.getStatusCode() != 200){
             SYS_debug.log('#### resp status: '+resp.getStatus());
             SYS_debug.log('#### resp code: '+resp.getStatusCode()); 
             SYS_debug.log('#### resp: '+resp.getBody());
@@ -148,12 +198,19 @@ global virtual class SYS_ApplicationService {
             if (Schema.sObjectType.SYS_IntegrationLog__c.fields.SYS_Operation_Type__c.isCreateable()) {
                 logResp.SYS_Operation_Type__c = 'RESPONSE';
             }
+            if (Schema.sObjectType.SYS_IntegrationLog__c.fields.How_To_Process__c.isCreateable()) {
+                logResp.How_To_Process__c = 'ignore_log';
+            }
             if (Schema.sObjectType.SYS_IntegrationLog__c.fields.SYS_Operation_Type__c.isCreateable()) {
                 logResp.SYS_IntegrationSettings__c = SYS_DataCache.INT_TYPE;
             }
             
         }
         else{
+
+            if (Schema.sObjectType.SYS_IntegrationLog__c.fields.Status__c.isCreateable()) {
+                logResp.Status__c = 'DONE';
+            }
             
             if (Schema.sObjectType.SYS_IntegrationLog__c.fields.SYS_Http_Status__c.isCreateable()) {
                 logresp.SYS_Http_Status__c = Integer.valueOf(resp.getStatusCode());
@@ -169,6 +226,9 @@ global virtual class SYS_ApplicationService {
             }
             if (Schema.sObjectType.SYS_IntegrationLog__c.fields.SYS_Operation_Type__c.isCreateable()) {
                 logResp.SYS_IntegrationSettings__c = SYS_DataCache.INT_TYPE;
+            }
+            if (Schema.sObjectType.SYS_IntegrationLog__c.fields.How_To_Process__c.isCreateable()) {
+                logResp.How_To_Process__c = 'ignore_log';
             }
             if (Schema.sObjectType.SYS_IntegrationLog__c.fields.SYS_Operation_Type__c.isCreateable()) {
                 logResp.SYS_Operation_Type__c = 'RESPONSE';
@@ -194,7 +254,7 @@ global virtual class SYS_ApplicationService {
 
     /* ------------------------------------------------------------------------ */
 
-    public SYS_IntegrationLog__c getLogsToInsert(String requestBody) {
+    public static SYS_IntegrationLog__c getLogsToInsert(String requestBody) {
         SYS_IntegrationLog__c integrationLog = new SYS_IntegrationLog__c();
         List<String> data = getJSONChunckedValues(requestBody);
         integer i = 0;
@@ -208,7 +268,7 @@ global virtual class SYS_ApplicationService {
 
     /* ------------------------------------------------------------------------ */
 
-    public List<String> getJSONChunckedValues(String body){
+    public static List<String> getJSONChunckedValues(String body){
         List<String> data = new List<String>{'','','','','','','','','',''};
         
         if (body.length() <= SYS_Constants.TEXT_AREA_MAX_SIZE){
@@ -236,7 +296,7 @@ global virtual class SYS_ApplicationService {
     }
     /* ------------------------------------------------------------------------ */
 
-    public static void doDML(List<sObject> records,String dmlType,Schema.SObjectField additionalSetting) {
+    public static void doDML(List<sObject> records,String dmlType,String additionalSetting) {
         
         switch on dmlType.toUpperCase() {
             when 'INSERT'{
@@ -253,8 +313,12 @@ global virtual class SYS_ApplicationService {
                     }
                 }
             }
-            when 'UPSERT'{  
-                Database.UpsertResult[] results = Database.upsert(records,additionalSetting, false);
+            when 'UPSERT'{
+                Database.UpsertResult[] results;
+                if(additionalSetting=='')
+                    results = Database.upsert(records, false);
+                //else
+                    //results = Database.upsert(records, additionalSetting, false);
                 for(Database.UpsertResult result : results){
                     if(result.isSuccess()){
                         // Email etc.

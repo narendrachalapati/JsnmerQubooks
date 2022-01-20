@@ -14,7 +14,11 @@ public class SYS_IntegrationLogTriggerHandler {
 
         }
 
-        System.enqueueJob(new SYS_IntegrationLogOutboundQueueable(newOutboundLogIds)); 
+        if(newOutboundLogIds.size()>0)
+            System.enqueueJob(new SYS_IntegrationLogOutboundQueueable(newOutboundLogIds));
+
+        if(newInboundLogIds.size()>0)
+            new SYS_IntegrationLogInboundImmediate(newInboundLogIds).execute(); 
 
     }
 

@@ -136,8 +136,9 @@ public class SYS_DataCache {
                 String query = 'SELECT Id, ChildFieldApiName__c, FieldApiName__c, ObjectApiName__c,Key__c, RestResource__c, Direction__c, ChildRootElement__c,' +                
                 ' ObjectSetting__r.Object__r.QualifiedApiName , ObjectSetting__r.Direction__c, ObjectSetting__r.ResourcePath__c , ObjectSetting__r.ApexHandler__c ' + 
                 ' from FieldSetting__mdt '+
-                ' WHERE ObjectSetting__r.IntegrationType__r.developername = :intType AND Direction__c != \'OUTBOUND\' '; 
+                ' WHERE ObjectSetting__r.IntegrationType__r.developername =\''+SYS_DataCache.INT_TYPE+'\' AND Direction__c != \'OUTBOUND\' '; 
                 
+                System.debug('----WS FieldMappingOutbound Query:'+query);
                 mappingOut = Database.query(query);
                 for(FieldSetting__mdt item : mappingOut) {
                     // system.debug('before replace==='+item.FieldApiName__c);

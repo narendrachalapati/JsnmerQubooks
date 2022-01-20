@@ -23,6 +23,7 @@ public class SYS_IntegrationLogInboundImmediate{
                                                 data7__c,
                                                 data8__c,
                                                 data9__c,
+                                                External_Id_Field_API_Name__c,
                                                 How_to_process__c,Custom_Apex_Handler__c,SYS_Operation_Type__c,Flat_Key_for_Resource__c,
                                                 Type__c,WhatId__c,Parent__c,Order__c,ObjectSettingId__c,SYS_IntegrationSettings__c
                                             FROM SYS_IntegrationLog__c 
@@ -32,7 +33,7 @@ public class SYS_IntegrationLogInboundImmediate{
             
             
             SYS_DataCache.INT_TYPE = log.SYS_IntegrationSettings__c;
-            SYS_DataCache.OBJ_TYPE = log.ObjectSettingId__c;
+            // NA SYS_DataCache.OBJ_TYPE = log.ObjectSettingId__c;
             SYS_ApplicationService appService;
             
             if(log.How_to_process__c == 'use_object_setting')
@@ -48,6 +49,7 @@ public class SYS_IntegrationLogInboundImmediate{
             }
 
             Boolean dmlResult = appService.doInbound(log);
+            
             inboundResultLogs.add(appService.generatelogForInboundResult(dmlResult,log));
 
             /*
@@ -82,7 +84,7 @@ public class SYS_IntegrationLogInboundImmediate{
         }
 
         if(inboundResultLogs.size()>0){
-            SYS_ApplicationService.doDML(inboundResultLogs,'UPSERT',NULL);  
+            //SYS_ApplicationService.doDML(inboundResultLogs,'UPSERT',NULL);  
         }
 
         /*
