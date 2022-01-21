@@ -461,7 +461,7 @@ public class SYS_DataCache {
                                      WHERE developername = :SYS_DataCache.INT_TYPE LIMIT 1][0].DebugCheck__c;
             }
             */
-            return intMap.get(SYS_DataCache.INT_TYPE).DebugCheck__c;
+            return integrationSetting.get(SYS_DataCache.INT_TYPE).DebugCheck__c;
             //return true;
         }
     } 
