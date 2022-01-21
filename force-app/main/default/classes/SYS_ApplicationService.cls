@@ -3,6 +3,7 @@ global virtual class SYS_ApplicationService {
 
     }
 
+
     /* ------------------------------------------------------------------------ */ 
 
     global virtual sObject processFieldMapping(FieldSetting__mdt mapping,sObject sObj,Object value, String sObjectApiName){
@@ -36,14 +37,17 @@ global virtual class SYS_ApplicationService {
     }
 
     /* ------------------------------------------------------------------------ */ 
+    global virtual String getOperationTypeFor(String method) {
 
-    global virtual SYS_IntegrationLog__c generateLogForWebhookReq() {
+        Map<String,String> methodToOperationMap = new Map<String,String>{'POST'=>'INSERT','PUT'=>'UPDATE','DELETE'=>'DELETE','PATCH'=>'UPDATE'};
+        return methodToOperationMap.get(method);
+    }
+
+    global virtual SYS_IntegrationLog__c generateLogForWebhookReq(String method) {
         String requestBody = RestContext.request.requestBody.toString();
-        
-        System.debug('\n****** WS requestBody:'+requestBody);
         SYS_IntegrationLog__c log = SYS_ApplicationService.getLogsToInsert(requestBody);
         log.Type__c = 'INBOUND';
-        log.SYS_Operation_Type__c = 'INSERT';
+        log.SYS_Operation_Type__c = getOperationTypeFor(method);
         log.Flat_Key_for_Resource__c = 'attributes.type';
         log.SYS_IntegrationSettings__c = 'SFsource';
         log.Status__c = 'NEW';
@@ -69,12 +73,12 @@ global virtual class SYS_ApplicationService {
 
     /* ------------------------------------------------------------------------ */ 
 
-    global virtual String preprocessJSONForInbound(String jsonBody) {
+    global virtual String preprocessJSONForInbound(SYS_IntegrationLog__c log,String jsonBody) {
 
         return jsonBody;
     }
 
-    global virtual String preprocessJSONForOutbound(String jsonBody) {
+    global virtual String preprocessJSONForOutbound(SYS_IntegrationLog__c log,String jsonBody) {
 
         return jsonBody;
     }
@@ -114,7 +118,7 @@ global virtual class SYS_ApplicationService {
                     log.data8__c != null ? log.data8__c : '' +
                     log.data9__c != null ? log.data9__c : '' ;
 
-        jsonBody = preprocessJSONForInbound(jsonBody);
+        jsonBody = preprocessJSONForInbound(log,jsonBody);
         List<sObject> sObjectsToDML = transformJsonToSObject(jsonBody, getResourceFromJSON(log,jsonBody));
 
         System.debug('\n\n ------------------------------- \n\n Application Service sObjects to DML:'+sObjectsToDML);
@@ -166,7 +170,7 @@ global virtual class SYS_ApplicationService {
                             log.data8__c != null ? log.data8__c : '' +
                             log.data9__c != null ? log.data9__c : '' ; 
         
-        body = preprocessJSONForOutbound(body);
+        body = preprocessJSONForOutbound(log,body);
         req.setBody(body);
         System.debug('body:'+body);
          

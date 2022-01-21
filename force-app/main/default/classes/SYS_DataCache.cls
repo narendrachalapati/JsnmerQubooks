@@ -106,7 +106,7 @@ public class SYS_DataCache {
             if(mappings == null){
                 mappings = new List<FieldSetting__mdt>();
                 System.debug('Field Settings #### 1:'+mappings);
-                mappings = [Select Id,masterlabel,Field_Mapping_Handler__c, ObjectSetting__r.masterlabel , StaticValue__c,IsChild__c, ObjectSetting__r.ObjectApiName__c, ObjectApiName__c, FieldApiName__c , Key__c, RestResource__c, Direction__c, ParentField__c, ChildRootElement__c,
+                mappings = [Select Id,ChildFieldApiName__c,ObjectSetting__r.DeveloperName,masterlabel,Field_Mapping_Handler__c, ObjectSetting__r.masterlabel , StaticValue__c,IsChild__c, ObjectSetting__r.ObjectApiName__c, ObjectApiName__c, FieldApiName__c , Key__c, RestResource__c, Direction__c, ParentField__c, ChildRootElement__c,
                             ObjectSetting__r.Direction__c,ObjectSetting__r.Trigger_Condition__c,ObjectSetting__r.TriggerEvents__c, ObjectSetting__r.ResourcePath__c , ObjectSetting__r.ApexHandler__c 
                             from FieldSetting__mdt /*where Is_Active__c=true where FieldApiName__c != null*/
                             WHERE ObjectSetting__r.IntegrationType__r.developername = : SYS_DataCache.INT_TYPE AND Direction__c != 'INBOUND'];
@@ -208,17 +208,17 @@ public class SYS_DataCache {
             if(objectFieldSettingMap == null) {
                 objectFieldSettingMap = new Map<String, List<FieldSetting__mdt>>();
                 for(FieldSetting__mdt fs : SYS_DataCache.AllFieldSettingMappings){
-                    if(objectFieldSettingMap.containsKey(fs.ObjectSetting__r.MasterLabel)){
-                        objectFieldSettingMap.get(fs.ObjectSetting__r.MasterLabel).add(fs);
-                        SYS_debug.log('Object=='+fs.ObjectSetting__r.MasterLabel+' Field=='+fs.FieldApiName__c);
+                    if(objectFieldSettingMap.containsKey(fs.ObjectSetting__r.DeveloperName)){
+                        objectFieldSettingMap.get(fs.ObjectSetting__r.DeveloperName).add(fs);
+                        SYS_debug.log('Object=='+fs.ObjectSetting__r.DeveloperName+' Field=='+fs.FieldApiName__c);
                     }
                     else{
-                        objectFieldSettingMap.put(fs.ObjectSetting__r.MasterLabel,new List<FieldSetting__mdt>{fs});
+                        objectFieldSettingMap.put(fs.ObjectSetting__r.DeveloperName,new List<FieldSetting__mdt>{fs});
                     }
                 }
             }
             //System.debug('Object=='+SYS_Constants.OBJ_TYPE+'--'+objectFieldSettingMap.get(SYS_Constants.OBJ_TYPE));
-            return objectFieldSettingMap.get(SYS_Constants.OBJ_TYPE);
+            return objectFieldSettingMap.get(SYS_DataCache.OBJ_TYPE);
         }
     }
     
@@ -243,7 +243,7 @@ public class SYS_DataCache {
                                                     MasterLabel, DeveloperName, Id, QualifiedApiName 
                                                     FROM IntegrationSetting__mdt LIMIT 100];
                 for(IntegrationSetting__mdt val:listObjSetting){
-                    escCharMap.put(val.MasterLabel , val.EscapeCharacter__c);
+                    escCharMap.put(val.DeveloperName , val.EscapeCharacter__c);
                 }
             }
             // SYS_debug.log('escape char is==' + escCharMap);
@@ -256,7 +256,7 @@ public class SYS_DataCache {
                                                    MasterLabel, DeveloperName, Id, QualifiedApiName 
                                                    FROM IntegrationSetting__mdt LIMIT 100];
         for(IntegrationSetting__mdt val:listObjSetting){
-            escCharMap.put(val.MasterLabel , val.EscapeCharacter__c);
+            escCharMap.put(val.DeveloperName , val.EscapeCharacter__c);
         }
     }
     
@@ -346,7 +346,7 @@ public class SYS_DataCache {
                                     ObjectApiName__c,Object__c,QualifiedApiName,ResourcePath__c FROM ObjectSetting__mdt LIMIT 10000];
             }
             for(ObjectSetting__mdt obj : objMap) {
-                extFieldName.put(obj.masterlabel, obj.ExternalFieldApi__c);
+                extFieldName.put(obj.DeveloperName, obj.ExternalFieldApi__c);
             }
             return extFieldName;
         }
@@ -466,7 +466,7 @@ public class SYS_DataCache {
                 enableIntList = [SELECT Id, DeveloperName, MasterLabel, Language, NamespacePrefix, Label, QualifiedApiName, Enable__c, ExpiryDate__c 
                                     FROM IntegrationEnablement__mdt];
                 for(IntegrationEnablement__mdt iter : enableIntList) {
-                    checkMap.put(iter.MasterLabel.toUpperCase() , iter.Enable__c);
+                    checkMap.put(iter.DeveloperName.toUpperCase() , iter.Enable__c);
                 }
             }
             return checkMap;

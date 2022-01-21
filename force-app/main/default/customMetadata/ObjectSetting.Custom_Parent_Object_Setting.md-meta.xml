@@ -4,7 +4,7 @@
     <protected>false</protected>
     <values>
         <field>ApexHandler__c</field>
-        <value xsi:nil="true"/>
+        <value xsi:type="xsd:string">override_SYS_ApplicationService</value>
     </values>
     <values>
         <field>BypassTrigger__c</field>
@@ -45,10 +45,6 @@
     <values>
         <field>Trigger_Condition__c</field>
         <value xsi:nil="true"/>
-    </values>
-    <values>
-        <field>Unique_Name__c</field>
-        <value xsi:type="xsd:string">CustomParent</value>
     </values>
     <values>
         <field>isInboundList__c</field>

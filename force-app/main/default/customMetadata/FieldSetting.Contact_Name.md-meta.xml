@@ -19,6 +19,10 @@
         <value xsi:type="xsd:string">LastName</value>
     </values>
     <values>
+        <field>Field_Mapping_Handler__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
         <field>IsChild__c</field>
         <value xsi:type="xsd:boolean">false</value>
     </values>

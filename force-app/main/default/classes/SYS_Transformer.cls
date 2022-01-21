@@ -203,7 +203,7 @@ public virtual class SYS_Transformer {
             
             if(mapping.IsChild__c == considerChild){
                 //TODO handle .'s and nested
-                System.debug('hbdebug getRequestJsonSingle mapping.Key__c'+ JSON.serialize(mapping.Key__c));
+                System.debug('*** hbdebug getRequestJsonSingle mapping.Key__c'+ JSON.serialize(mapping.Key__c));
                 List<String> nodeList = new List<String>();
                 for(String node : mapping.Key__c.split('\\.')) {
                     if(SYS_DataCache.ESCAPE_CHAR != null) {
