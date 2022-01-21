@@ -282,6 +282,8 @@ public class SYS_DataCache {
     // SYS_debug.log(JSON.serialize(SYS_DataCache.mapPriceBookEntry));
 
     // String x = SYS_DataCache.priceBookId;
+
+    /* --MS
     public static String bookId;
     public static String priceBookId {
         get {
@@ -302,6 +304,7 @@ public class SYS_DataCache {
             return bookId;
         }
     }
+    */
 
     public static string sObjectApiName;
 
@@ -316,6 +319,7 @@ public class SYS_DataCache {
             return objMap;
         }
     }
+
     public static Map<String, Map<String, String>> externalIdmap = new Map<String, Map<String, String>>();
     public static Map<String, Map<String, String>> getExtId {
         get {
@@ -379,6 +383,7 @@ public class SYS_DataCache {
     }
 	*/
 
+    /* --MS
     public static String genericAccount;
     public static String ACC_ID {
         get {
@@ -408,6 +413,7 @@ public class SYS_DataCache {
             return priceBookEntry;
         }
     }
+    */
 
     /*
     public static Map<String, String> mapProduct = new Map<String, String>();
@@ -445,16 +451,18 @@ public class SYS_DataCache {
     public static boolean debug;
     public static boolean DEBUG_CHECK {
         get {
+            
             /*
             if(intMap == null || debug == null){
-                intMap = new List<IntegrationSetting__mdt>();
+                intMap = new Map<String,IntegrationSetting__mdt>();
                 debug = [SELECT Id, DeveloperName, Label, UpdateMethod__c, DebugCheck__c,
                                      AuthenticationType__c, BaseAPIEndPoint__c, 
                                      QualifiedApiName, EscapeCharacter__c FROM IntegrationSetting__mdt 
                                      WHERE developername = :SYS_DataCache.INT_TYPE LIMIT 1][0].DebugCheck__c;
-            }*/
-            //return debug;
-            return true;
+            }
+            */
+            return intMap.get(SYS_DataCache.INT_TYPE).DebugCheck__c;
+            //return true;
         }
     } 
 
