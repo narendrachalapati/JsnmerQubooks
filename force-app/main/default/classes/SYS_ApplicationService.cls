@@ -3,6 +3,73 @@ global virtual class SYS_ApplicationService {
 
     }
 
+    /* ------------------------------------------------------------------------ */
+
+    
+    global virtual void handleDMLErrors(Database.Error[] errors){
+        for(Database.Error err : errors) {
+            SYS_debug.log('The following error has occurred.');                    
+            SYS_debug.log(err.getStatusCode() + ': ' + err.getMessage());
+            SYS_debug.log('Fields affected are: ' + err.getFields());
+        }
+    }
+
+    global virtual Boolean doInsert(List<sObject> records){
+        Database.SaveResult[] results;
+        Boolean success = true;
+        results = Database.insert(records, false);
+        if(!results[0].isSuccess()){
+            success = false;
+            handleDMLErrors(results[0].getErrors());
+        }
+
+        return success;
+    }
+
+    global virtual Boolean doUpdate(List<sObject> records){
+        Database.SaveResult[] results;
+        Boolean success = true;
+        results = Database.update(records, false);
+        if(!results[0].isSuccess()){
+            success = false;
+            handleDMLErrors(results[0].getErrors());
+        }
+
+        return success;
+    }
+
+    global virtual Boolean doDelete(List<sObject> records){
+        Database.DeleteResult[] results;
+        Boolean success = true;
+        results = Database.delete(records, false);
+        if(!results[0].isSuccess()){
+            success = false;
+            handleDMLErrors(results[0].getErrors());
+        }
+
+        return success;
+    }
+
+    global virtual Boolean doUpsert(List<sObject> records,String additionalSetting){
+        Database.UpsertResult[] results;
+        Boolean success = true;
+        if(additionalSetting=='')
+            results = Database.upsert(records, false);
+        else{
+            String externalIdFieldAPIName = additionalSetting;
+            String objectApiName = SYS_DataCache.objectSettingMap.get(SYS_DataCache.OBJ_TYPE).ExternalFieldApi__c;
+            Schema.SObjectField externalIdField = Schema.getGlobalDescribe().get(SYS_DataCache.sObjectApiName).getDescribe().fields.getMap().get(externalIdFieldAPIName); 
+            results = Database.upsert(records, externalIdField, false);
+        }
+        
+        if(!results[0].isSuccess()){
+            success = false;
+            handleDMLErrors(results[0].getErrors());
+        }
+
+        return success;
+    }
+
 
     /* ------------------------------------------------------------------------ */ 
 
@@ -32,7 +99,7 @@ global virtual class SYS_ApplicationService {
             sObj.put(mapping.FieldApiName__c, value);
         }
 
-        System.debug('MS FINAL SOBJ:'+sObj);
+        SYS_debug.log('MS FINAL SOBJ:'+sObj);
         return sObj;
     }
 
@@ -121,15 +188,15 @@ global virtual class SYS_ApplicationService {
         jsonBody = preprocessJSONForInbound(log,jsonBody);
         List<sObject> sObjectsToDML = transformJsonToSObject(jsonBody, getResourceFromJSON(log,jsonBody));
 
-        System.debug('\n\n ------------------------------- \n\n Application Service sObjects to DML:'+sObjectsToDML);
+        SYS_debug.log('\n\n ------------------------------- \n\n Application Service sObjects to DML:'+sObjectsToDML);
 
-        String externalIdFieldAPIName = log.External_Id_Field_API_Name__c;
-        Schema.SObjectField externalIdField = Schema.getGlobalDescribe().get(SYS_DataCache.sObjectApiName).getDescribe().fields.getMap().get(externalIdFieldAPIName);
+        String externalIdFieldAPIName = log.External_Id_Field_API_Name__c==NULL?log.External_Id_Field_API_Name__c:'';
+        //Schema.SObjectField externalIdField = Schema.getGlobalDescribe().get(SYS_DataCache.sObjectApiName).getDescribe().fields.getMap().get(externalIdFieldAPIName);
 
         //TODO DML Based on log operation type
-        Database.UpsertResult[] results = Database.upsert(sObjectsToDML,externalIdField, false);
+        //Database.UpsertResult[] results = Database.upsert(sObjectsToDML,externalIdField, false);
                
-        return results[0].isSuccess();
+        return doDML(sObjectsToDML,log.SYS_Operation_Type__c,externalIdFieldAPIName);
     }
     /* ------------------------------------------------------------------------ */
 
@@ -172,7 +239,7 @@ global virtual class SYS_ApplicationService {
         
         body = preprocessJSONForOutbound(log,body);
         req.setBody(body);
-        System.debug('body:'+body);
+        SYS_debug.log('body:'+body);
          
         HttpResponse response = http.send(req);
         return response;
@@ -352,71 +419,24 @@ global virtual class SYS_ApplicationService {
     }
     /* ------------------------------------------------------------------------ */
 
-    public static void doDML(List<sObject> records,String dmlType,String additionalSetting) {
+    public Boolean doDML(List<sObject> records,String dmlType,String additionalSetting) {
         
         switch on dmlType.toUpperCase() {
             when 'INSERT'{
-                Database.SaveResult[] results = Database.insert(records, false);
-                for(Database.SaveResult result : results){
-                    if(result.isSuccess()){
-                        // Email etc.
-                    } else {
-                        for(Database.Error err : result.getErrors()) {
-                            SYS_debug.log('The following error has occurred.');                    
-                            SYS_debug.log(err.getStatusCode() + ': ' + err.getMessage());
-                            SYS_debug.log('Fields affected are: ' + err.getFields());
-                        }
-                    }
-                }
+                return doInsert(records);
             }
             when 'UPSERT'{
-                Database.UpsertResult[] results;
-                if(additionalSetting=='')
-                    results = Database.upsert(records, false);
-                //else
-                    //results = Database.upsert(records, additionalSetting, false);
-                for(Database.UpsertResult result : results){
-                    if(result.isSuccess()){
-                        // Email etc.
-                    } else {
-                        for(Database.Error err : result.getErrors()) {
-                            SYS_debug.log('The following error has occurred.');                    
-                            SYS_debug.log(err.getStatusCode() + ': ' + err.getMessage());
-                            SYS_debug.log('Fields affected are: ' + err.getFields());
-                        }
-                    }
-                }
+                return doUpsert(records, additionalSetting);
             }
             when 'UPDATE'{
-                Database.SaveResult[] results = Database.update(records, false);
-                for(Database.SaveResult result : results){
-                    if(result.isSuccess()){
-                        // Email etc.
-                    } else {
-                        for(Database.Error err : result.getErrors()) {
-                            SYS_debug.log('The following error has occurred.');                    
-                            SYS_debug.log(err.getStatusCode() + ': ' + err.getMessage());
-                            SYS_debug.log('Fields affected are: ' + err.getFields());
-                        }
-                    }
-                }
+                return doUpdate(records);
             }
             when 'DELETE'{
-                Database.DeleteResult[] results = Database.delete(records, false);
-                for(Database.DeleteResult result : results){
-                    if(result.isSuccess()){
-                        // Email etc.
-                    } else {
-                        for(Database.Error err : result.getErrors()) {
-                            SYS_debug.log('The following error has occurred.');                    
-                            SYS_debug.log(err.getStatusCode() + ': ' + err.getMessage());
-                            SYS_debug.log('Fields affected are: ' + err.getFields());
-                        }
-                    }
-                } 
+                return doDelete(records);
             }
             when else {
-                // Invalid DML Type. Log Exception
+                SYS_debug.log('Invalid DML Operation specified in log record:'+dmlType);
+                return false;
             }
             
         }

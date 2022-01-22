@@ -84,7 +84,7 @@ public class SYS_IntegrationLogInboundImmediate{
         }
 
         if(inboundResultLogs.size()>0){
-            //SYS_ApplicationService.doDML(inboundResultLogs,'UPSERT',NULL);  
+            new SYS_ApplicationService().doDML(inboundResultLogs,'UPSERT','');  
         }
 
         /*
