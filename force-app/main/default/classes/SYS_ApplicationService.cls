@@ -56,9 +56,7 @@ global virtual class SYS_ApplicationService {
         if(additionalSetting=='')
             results = Database.upsert(records, false);
         else{
-            String externalIdFieldAPIName = additionalSetting;
-            String objectApiName = SYS_DataCache.objectSettingMap.get(SYS_DataCache.OBJ_TYPE).ExternalFieldApi__c;
-            Schema.SObjectField externalIdField = Schema.getGlobalDescribe().get(SYS_DataCache.sObjectApiName).getDescribe().fields.getMap().get(externalIdFieldAPIName); 
+            Schema.SObjectField externalIdField = Schema.getGlobalDescribe().get(SYS_DataCache.sObjectApiName).getDescribe().fields.getMap().get(additionalSetting); 
             results = Database.upsert(records, externalIdField, false);
         }
         
@@ -106,7 +104,7 @@ global virtual class SYS_ApplicationService {
     /* ------------------------------------------------------------------------ */ 
     global virtual String getOperationTypeFor(String method) {
 
-        Map<String,String> methodToOperationMap = new Map<String,String>{'POST'=>'INSERT','PUT'=>'UPDATE','DELETE'=>'DELETE','PATCH'=>'UPDATE'};
+        Map<String,String> methodToOperationMap = new Map<String,String>{'POST'=>'INSERT','PUT'=>'UPSERT','DELETE'=>'DELETE','PATCH'=>'UPDATE'};
         return methodToOperationMap.get(method);
     }
 
@@ -190,7 +188,7 @@ global virtual class SYS_ApplicationService {
 
         SYS_debug.log('\n\n ------------------------------- \n\n Application Service sObjects to DML:'+sObjectsToDML);
 
-        String externalIdFieldAPIName = log.External_Id_Field_API_Name__c==NULL?log.External_Id_Field_API_Name__c:'';
+        String externalIdFieldAPIName = log.External_Id_Field_API_Name__c!=NULL?log.External_Id_Field_API_Name__c:'';
         //Schema.SObjectField externalIdField = Schema.getGlobalDescribe().get(SYS_DataCache.sObjectApiName).getDescribe().fields.getMap().get(externalIdFieldAPIName);
 
         //TODO DML Based on log operation type
