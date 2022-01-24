@@ -3,7 +3,7 @@
     <fullName>webhookToken__c</fullName>
     <externalId>false</externalId>
     <fieldManageability>DeveloperControlled</fieldManageability>
-    <label>webhookToken</label>
+    <label>Webhook Token</label>
     <length>255</length>
     <required>false</required>
     <type>Text</type>

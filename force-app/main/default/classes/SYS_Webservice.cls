@@ -1,110 +1,68 @@
 @RestResource(urlMapping = '/municorn/v1/*')
 global class SYS_Webservice{
 
+    
     @HttpPost
-    global static void doPost(){
+    global static void postRequest(){
 
-        RestRequest req = RestContext.request;
-        String extension = req.requestURI.substring(req.requestURI.lastIndexOf('/')+1);
-        System.debug('\n\nExtension:'+extension);
-        if(extension == '' || extension == NULL){
-            extension = 'SYS_ApplicationService';
+        SYS_ApplicationService appService = (SYS_ApplicationService)Type.forName(SYS_DataCache.getExtension).newInstance();
+        if(appService.doWebhookSignatureCheck()){
+            appService.doPost();
+        }  
+        else {
+            appService.setErrorHttpResponse();
         }
+    }
 
-        SYS_ApplicationService appService = (SYS_ApplicationService)Type.forName(extension).newInstance();
-        SYS_IntegrationLog__c log = appService.generateLogForWebhookReq('POST');
-
-        try{
-            insert log;
-            RestContext.response.responseBody = Blob.valueOf(RestContext.request.requestBody.toString());
-        } catch ( Exception e ) {
-            System.debug('\n****** WS Log:'+log);
+    
+    @HttpPut
+    global static void putRequest(){
+        SYS_ApplicationService appService = (SYS_ApplicationService)Type.forName(SYS_DataCache.getExtension).newInstance();
+        if(appService.doWebhookSignatureCheck()){
+            appService.doPut();
+        }  
+        else {
+            appService.setErrorHttpResponse();
         }
         
     }
 
     
-    @httpPut
-    global static void doPut(){
+    @HttpGet
+    global static void getRequest(){
 
-        RestRequest req = RestContext.request;
-        String extension = req.requestURI.substring(req.requestURI.lastIndexOf('/')+1);
-        System.debug('\n\nExtension:'+extension);
-        if(extension == '' || extension == NULL){
-            extension = 'SYS_ApplicationService';
-        }
-
-        SYS_ApplicationService appService = (SYS_ApplicationService)Type.forName(extension).newInstance();
-        SYS_IntegrationLog__c log = appService.generateLogForWebhookReq('PUT');
-
-        try{
-            insert log;
-            RestContext.response.responseBody = Blob.valueOf(RestContext.request.requestBody.toString());
-        } catch ( Exception e ) {
-            System.debug('\n****** WS Log:'+log);
-        }
-    }
-
-    
-    @httpGet
-    global static void doGet(){
-        RestRequest req = RestContext.request;
-        String extension = req.requestURI.substring(req.requestURI.lastIndexOf('/')+1);
-        System.debug('\n\nExtension:'+extension);
-        if(extension == '' || extension == NULL){
-            extension = 'SYS_ApplicationService';
-        }
-
-        SYS_ApplicationService appService = (SYS_ApplicationService)Type.forName(extension).newInstance();
-        SYS_IntegrationLog__c log = appService.generateLogForWebhookReq('GET');
-
-        try{
-            insert log;
-            RestContext.response.responseBody = Blob.valueOf(RestContext.request.requestBody.toString());
-        } catch ( Exception e ) {
-            System.debug('\n****** WS Log:'+log);
+        SYS_ApplicationService appService = (SYS_ApplicationService)Type.forName(SYS_DataCache.getExtension).newInstance();
+        if(appService.doWebhookSignatureCheck()){
+            appService.doGet();
+        }  
+        else {
+            appService.setErrorHttpResponse();
         }
     }
     
     
     @HttpDelete
-    global static void doDelete(){
-        RestRequest req = RestContext.request;
-        String extension = req.requestURI.substring(req.requestURI.lastIndexOf('/')+1);
-        System.debug('\n\nExtension:'+extension);
-        if(extension == '' || extension == NULL){
-            extension = 'SYS_ApplicationService';
-        }
-
-        SYS_ApplicationService appService = (SYS_ApplicationService)Type.forName(extension).newInstance();
-        SYS_IntegrationLog__c log = appService.generateLogForWebhookReq('DELETE');
-
-        try{
-            insert log;
-            RestContext.response.responseBody = Blob.valueOf(RestContext.request.requestBody.toString());
-        } catch ( Exception e ) {
-            System.debug('\n****** WS Log:'+log);
+    global static void deleteRequest(){
+        
+        SYS_ApplicationService appService = (SYS_ApplicationService)Type.forName(SYS_DataCache.getExtension).newInstance();
+        if(appService.doWebhookSignatureCheck()){
+            appService.doDelete();
+        }  
+        else {
+            appService.setErrorHttpResponse();
         }
         
     }
 
     @HttpPatch
-    global static void doPatch(){
-        RestRequest req = RestContext.request;
-        String extension = req.requestURI.substring(req.requestURI.lastIndexOf('/')+1);
-        System.debug('\n\nExtension:'+extension);
-        if(extension == '' || extension == NULL){
-            extension = 'SYS_ApplicationService';
-        }
-
-        SYS_ApplicationService appService = (SYS_ApplicationService)Type.forName(extension).newInstance();
-        SYS_IntegrationLog__c log = appService.generateLogForWebhookReq('PATCH');
-
-        try{
-            insert log;
-            RestContext.response.responseBody = Blob.valueOf(RestContext.request.requestBody.toString());
-        } catch ( Exception e ) {
-            System.debug('\n****** WS Log:'+log);
+    global static void patchRequest(){
+        
+        SYS_ApplicationService appService = (SYS_ApplicationService)Type.forName(SYS_DataCache.getExtension).newInstance();
+        if(appService.doWebhookSignatureCheck()){
+            appService.doPatch();
+        }  
+        else {
+            appService.setErrorHttpResponse();
         }
         
     }

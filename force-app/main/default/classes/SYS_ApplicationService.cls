@@ -4,6 +4,60 @@ global virtual class SYS_ApplicationService {
     }
 
     /* ------------------------------------------------------------------------ */
+    
+    //WEBHOOK Virtuals
+
+    global virtual Boolean doWebhookSignatureCheck(){
+
+        String tokenFromUrl = RestContext.request.params.get('token');
+        String tokenFromIntegrationSetting = SYS_DataCache.integrationSetting.get(SYS_DataCache.INT_TYPE).webhookToken__c;
+
+        SYstem.debug('WEBHOOK TOKEN CHECK: '+tokenFromUrl+' vs. '+tokenFromIntegrationSetting);
+        return (tokenFromUrl == tokenFromIntegrationSetting);
+
+    }
+
+    global virtual void setSuccessHttpResponse(){
+        RestContext.response.responseBody = Blob.valueOf(RestContext.request.requestBody.toString());
+    }
+
+    global virtual void setErrorHttpResponse(){
+        SYS_debug.log('Webhook Error');
+    }
+
+    global virtual void doPost(){
+        
+        SYS_IntegrationLog__c log = generateLogForWebhookReq('POST');
+        insertWebhookLog(log);
+        
+    }
+    global virtual void doPut(){
+
+        SYS_IntegrationLog__c log = generateLogForWebhookReq('PUT');
+        insertWebhookLog(log);
+        
+    }
+    global virtual void doGet(){
+        
+        SYS_IntegrationLog__c log = generateLogForWebhookReq('GET');
+        insertWebhookLog(log);
+        
+    }
+    global virtual void doPatch(){
+
+        SYS_IntegrationLog__c log = generateLogForWebhookReq('PATCH');
+        insertWebhookLog(log);
+        
+    }
+    global virtual void doDelete(){
+
+        SYS_IntegrationLog__c log = generateLogForWebhookReq('DELETE');
+        insertWebhookLog(log);
+        
+    }
+
+
+    /* ------------------------------------------------------------------------ */
 
     
     global virtual void handleDMLErrors(Database.Error[] errors){
@@ -440,6 +494,18 @@ global virtual class SYS_ApplicationService {
         }
 
     }
+    /* ------------------------------------------------------------------------ */
+
+    public void insertWebhookLog(SYS_IntegrationLog__c log){
+
+        try{
+            insert log;
+            setSuccessHttpResponse();
+        } catch ( Exception e ) {
+            setErrorHttpResponse();
+        }
+    }
+
     /* ------------------------------------------------------------------------ */
 
     /************************** C O N C R E T E    M E T H O D S    E N D *****************************/

@@ -5,6 +5,30 @@ public class SYS_DataCache {
     private static Map<String, List<FieldSetting__mdt>> objectFieldSettingMap;
     private static Map<String, Map<String, List<FieldSetting__mdt>>> childFieldSettingMap;
     private static List<FieldSetting__mdt> mappings;
+
+    //Extension for Webhook extension
+    private static String extension;
+    public static String getExtension{
+        get{
+            if(extension==NULL || extension==''){
+                RestRequest req = RestContext.request;
+                String intSettingFromUrl = req.requestURI.substring(req.requestURI.lastIndexOf('/')+1);
+                INT_TYPE = intSettingFromUrl;
+
+                String extFromUrl = integrationSetting.get(INT_TYPE).ApexHandler__c;
+                System.debug('\nintegrationSetting.get(INT_TYPE):'+integrationSetting.get(INT_TYPE));
+                System.debug('\nApexHandler__c:'+integrationSetting.get(INT_TYPE).ApexHandler__c);
+                if(extFromUrl != '' && extFromUrl != NULL){
+                    extension = extFromUrl;
+                }
+                else{
+                    extension = 'SYS_ApplicationService';
+                }
+            }
+            return extension;
+        }
+        
+    }
     
     //TODO - HB -  Fill the objectsettings 
     private static ObjectSetting__mdt objectSetting; 
@@ -66,7 +90,7 @@ public class SYS_DataCache {
         get{
             if(integrationSetting == null){
                 intMap = new Map<String,IntegrationSetting__mdt>();
-                for(IntegrationSetting__mdt is : [SELECT Id, DeveloperName, Label, UpdateMethod__c, DebugCheck__c,
+                for(IntegrationSetting__mdt is : [SELECT Id,ApexHandler__c,webhookToken__c, DeveloperName, Label, UpdateMethod__c, DebugCheck__c,
                                      AuthenticationType__c, BaseAPIEndPoint__c, 
                                      QualifiedApiName, EscapeCharacter__c FROM IntegrationSetting__mdt 
                                      LIMIT 100]){
