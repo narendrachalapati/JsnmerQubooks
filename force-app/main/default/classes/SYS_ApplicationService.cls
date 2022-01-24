@@ -110,6 +110,7 @@ global virtual class SYS_ApplicationService {
         if(additionalSetting=='')
             results = Database.upsert(records, false);
         else{
+            System.debug('--MS SYS_DataCache.sObjectApiName in Applicaiton Service:'+SYS_DataCache.sObjectApiName);
             Schema.SObjectField externalIdField = Schema.getGlobalDescribe().get(SYS_DataCache.sObjectApiName).getDescribe().fields.getMap().get(additionalSetting); 
             results = Database.upsert(records, externalIdField, false);
         }
@@ -215,6 +216,7 @@ global virtual class SYS_ApplicationService {
         else{
             //Key mentioned in Flat_Key_for_Resource__c identifies Resource
             Map<String, Object> flatKeyMap = SYS_Transformer.makeJsonIntoKeyValuePairs(jsonBody);
+            System.debug('-- MS flatKeyMap in getResourceFromJSON:'+flatKeyMap);
             resource = (String)flatKeyMap.get(log.Flat_Key_for_Resource__c);
         }
 
@@ -497,9 +499,8 @@ global virtual class SYS_ApplicationService {
     /* ------------------------------------------------------------------------ */
 
     public void insertWebhookLog(SYS_IntegrationLog__c log){
-
         try{
-            insert log;
+            Database.SaveResult result = Database.insert(log,false);
             setSuccessHttpResponse();
         } catch ( Exception e ) {
             setErrorHttpResponse();
