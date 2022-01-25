@@ -1,29 +1,41 @@
 public with sharing class SYS_QueueableForInboundChild implements Queueable {
     public List<String> childRecList;
     public String key;
-    
-    public SYS_QueueableForInboundChild(List<String> childRecList,String key,String objName){
+    public String integrationSetting;
+    public SYS_QueueableForInboundChild(List<String> childRecList,String key,String integrationSetting){
         this.childRecList = childRecList;
         this.key = key;
+        this.integrationSetting = integrationSetting;
     }
     
     public void execute(QueueableContext context){
-        //Set isChild to true so that the primaryobject could be set to root of related records instead of parent
-        //SYS_Transformer.isChild = true;
-        SYS_IntegrationLog__c log = SYS_ApplicationService.getLogsToInsert(childRecList[0]);
         
-        log.Type__c = 'INBOUND';
-        log.SYS_Operation_Type__c = 'UPSERT';
-        log.Flat_Key_for_Resource__c = '';
-        log.SYS_IntegrationSettings__c = 'SFsource';
-        log.Status__c = 'NEW';
-        log.External_Id_Field_API_Name__c = 'SYS_Child_Key__c';
-        log.How_to_process__c = 'use_custom_apex_handler';
-        log.Custom_Apex_Handler__c = 'SYS_ApplicationService';
+        //TODO Make Dynamic
+        SYS_ApplicationService appService = new SYS_ApplicationService();
 
-        insert log;
+        List<String> pendingChildRecords = new List<String>();
+        
+        for(String singleChildJSON : childRecList){
+            if(Limits.getDmlStatements() < Limits.getLimitDmlStatements() - 1){
+                appService.insertWebhookLog(appService.generateLogForChildRecords(singleChildJSON,integrationSetting));
+            }
+            else{
+                pendingChildRecords.add(singleChildJSON);
+            }
+        }
 
-        //new SYS_ApplicationService().doInbound(log);
+        System.debug('MS pendingChildRecords:'+pendingChildRecords);
+        System.debug('MS childRecList:'+childRecList);
+
+        /**
+         * If there are still some records pending for process after exhausting the callout limits 
+         * then chain the queueable
+        **/ 
+        if(pendingChildRecords.size()>0){
+            System.enqueueJob(new SYS_QueueableForInboundChild(pendingChildRecords,key,integrationSetting));
+        }
+        
+
     }
 }
 

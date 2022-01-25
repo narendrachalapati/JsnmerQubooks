@@ -592,7 +592,7 @@ public virtual class SYS_Transformer {
                         
                         //24 jan 2022
                         
-                        ID jobID = System.enqueueJob(new SYS_QueueableForInboundChild(childRecList,key,''));
+                        ID jobID = System.enqueueJob(new SYS_QueueableForInboundChild(childRecList,key,SYS_DataCache.INT_TYPE));
                         //System.debug('job id is==='+jobID);
                     }
                 }

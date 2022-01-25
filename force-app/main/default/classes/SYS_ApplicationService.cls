@@ -169,9 +169,24 @@ global virtual class SYS_ApplicationService {
         log.Type__c = 'INBOUND';
         log.SYS_Operation_Type__c = getOperationTypeFor(method);
         log.Flat_Key_for_Resource__c = 'attributes.type';
-        log.SYS_IntegrationSettings__c = 'SFsource';
+        log.SYS_IntegrationSettings__c = SYS_DataCache.INT_TYPE;
         log.Status__c = 'NEW';
         log.External_Id_Field_API_Name__c = 'SYS_Key__c';
+        log.How_to_process__c = 'use_custom_apex_handler';
+        log.Custom_Apex_Handler__c = 'SYS_ApplicationService';
+
+        return log;
+    }
+
+    global virtual SYS_IntegrationLog__c generateLogForChildRecords(String recordsJson,String integrationSetting) {
+        SYS_IntegrationLog__c log = SYS_ApplicationService.getLogsToInsert(recordsJson);
+        
+        log.Type__c = 'INBOUND';
+        log.SYS_Operation_Type__c = 'UPSERT';
+        log.Flat_Key_for_Resource__c = '';
+        log.SYS_IntegrationSettings__c = integrationSetting;//'SFsource';
+        log.Status__c = 'NEW';
+        log.External_Id_Field_API_Name__c = 'SYS_Child_Key__c';
         log.How_to_process__c = 'use_custom_apex_handler';
         log.Custom_Apex_Handler__c = 'SYS_ApplicationService';
 

@@ -32,6 +32,7 @@ public class SYS_IntegrationLogOutboundQueueable implements Queueable, Database.
                 SYS_DataCache.INT_TYPE = log.SYS_IntegrationSettings__c;
                 SYS_DataCache.OBJ_TYPE = log.ObjectSettingId__c;
                 SYS_ApplicationService appService;
+                
 
                 if(log.How_to_process__c == 'use_object_setting')
                     appService = (SYS_ApplicationService)Type.forName(SYS_DataCache.objectSettingMap.get(SYS_DataCache.OBJ_TYPE).ApexHandler__c).newInstance();
