@@ -10,8 +10,11 @@ public with sharing class SYS_QueueableForInboundChild implements Queueable {
     
     public void execute(QueueableContext context){
         
-        //TODO Make Dynamic
-        SYS_ApplicationService appService = new SYS_ApplicationService();
+        //TODO Make Dynamic - DONE
+        SYS_DataCache.INT_TYPE = integrationSetting;
+        System.debug('Inbound for Child:'+SYS_DataCache.INT_TYPE);
+        System.debug('Apex Handler:'+SYS_DataCache.integrationSetting.get(SYS_DataCache.INT_TYPE).ApexHandler__c);
+        SYS_ApplicationService appService = (SYS_ApplicationService)Type.forName(SYS_DataCache.integrationSetting.get(SYS_DataCache.INT_TYPE).ApexHandler__c).newInstance();
 
         List<String> pendingChildRecords = new List<String>();
         

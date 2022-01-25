@@ -163,9 +163,23 @@ global virtual class SYS_ApplicationService {
         return methodToOperationMap.get(method);
     }
 
+    global virtual String generateHash(String requestBody,String algo) {
+
+        Blob requestBlob = Blob.valueOf(requestBody);
+        Blob hashBlob = Crypto.generateDigest(algo,requestBlob);
+        String base64EncodedHash = EncodingUtil.base64encode(hashBlob);
+
+        return base64EncodedHash;
+    }
+
     global virtual SYS_IntegrationLog__c generateLogForWebhookReq(String method) {
         String requestBody = RestContext.request.requestBody.toString();
         SYS_IntegrationLog__c log = SYS_ApplicationService.getLogsToInsert(requestBody);
+
+        String algo = SYS_DataCache.integrationSetting.get(SYS_DataCache.INT_TYPE).Hashing_Algo__c;
+        if(algo!=NULL && algo!='')
+        log.Request_Digest__c = generateHash(requestBody,algo);
+
         log.Type__c = 'INBOUND';
         log.SYS_Operation_Type__c = getOperationTypeFor(method);
         log.Flat_Key_for_Resource__c = 'attributes.type';
@@ -180,6 +194,10 @@ global virtual class SYS_ApplicationService {
 
     global virtual SYS_IntegrationLog__c generateLogForChildRecords(String recordsJson,String integrationSetting) {
         SYS_IntegrationLog__c log = SYS_ApplicationService.getLogsToInsert(recordsJson);
+
+        String algo = SYS_DataCache.integrationSetting.get(SYS_DataCache.INT_TYPE).Hashing_Algo__c;
+        if(algo!=NULL && algo!='')
+        log.Request_Digest__c = generateHash(recordsJson,algo);
         
         log.Type__c = 'INBOUND';
         log.SYS_Operation_Type__c = 'UPSERT';
