@@ -5,7 +5,7 @@ global virtual class SYS_ApplicationService {
 
     /* ------------------------------------------------------------------------ */
     
-    //WEBHOOK Virtuals - RULE
+    //WEBHOOK Virtuals
 
     global virtual Boolean doWebhookSignatureCheck(){
 
