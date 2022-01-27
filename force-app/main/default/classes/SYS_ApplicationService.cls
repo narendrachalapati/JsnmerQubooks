@@ -5,7 +5,11 @@ global virtual class SYS_ApplicationService {
 
     /* ------------------------------------------------------------------------ */
     
+<<<<<<< Updated upstream
     //WEBHOOK Virtuals - QB
+=======
+    //WEBHOOK Virtuals
+>>>>>>> Stashed changes
 
     global virtual Boolean doWebhookSignatureCheck(){
 
