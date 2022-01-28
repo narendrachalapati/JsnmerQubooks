@@ -6,7 +6,13 @@ global virtual class SYS_ApplicationService {
     /* ------------------------------------------------------------------------ */
     
     //WEBHOOK Virtuals
-
+    
+    /**
+     * This hook is called from Webservice methods to verify the source.
+     * Default is to cross check the token configured in Integration Setting
+     * Zero Arguments. Relies on Integration Setting in DataCache
+     * Override if custom signature check is required
+     */
     global virtual Boolean doWebhookSignatureCheck(){
 
         String tokenFromUrl = RestContext.request.params.get('token');
@@ -17,14 +23,33 @@ global virtual class SYS_ApplicationService {
 
     }
 
+    /**
+     * This hook is called from insertWebhookLog methods.
+     * Default is to set the response body with incoming request
+     * Zero Arguments. Relies on Integration Setting in DataCache and RestContext
+     * Override if custom handler is required after successful log creation
+     */
     global virtual void setSuccessHttpResponse(){
         RestContext.response.responseBody = Blob.valueOf(RestContext.request.requestBody.toString());
     }
 
+    /**
+     * This hook is called from insertWebhookLog methods.
+     * Default is just a message for Debug logs
+     * Zero Arguments. Relies on Integration Setting in DataCache and RestContext
+     * Override if custom handler is required when log creation causes error
+     */
     global virtual void setErrorHttpResponse(){
         SYS_debug.log('Webhook Error');
     }
 
+
+    /**
+     * These hooks are called from Webservice.
+     * Default is to generate a log record using another hook (generateLogForWebhookReq) and insert using another concrete method
+     * Zero Arguments. Relies on Integration Setting in DataCache and RestContext
+     * Override if custom handler is required for any or all of Http Verbs
+     */
     global virtual void doPost(){
         
         SYS_IntegrationLog__c log = generateLogForWebhookReq('POST');
@@ -59,7 +84,12 @@ global virtual class SYS_ApplicationService {
 
     /* ------------------------------------------------------------------------ */
 
-    
+    /**
+     * This hook is called from all DML hooks following this method
+     * Default is just a message for Debug logs
+     * Argument: Database.Error[]. Relies on Integration Setting in DataCache
+     * Override if custom handler is required when there are errors in DMLs
+     */
     global virtual void handleDMLErrors(Database.Error[] errors){
         for(Database.Error err : errors) {
             SYS_debug.log('The following error has occurred.');                    
@@ -68,6 +98,13 @@ global virtual class SYS_ApplicationService {
         }
     }
 
+    /**
+     * These hooks are called from doDML() concrete method which in turn is called from doInbound
+     * Default is to call the DML based on operation type
+     * Argument: List<sObject>. Additionally ExternalId field for upsert.
+     * Relies on Integration Setting in DataCache
+     * Override if custom handler is required for any DML
+     */
     global virtual Boolean doInsert(List<sObject> records){
         Database.SaveResult[] results;
         Boolean success = true;
@@ -126,6 +163,13 @@ global virtual class SYS_ApplicationService {
 
     /* ------------------------------------------------------------------------ */ 
 
+    
+    /**
+     * This hook is called from SYS_Transformer to set values for sObject record
+     * Default is map based on field type
+     * Relies on Integration Setting in DataCache
+     * Override if custom field mapping is required
+     */
     global virtual sObject processFieldMapping(FieldSetting__mdt mapping,sObject sObj,Object value, String sObjectApiName){
 
         SObjectType r = ((SObject)(Type.forName('Schema.'+sObjectApiName).newInstance())).getSObjectType();
@@ -157,12 +201,23 @@ global virtual class SYS_ApplicationService {
     }
 
     /* ------------------------------------------------------------------------ */ 
+    
+    /**
+     * This hook is called from generateLogForWebhookReq to map Http verb to DML operation type
+     * Override if a different mapping is required
+     */
     global virtual String getOperationTypeFor(String method) {
 
         Map<String,String> methodToOperationMap = new Map<String,String>{'POST'=>'INSERT','PUT'=>'UPSERT','DELETE'=>'DELETE','PATCH'=>'UPDATE'};
         return methodToOperationMap.get(method);
     }
 
+    /**
+     * This hook is called from generateLogForWebhookReq
+     * Default is to get digest for Http request body based on algorithm configured on Integration Settings 
+     * Relies on Integration Setting in DataCache and RestContext
+     * Override if custom digest generation is requied
+     */
     global virtual String generateHash(String requestBody,String algo) {
 
         Blob requestBlob = Blob.valueOf(requestBody);
@@ -172,6 +227,12 @@ global virtual class SYS_ApplicationService {
         return base64EncodedHash;
     }
 
+    /**
+     * This hook is called from each of the hook for Http Verb processing
+     * Arguement: Http Verb - POST,GET,PATCH,DELETE,PUT
+     * Relies on Integration Setting in DataCache and RestContext
+     * Override if custom log generation is required
+     */
     global virtual SYS_IntegrationLog__c generateLogForWebhookReq(String method) {
         String requestBody = RestContext.request.requestBody.toString();
         SYS_IntegrationLog__c log = SYS_ApplicationService.getLogsToInsert(requestBody);
@@ -192,6 +253,11 @@ global virtual class SYS_ApplicationService {
         return log;
     }
 
+    /**
+     * This hook is called from SYS_QueueableForInboundChild to generate logs for inbound child records
+     * Arguement: record json and Integration setting
+     * Override if custom log generation is required
+     */
     global virtual SYS_IntegrationLog__c generateLogForChildRecords(String recordsJson,String integrationSetting) {
         SYS_IntegrationLog__c log = SYS_ApplicationService.getLogsToInsert(recordsJson);
 
@@ -236,6 +302,12 @@ global virtual class SYS_ApplicationService {
         return jsonBody;
     }
 
+    /**
+     * This hook is called from doInbound to identify resource from incoming JSON
+     * Arguement: SYS Log record and JSON Body
+     * Default is return the root if it exists or the value of falt key mentioned in Flat_Key_for_Resource__c field on log record
+     * Override if custom implementation is required for identifying the resoruce for inbound request
+     */
     global virtual String getResourceFromJSON(SYS_IntegrationLog__c log,String jsonBody){
 
         String resource = '';
