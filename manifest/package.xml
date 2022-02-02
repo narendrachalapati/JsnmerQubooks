@@ -18,6 +18,7 @@
 		<members>SYS_Webservice.cls</members>
 		<members>SYS_debug.cls</members>
 		<members>override_SYS_ApplicationService.cls</members>
+		<members>SYS_OAuthRedirectHandler</members>
 		<name>ApexClass</name>
 	</types>
 	
