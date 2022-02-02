@@ -48,7 +48,8 @@ global class SYS_OAuthRedirectHandler {
             //TODO - Check status code and process success/error
             
             JSONParser parser = JSON.createParser(res.getBody());
-            String access_token=''; 
+            String access_token='';
+            String refresh_token=''; 
             while (parser.nextToken() != null) {
                 if ((parser.getCurrentToken() == JSONToken.FIELD_NAME) && 
                     (parser.getText() == 'access_token')) {
@@ -56,9 +57,17 @@ global class SYS_OAuthRedirectHandler {
                     parser.nextToken();
                     access_token= parser.getText();
                 }
+
+                if ((parser.getCurrentToken() == JSONToken.FIELD_NAME) && 
+                    (parser.getText() == 'refresh_token')) {
+                    
+                    parser.nextToken();
+                    refresh_token= parser.getText();
+                }
             }
 
             configs[0].Access_Token__c =access_token;
+            configs[0].Refresh_Token__c = refresh_token;
             update configs;
 
             RestContext.response.responseBody = Blob.valueOf('{"data":'+res.getBody()+'}');
