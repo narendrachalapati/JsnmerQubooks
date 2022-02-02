@@ -1,25 +1,31 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
 	<types>
-		<members>*</members>
+		<members>SYS_ApplicationService.cls</members>
+		<members>SYS_Constants.cls</members>
+		<members>SYS_DataCache.cls</members>
+		<members>SYS_DataCacheTest.cls</members>
+		<members>SYS_ExceptionHandler.cls</members>
+		<members>SYS_HttpBuilder.cls</members>
+		<members>SYS_IntegrationLogInboundImmediate.cls</members>
+		<members>SYS_IntegrationLogOutboundImmediate.cls</members>
+		<members>SYS_IntegrationLogOutboundQueueable.cls</members>
+		<members>SYS_IntegrationLogTriggerHandler.cls</members>
+		<members>SYS_InvocableHandler.cls</members>
+		<members>SYS_QueueableForInboundChild.cls</members>
+		<members>SYS_RelationshipMapper.cls</members>
+		<members>SYS_Transformer.cls</members>
+		<members>SYS_Webservice.cls</members>
+		<members>SYS_debug.cls</members>
+		<members>override_SYS_ApplicationService.cls</members>
 		<name>ApexClass</name>
 	</types>
+	
 	<types>
-		<members>*</members>
-		<name>ApexComponent</name>
-	</types>
-	<types>
-		<members>*</members>
-		<name>ApexTestSuite</name>
-	</types>
-	<types>
-		<members>*</members>
+		<members>SYS_IntegrationLogTrigger</members>
 		<name>ApexTrigger</name>
 	</types>
-	<types>
-		<members>*</members>
-		<name>AuraDefinitionBundle</name>
-	</types>
+	
 	<types>
 		<members>*</members>
 		<name>CustomMetadata</name>
@@ -34,19 +40,13 @@
 		<members>ObjectSetting__mdt</members>
 		<members>RelationshipSetting__mdt</members>
 		<members>SYS_IntegrationLog__c</members>
+		<members>SYS_OAuthConfig__c</members>
 		<name>CustomObject</name>
 	</types>
 	<types>
 		<members>SYS_IntegrationLog_Record_Page</members>
 		<name>FlexiPage</name>
 	</types>
-	<types>
-		<members>*</members>
-		<name>LightningComponentBundle</name>
-	</types>
-	<types>
-		<members>*</members>
-		<name>StaticResource</name>
-	</types>
+	
 	<version>53.0</version>
 </Package>
