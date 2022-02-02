@@ -12,29 +12,34 @@
         <valueSetDefinition>
             <sorted>false</sorted>
             <value>
-                <fullName>Authorization Code</fullName>
+                <fullName>authorization_code</fullName>
                 <default>false</default>
                 <label>Authorization Code</label>
             </value>
             <value>
-                <fullName>PKCE</fullName>
-                <default>false</default>
-                <label>PKCE</label>
-            </value>
-            <value>
-                <fullName>Client Credentials</fullName>
+                <fullName>client_credentials</fullName>
                 <default>false</default>
                 <label>Client Credentials</label>
             </value>
             <value>
-                <fullName>Device Code</fullName>
+                <fullName>device_code</fullName>
                 <default>false</default>
                 <label>Device Code</label>
             </value>
             <value>
-                <fullName>Refresh Token</fullName>
+                <fullName>refresh_token</fullName>
                 <default>false</default>
                 <label>Refresh Token</label>
+            </value>
+            <value>
+                <fullName>password</fullName>
+                <default>false</default>
+                <label>Password</label>
+            </value>
+            <value>
+                <fullName>pkce</fullName>
+                <default>false</default>
+                <label>PKCE</label>
             </value>
         </valueSetDefinition>
     </valueSet>
