@@ -62,7 +62,7 @@ public class SYS_QB_ApplicationServiceOutbound extends SYS_ApplicationService {
                 logResp.How_To_Process__c = 'use_custom_apex_handler';
             }
             if (Schema.sObjectType.SYS_IntegrationLog__c.fields.How_To_Process__c.isCreateable()) {
-                logResp.Custom_Apex_Handler__c  = 'override_SYS_ApplicationService';
+                logResp.Custom_Apex_Handler__c  = 'SYS_QB_ApplicationServiceOutbound';
             }
             if (Schema.sObjectType.SYS_IntegrationLog__c.fields.SYS_Operation_Type__c.isCreateable()) {
                 logResp.SYS_Operation_Type__c = 'UPSERT';
