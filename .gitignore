@@ -8,6 +8,22 @@
 .localdevserver/
 deploy-options.json
 
+#Default Classes
+**/staticresources/classes/ChangePasswordController
+**/staticresources/classes/ChangePasswordControllerTest
+**/staticresources/classes/ForgotPasswordController
+**/staticresources/classes/ForgotPasswordControllerTest
+**/staticresources/classes/MyProfilePageController
+**/staticresources/classes/MyProfilePageControllerTest
+**/staticresources/classes/SiteLoginController
+**/staticresources/classes/SiteLoginControllerTest
+**/staticresources/classes/SiteRegisterController
+**/staticresources/classes/SiteRegisterControllerTest
+
+# Static Default Resources
+**/staticresources/SiteSamples/
+**/staticresources/SiteSamples.resource-meta.xml
+
 # LWC VSCode autocomplete
 **/lwc/jsconfig.json
 

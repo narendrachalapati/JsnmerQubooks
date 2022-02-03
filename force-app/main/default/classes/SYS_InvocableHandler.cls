@@ -41,7 +41,7 @@ global class SYS_InvocableHandler {
         } 
         
         SYS_ApplicationService appService = (SYS_ApplicationService)Type.forName(SYS_DataCache.objectSettingMap.get(SYS_DataCache.OBJ_TYPE).ApexHandler__c).newInstance();
-        
+         system.debug('appService'+appService);
         Map<Id, String> jsonListForOutbound = appService.transformSObjectToJson(newList);
         List<SYS_IntegrationLog__c> insertSysLog = new List<SYS_IntegrationLog__c>();
        

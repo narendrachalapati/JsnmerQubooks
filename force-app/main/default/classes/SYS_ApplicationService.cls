@@ -5,7 +5,7 @@ global virtual class SYS_ApplicationService {
 
     /* ------------------------------------------------------------------------ */
     
-    //Test Branch Commit - New
+    //WEBHOOK Virtuals
 
     global virtual Boolean doWebhookSignatureCheck(){
 
@@ -110,9 +110,9 @@ global virtual class SYS_ApplicationService {
         if(additionalSetting=='')
             results = Database.upsert(records, false);
         else{
-            System.debug('--MS SYS_DataCache.sObjectApiName in Applicaiton Service:'+SYS_DataCache.sObjectApiName);
             Schema.SObjectField externalIdField = Schema.getGlobalDescribe().get(SYS_DataCache.sObjectApiName).getDescribe().fields.getMap().get(additionalSetting); 
             results = Database.upsert(records, externalIdField, false);
+            system.debug('results==++'+results);
         }
         
         if(!results[0].isSuccess()){
@@ -151,8 +151,9 @@ global virtual class SYS_ApplicationService {
         else{
             sObj.put(mapping.FieldApiName__c, value);
         }
-
+ 
         SYS_debug.log('MS FINAL SOBJ:'+sObj);
+       
         return sObj;
     }
 
@@ -163,48 +164,15 @@ global virtual class SYS_ApplicationService {
         return methodToOperationMap.get(method);
     }
 
-    global virtual String generateHash(String requestBody,String algo) {
-
-        Blob requestBlob = Blob.valueOf(requestBody);
-        Blob hashBlob = Crypto.generateDigest(algo,requestBlob);
-        String base64EncodedHash = EncodingUtil.base64encode(hashBlob);
-
-        return base64EncodedHash;
-    }
-
     global virtual SYS_IntegrationLog__c generateLogForWebhookReq(String method) {
         String requestBody = RestContext.request.requestBody.toString();
         SYS_IntegrationLog__c log = SYS_ApplicationService.getLogsToInsert(requestBody);
-
-        String algo = SYS_DataCache.integrationSetting.get(SYS_DataCache.INT_TYPE).Hashing_Algo__c;
-        if(algo!=NULL && algo!='')
-        log.Request_Digest__c = generateHash(requestBody,algo);
-
         log.Type__c = 'INBOUND';
         log.SYS_Operation_Type__c = getOperationTypeFor(method);
         log.Flat_Key_for_Resource__c = 'attributes.type';
-        log.SYS_IntegrationSettings__c = SYS_DataCache.INT_TYPE;
+        log.SYS_IntegrationSettings__c = 'SFsource';
         log.Status__c = 'NEW';
         log.External_Id_Field_API_Name__c = 'SYS_Key__c';
-        log.How_to_process__c = 'use_custom_apex_handler';
-        log.Custom_Apex_Handler__c = 'SYS_ApplicationService';
-
-        return log;
-    }
-
-    global virtual SYS_IntegrationLog__c generateLogForChildRecords(String recordsJson,String integrationSetting) {
-        SYS_IntegrationLog__c log = SYS_ApplicationService.getLogsToInsert(recordsJson);
-
-        String algo = SYS_DataCache.integrationSetting.get(SYS_DataCache.INT_TYPE).Hashing_Algo__c;
-        if(algo!=NULL && algo!='')
-        log.Request_Digest__c = generateHash(recordsJson,algo);
-        
-        log.Type__c = 'INBOUND';
-        log.SYS_Operation_Type__c = 'UPSERT';
-        log.Flat_Key_for_Resource__c = '';
-        log.SYS_IntegrationSettings__c = integrationSetting;//'SFsource';
-        log.Status__c = 'NEW';
-        log.External_Id_Field_API_Name__c = 'SYS_Child_Key__c';
         log.How_to_process__c = 'use_custom_apex_handler';
         log.Custom_Apex_Handler__c = 'SYS_ApplicationService';
 
@@ -249,7 +217,6 @@ global virtual class SYS_ApplicationService {
         else{
             //Key mentioned in Flat_Key_for_Resource__c identifies Resource
             Map<String, Object> flatKeyMap = SYS_Transformer.makeJsonIntoKeyValuePairs(jsonBody);
-            System.debug('-- MS flatKeyMap in getResourceFromJSON:'+flatKeyMap);
             resource = (String)flatKeyMap.get(log.Flat_Key_for_Resource__c);
         }
 
@@ -532,8 +499,9 @@ global virtual class SYS_ApplicationService {
     /* ------------------------------------------------------------------------ */
 
     public void insertWebhookLog(SYS_IntegrationLog__c log){
+
         try{
-            Database.SaveResult result = Database.insert(log,false);
+            insert log;
             setSuccessHttpResponse();
         } catch ( Exception e ) {
             setErrorHttpResponse();

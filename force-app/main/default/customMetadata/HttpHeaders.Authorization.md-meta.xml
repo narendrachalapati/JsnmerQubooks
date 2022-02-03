@@ -4,10 +4,10 @@
     <protected>true</protected>
     <values>
         <field>IntegrationType__c</field>
-        <value xsi:type="xsd:string">SFsource</value>
+        <value xsi:type="xsd:string">Quickbooks</value>
     </values>
     <values>
         <field>Value__c</field>
-        <value xsi:type="xsd:string">Bearer token</value>
+        <value xsi:type="xsd:string">Bearer {!$Quickbooks.OAuthToken}</value>
     </values>
 </CustomMetadata>

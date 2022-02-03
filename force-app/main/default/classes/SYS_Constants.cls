@@ -16,8 +16,8 @@ public class SYS_Constants {
     public static FINAL String SYSMERGE = 'MERGE';*/
         
     public static FINAL String RESOURCE = 'entityName/entityId?minorversion=59';
-    public static String INT_TYPE = 'SFsource'; //Quickbooks  Middleware_hl7 IMS_SIU JIRA
-    public static String OBJ_TYPE = 'Custom Parent Object Setting';
+    public static String INT_TYPE = 'Quickbooks'; //Quickbooks  Middleware_hl7 IMS_SIU JIRA
+    public static String OBJ_TYPE = 'AccountQB';
     public static String PRICEBOOK = 'Standard Price Book'; // Standard , Standard Price Book
     public static FINAL Map<String, String>  metaDataMap = new Map<String, String>{'Account' => 'Customer', 'SBQQ__Quote__c' => 'Invoice', 'Product2' => 'Item', 'pymt__PaymentX__c' => 'Payment', 'Order'=> 'Invoice2','Custom_Parent__c'=>'Custom_Parent__c'}; 
     public static FINAL Map<String, String> mapEntityPath = new Map<String, String>{'Customer' => 'customer?minorversion=55', 'Invoice' => 'invoice1','Invoice2' => 'invoice2' , 'Item' => 'item', 'Payment'=>'payment','Custom_Parent__c'=>'Custom_Parent__c'};

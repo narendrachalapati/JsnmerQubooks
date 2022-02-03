@@ -20,7 +20,7 @@ public with sharing class SYS_QueueableForInboundChild implements Queueable {
         
         for(String singleChildJSON : childRecList){
             if(Limits.getDmlStatements() < Limits.getLimitDmlStatements() - 1){
-                appService.insertWebhookLog(appService.generateLogForChildRecords(singleChildJSON,integrationSetting));
+               // appService.insertWebhookLog(appService.generateLogForChildRecords(singleChildJSON,integrationSetting));
             }
             else{
                 pendingChildRecords.add(singleChildJSON);
@@ -41,5 +41,3 @@ public with sharing class SYS_QueueableForInboundChild implements Queueable {
 
     }
 }
-
-
