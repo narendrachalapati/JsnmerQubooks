@@ -18,7 +18,6 @@ global virtual class SYS_ApplicationService {
         String tokenFromUrl = RestContext.request.params.get('token');
         String tokenFromIntegrationSetting = SYS_DataCache.integrationSetting.get(SYS_DataCache.INT_TYPE).webhookToken__c;
 
-        SYstem.debug('WEBHOOK TOKEN CHECK: '+tokenFromUrl+' vs. '+tokenFromIntegrationSetting);
         return (tokenFromUrl == tokenFromIntegrationSetting);
 
     }
