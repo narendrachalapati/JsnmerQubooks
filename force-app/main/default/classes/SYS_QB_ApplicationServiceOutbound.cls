@@ -1,5 +1,5 @@
-public class override_SYS_ApplicationService extends SYS_ApplicationService {
-    public override_SYS_ApplicationService() {
+public class SYS_QB_ApplicationServiceOutbound extends SYS_ApplicationService {
+    public SYS_QB_ApplicationServiceOutbound() {
 
     }
  public override SYS_IntegrationLog__c generatelogForOutboundResult(HttpResponse resp,SYS_IntegrationLog__c log){

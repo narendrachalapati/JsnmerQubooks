@@ -1,7 +1,7 @@
 //This class is maily used for overriding the methods in the sys application service 
 //for inbound processing from webhook 
-public class SYS_QB_ApplicationService extends SYS_ApplicationService {
-    public SYS_QB_ApplicationService() {
+public class SYS_QB_ApplicationServiceinbound extends SYS_ApplicationService {
+    public SYS_QB_ApplicationServiceinbound() {
 
     }
     //QB webhook is not providing the entire json so we need to do the get request and
