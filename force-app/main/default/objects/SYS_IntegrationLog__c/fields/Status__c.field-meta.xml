@@ -36,6 +36,16 @@
                 <default>false</default>
                 <label>PENDING_PARENT</label>
             </value>
+            <value>
+                <fullName>READY_FOR_PROCESSING</fullName>
+                <default>false</default>
+                <label>READY FOR PROCESSING</label>
+            </value>
+            <value>
+                <fullName>WAITING_FOR_PARENT</fullName>
+                <default>false</default>
+                <label>WAITING FOR PARENT</label>
+            </value>
         </valueSetDefinition>
     </valueSet>
 </CustomField>

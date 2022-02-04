@@ -44,6 +44,7 @@
 	</types>
 	<types>
 		<members>SYS_IntegrationLog_Record_Page</members>
+		<members>SYS_OAuth_Configs</members>
 		<name>FlexiPage</name>
 	</types>
 	<version>53.0</version>
