@@ -126,7 +126,7 @@
         <formFactor>Small</formFactor>
         <type>Default</type>
     </actionOverrides>
-    <actionOverrides>
+    <!-- <actionOverrides>
         <actionName>View</actionName>
         <comment>Action override created by Lightning App Builder during activation.</comment>
         <content>SYS_OAuth_Configs</content>
@@ -141,7 +141,7 @@
         <formFactor>Small</formFactor>
         <skipRecordTypeSelect>false</skipRecordTypeSelect>
         <type>Flexipage</type>
-    </actionOverrides>
+    </actionOverrides> -->
     <actionOverrides>
         <actionName>View</actionName>
         <type>Default</type>
