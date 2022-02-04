@@ -346,6 +346,8 @@ global virtual class SYS_ApplicationService {
                     log.data8__c != null ? log.data8__c : '' +
                     log.data9__c != null ? log.data9__c : '' ;
 
+        SYS_DataCache.log = log;
+
         jsonBody = preprocessJSONForInbound(log,jsonBody);
         List<sObject> sObjectsToDML = transformJsonToSObject(jsonBody, getResourceFromJSON(log,jsonBody));
 
@@ -356,7 +358,7 @@ global virtual class SYS_ApplicationService {
 
         //TODO DML Based on log operation type
         //Database.UpsertResult[] results = Database.upsert(sObjectsToDML,externalIdField, false);
-        SYS_DataCache.log = log;
+        
                
         return doDML(sObjectsToDML,log.SYS_Operation_Type__c,externalIdFieldAPIName);
     }
