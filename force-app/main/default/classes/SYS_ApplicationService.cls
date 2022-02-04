@@ -333,6 +333,7 @@ global virtual class SYS_ApplicationService {
     /* ------------------------------------------------------------------------ */ 
 
     global virtual Boolean doInbound(SYS_IntegrationLog__c log) {
+        SYS_DataCache.log = log;
         String jsonBody = '';
         
         jsonBody =  log.data0__c != null ? log.data0__c : '' +
@@ -345,8 +346,6 @@ global virtual class SYS_ApplicationService {
                     log.data7__c != null ? log.data7__c : '' +
                     log.data8__c != null ? log.data8__c : '' +
                     log.data9__c != null ? log.data9__c : '' ;
-
-        SYS_DataCache.log = log;
 
         jsonBody = preprocessJSONForInbound(log,jsonBody);
         List<sObject> sObjectsToDML = transformJsonToSObject(jsonBody, getResourceFromJSON(log,jsonBody));
@@ -402,11 +401,11 @@ global virtual class SYS_ApplicationService {
 
     global virtual HttpResponse doOutbound(SYS_IntegrationLog__c log){
 
+        SYS_DataCache.log = log;
+
         Http http = new Http();
         HttpRequest req = buildOutboundHttpRequest(log);
-        
 
-        
         String body = log.data0__c != null ? log.data0__c : '' +
                             log.data1__c != null ? log.data1__c : '' +
                             log.data2__c != null ? log.data2__c : '' +
@@ -418,6 +417,8 @@ global virtual class SYS_ApplicationService {
                             log.data8__c != null ? log.data8__c : '' +
                             log.data9__c != null ? log.data9__c : '' ; 
         
+        
+
         body = preprocessJSONForOutbound(log,body);
         req.setBody(body);
         SYS_debug.log('body:'+body);
