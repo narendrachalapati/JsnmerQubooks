@@ -5,8 +5,43 @@
 		<name>ApexComponent</name>
 	</types>
 	<types>
-		<members>*</members>
+		<members>SYS_ApplicationService</members>
+		<members>SYS_Constants</members>
+		<members>SYS_DataCache</members>
+		<members>SYS_DataCacheTest</members>
+		<members>SYS_debug</members>
+		<members>SYS_ExceptionHandler</members>
+		<members>SYS_HttpBuilder</members>
+		<members>SYS_IntegrationLogInboundImmediate</members>
+		<members>SYS_IntegrationLogOutboundImmediate</members>
+		<members>SYS_IntegrationLogOutboundQueueable</members>
+		<members>SYS_IntegrationLogTriggerHandler</members>
+		<members>SYS_InvocableHandler</members>
+		<members>SYS_QB_ApplicationServiceinbound</members>
+		<members>SYS_QB_ApplicationServiceOutbound</members>
+		<members>SYS_QueueableForInboundChild</members>
+		<members>SYS_RelationshipMapper</members>
+		<members>SYS_Transformer</members>
+		<members>SYS_Webservice</members>
 		<name>ApexClass</name>
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	</types>
 	
 	<types>
