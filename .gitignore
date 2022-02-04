@@ -54,3 +54,10 @@ $RECYCLE.BIN/
 
 # Local environment variables
 .env
+force-app/main/default/customMetadata/FieldSetting.IB_Child_Obj_SYS_Key.md-meta.xml
+force-app/main/default/customMetadata/FieldSetting.IB_Child_Obj_Text_Field.md-meta.xml
+force-app/main/default/customMetadata/FieldSetting.Id_Field_on_Custom_Parent.md-meta.xml
+force-app/main/default/customMetadata/FieldSetting.IN_Text_Field_on_Custom_Parent.md-meta.xml
+force-app/main/default/customMetadata/IntegrationSetting.SFsource.md-meta.xml
+force-app/main/default/objects/Custom_Child_Object__c/fields/SYS_Child_Key__c.field-meta.xml
+force-app/main/default/objects/Custom_Child_Object__c/listViews/All.listView-meta.xml

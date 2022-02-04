@@ -31,57 +31,34 @@ public class SYS_IntegrationLogInboundImmediate{
         
         for(SYS_IntegrationLog__c log:sysLogs) {
             
-            
-            SYS_DataCache.INT_TYPE = log.SYS_IntegrationSettings__c;
-            // NA SYS_DataCache.OBJ_TYPE = log.ObjectSettingId__c;
-            SYS_ApplicationService appService;
-            
-            if(log.How_to_process__c == 'use_object_setting')
-                appService = (SYS_ApplicationService)Type.forName(SYS_DataCache.objectSettingMap.get(SYS_DataCache.OBJ_TYPE).ApexHandler__c).newInstance();
-            else if(log.How_to_process__c == 'use_custom_apex_handler')
-                appService = (SYS_ApplicationService)Type.forName(log.Custom_Apex_Handler__c).newInstance();
-            else if(log.How_to_process__c == 'ignore_log'){
-                continue;
-            }
-            else{
-                //Log Message
-                continue;
-            }
+            try{
+                SYS_DataCache.INT_TYPE = log.SYS_IntegrationSettings__c;
+                // NA SYS_DataCache.OBJ_TYPE = log.ObjectSettingId__c;
+                SYS_ApplicationService appService;
 
-            Boolean dmlResult = appService.doInbound(log);
-            
-            inboundResultLogs.add(appService.generatelogForInboundResult(dmlResult,log));
-
-            /*
-            if(log.SYS_Operation_Type__c.toUpperCase()=='INSERT'){
-                inboundRecordsForInsert.add(appService.doInbound(log));   
-            }
-            else if(log.SYS_Operation_Type__c.toUpperCase()=='UPSERT'){
-
-                String externalKey = SYS_DataCache.objectSettingMap.get(log.ObjectSettingId__c).ExternalFieldApi__c;
-                String compositeKey = externalKey+'.'+SYS_DataCache.objectSettingMap.get(log.ObjectSettingId__c).ObjectApiName__c;
-                if(inboundRecordsForUpsertMap.containsKey(compositeKey)){
-                    List<sObject> existingRecordsForKey = inboundRecordsForUpsertMap.get(compositeKey);
-                    existingRecordsForKey.add(appService.doInbound(log));
-                    inboundRecordsForUpsertMap.put(compositeKey, existingRecordsForKey);
+                System.debug('How to process:'+log.How_to_process__c);
+                System.debug('SYS_DataCache.OBJ_TYPE:'+SYS_DataCache.OBJ_TYPE);
+                
+                if(log.How_to_process__c == 'use_object_setting')
+                    appService = (SYS_ApplicationService)Type.forName(SYS_DataCache.objectSettingMap.get(SYS_DataCache.OBJ_TYPE).ApexHandler__c).newInstance();
+                else if(log.How_to_process__c == 'use_custom_apex_handler')
+                    appService = (SYS_ApplicationService)Type.forName(log.Custom_Apex_Handler__c).newInstance();
+                else if(log.How_to_process__c == 'ignore_log'){
+                    continue;
                 }
                 else{
-                    inboundRecordsForUpsertMap.put(compositeKey, new List<sObject>());
+                    //Log Message
+                    continue;
                 }
-                       
+
+                Boolean dmlResult = appService.doInbound(log);
+                
+                inboundResultLogs.add(appService.generatelogForInboundResult(dmlResult,log));
+            }catch(Exception e){
+                SYS_ApplicationService.logException(log, e.getStackTraceString());
             }
-            else if(log.SYS_Operation_Type__c.toUpperCase()=='UPDATE'){
-                inboundRecordsForUpdate.add(appService.doInbound(log));   
-            }
-            else if(log.SYS_Operation_Type__c.toUpperCase()=='DELETE'){
-                inboundRecordsForDelete.add(appService.doInbound(log));   
-            }
-            else{
-                // Non DML Operation Type. Handle DMLs; if any, in the extended class. 
-            }
-            */
-            
-        }
+
+        }// For loop ends
 
         if(inboundResultLogs.size()>0){
             new SYS_ApplicationService().doDML(inboundResultLogs,'UPSERT','');  
