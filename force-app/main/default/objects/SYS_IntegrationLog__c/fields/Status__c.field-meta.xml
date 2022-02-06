@@ -5,6 +5,7 @@
     <externalId>false</externalId>
     <label>Status</label>
     <required>true</required>
+    <trackHistory>false</trackHistory>
     <trackTrending>false</trackTrending>
     <type>Picklist</type>
     <valueSet>
@@ -42,9 +43,16 @@
                 <label>READY FOR PROCESSING</label>
             </value>
             <value>
+                <fullName>READY_FOR_PARENT</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>READY_FOR_PARENT</label>
+            </value>
+            <value>
                 <fullName>WAITING_FOR_PARENT</fullName>
                 <default>false</default>
-                <label>WAITING FOR PARENT</label>
+                <isActive>false</isActive>
+                <label>WAITING_FOR_PARENT</label>
             </value>
         </valueSetDefinition>
     </valueSet>

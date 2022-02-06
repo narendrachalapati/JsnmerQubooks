@@ -19,6 +19,7 @@
 		<members>SYS_Webservice</members>
 		<members>SYS_debug</members>
 		<members>override_SYS_ApplicationService</members>
+		<members>SYS_ParentingQueueable</members>
 		<name>ApexClass</name>
 	</types>
 	<types>
