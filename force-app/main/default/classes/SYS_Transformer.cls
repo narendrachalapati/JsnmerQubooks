@@ -253,8 +253,15 @@ public virtual class SYS_Transformer {
                 jsonObj.put(nodeList[0], new Map<String, Object>()); 
             }
             System.debug('node json=='+jsonObj.get(nodeList[0]));
-            ((Map<String, Object>)jsonObj.get(nodeList[0])).put(nodeList[1], getFieldValues(obj, mapping, mapping.FieldApiName__c));
-            System.debug('Allfields@@=='+nodeList[1]+ ' -- ' + getFieldValues(obj, mapping, mapping.FieldApiName__c));
+
+            String fieldMappingHandler = 'SYS_ApplicationService';
+            if(mapping.Field_Mapping_Handler__c != '' && mapping.Field_Mapping_Handler__c != NULL){
+                fieldMappingHandler = mapping.Field_Mapping_Handler__c;
+            }
+
+            SYS_ApplicationService appService = (SYS_ApplicationService)Type.forName(fieldMappingHandler).newInstance();
+
+            ((Map<String, Object>)jsonObj.get(nodeList[0])).put(nodeList[1], appService.getFieldValues(obj, mapping, mapping.FieldApiName__c));
             return jsonObj;
         }
         else if(nodeList.size() > 0) {
@@ -331,7 +338,12 @@ public virtual class SYS_Transformer {
         if(!SYS_Transformer.isChild && mappings.size()>0){
             // sObjectApiName = mappings[0].ObjectSetting__r.Object__r.QualifiedAPIName;
             sObjectApiName = mappings[0].ObjectApiName__c;
+<<<<<<< HEAD
             SYS_DataCache.sObjectApiName = sObjectApiName; 
+=======
+            SYS_DataCache.sObjectApiName = sObjectApiName;
+            SYS_DataCache.OBJ_TYPE = mappings[0].ObjectSetting__r.DeveloperName;
+>>>>>>> 8154664cbb395202c0f2292e7f8abf68ef963c12
         }
         //--M String sObjectApiName = null;
         SYS_DataCache.load();
@@ -341,6 +353,11 @@ public virtual class SYS_Transformer {
         
         //TODO - refactor the below code
         String rootKey;
+<<<<<<< HEAD
+=======
+
+        /* --MS Repeated code block
+>>>>>>> 8154664cbb395202c0f2292e7f8abf68ef963c12
         for(String jsonObj : jsonList) {
             if(jsonObj != null || jsonObj != ''){
                 Map<String, Object> mapDeserialized = (Map<String, Object>)JSON.deserializeUntyped(jsonObj);
@@ -361,7 +378,8 @@ public virtual class SYS_Transformer {
         return objectsToUpsert;
     }
     
-    public static List<sObject> parseJsonToChildObject(String jsonObj, String sObjectApiName, Map<String, FieldSetting__mdt> mapOfPaths) {
+    /*************************************************** D E P R E C A T E D [ ***************************************************************/
+    public static List<sObject> parseJsonToChildObject_DEPRECATED(String jsonObj, String sObjectApiName, Map<String, FieldSetting__mdt> mapOfPaths) {
         Map<String, Object> flatKeyMap = makeJsonIntoKeyValuePairs(jsonObj);
         if(SYS_Transformer.isChild){
         	System.debug('\n\n++++++++++++ flatKeyMap: '+flatKeyMap);
@@ -454,7 +472,9 @@ public virtual class SYS_Transformer {
         }
         return objectList;
     }
+    /*************************************************** D E P R E C A T E D ] ***************************************************************/
     //
+
     public static sObject parseJsonToObject(String jsonObj, String sObjectApiName, Map<String, FieldSetting__mdt> mapOfPaths) {
         Map<String, Object> flatKeyMap = makeJsonIntoKeyValuePairs(jsonObj);
         system.debug('flatKeyMap======+++++'+flatKeyMap);
@@ -523,7 +543,7 @@ public virtual class SYS_Transformer {
     public static Map<String, Object> makeJsonIntoKeyValuePairs(String jsonObj) {
         Object result = JSON.deserializeUntyped(jsonObj);
         Map<String, Object> flatKeyMap = new Map<String, Object>();
-
+        System.debug('MS Double check. in makeJsonIntoKeyValuePairs');
         if (result instanceof Map<String, Object>) {
             recursiveJsonParser((Map<String, Object>)result, new List<String>(), flatKeyMap);
         }
@@ -531,18 +551,22 @@ public virtual class SYS_Transformer {
     }
     
     private static void recursiveJsonParser(Map<String, Object> jsonObject, List<String> parents, Map<String, Object> result) {
-        //Handle arrays later
+        System.debug('MS Double check. jsonObject:'+jsonObject);
         for(String key : jsonObject.keySet()) {
             Object currentObj = jsonObject.get(key);
             System.debug('##key='+key);
             if (currentObj instanceof Map<String, Object>) {
+                System.debug('MS Double check. in IF:'+currentObj);
                 Map<String, Object> child = (Map<String, Object>)currentObj;
+                
                 parents.add(key);
+                System.debug('MS Double check. Parents:'+parents);
                 recursiveJsonParser(child, parents, result);
                 parents.remove(parents.size() - 1);
+                System.debug('MS Double check. Parents after:'+parents);
            
             } else {
-                
+                System.debug('MS Double check. in else:'+currentObj);
                 String parentKey = '';
                 System.debug('params=='+key+' =='+parents.size()+' res=='+result);
                 if(parents.size() > 0) {
@@ -581,10 +605,25 @@ public virtual class SYS_Transformer {
                             }
                             result.clear();
                             String objString = JSON.serialize(obj);
+<<<<<<< HEAD
                             childRecList.add(objString);
                         }
                         System.debug('in else=='+result);
                         //ID jobID = System.enqueueJob(new SYS_QueueableJSONTOSObject(childRecList,key,''));
+=======
+                            //-- MS childRecList.add('{\"'+key+'\":'+objString+'}');
+                            //-- MS Root element of array is not required. The Resource field on log record
+                            // will be used to identify fieldmappings
+                            childRecList.add(objString);
+                            
+                        }
+                        System.debug('in else=='+result);
+                        System.debug('MS Child Objects to be processed:'+childRecList);
+                        
+                        //24 jan 2022
+                        
+                        ID jobID = System.enqueueJob(new SYS_QueueableForInboundChild(SYS_DataCache.log,childRecList,key,SYS_DataCache.INT_TYPE));
+>>>>>>> 8154664cbb395202c0f2292e7f8abf68ef963c12
                         //System.debug('job id is==='+jobID);
                     }
                 }
@@ -596,37 +635,8 @@ public virtual class SYS_Transformer {
         
     }
     
-    public static Object getFieldValues(sObject obj, FieldSetting__mdt mapping, String fieldAPIName){
-        //TODO - handle case - Account."CreatedBy".Name, where CreatedBy is not an sobject
-        System.debug('\n\n++++++++++++++ \n obj:'+obj+'\n++++++++++++++\n');
-        System.debug('\n\n++++++++++++++ \n fieldAPIName:'+fieldAPIName+'\n++++++++++++++\n');
-        String fvalue='';
-        if(fieldAPIName == null){
-            fvalue = mapping.StaticValue__c;
-        }
-        else if(fieldAPIName.contains('.')){
-            List<String> splitedFields = fieldAPIName.split('\\.');
-            try{
-                for(Integer i = 0; i < splitedFields.size() - 1; i++){
-                    obj = obj.getSobject(splitedFields[i]);   
-                } 
-                return obj.get(splitedFields[splitedFields.size()-1]);
-            }catch(exception ex){
-               System.debug('******exception while fetching fieldValues as relationship '+fieldAPIName+'  value is blank.'+ex.getmessage()); 
-               return null;
-            }
-            
-        } else if(obj.get(fieldAPIName)!=null && fieldAPIName == SYS_DataCache.namespacePrefix + 'Is_Taxable__c') { //TODO - specific to quickbooks
-            return ((Boolean)obj.get(fieldAPIName)) ? 'TAX' : 'NON';
-        } 
-        else if(obj.get(fieldAPIName) != null && fieldAPIName == SYS_DataCache.namespacePrefix + 'Total_Tax__c') {
-            return ((Decimal)obj.get(fieldAPIName)) == 0.00 ? 'null' : obj.get(fieldAPIName);  
-        }
-        else if(obj.get(fieldAPIName)!=null){
-            return obj.get(fieldAPIName);
-        }
-        return fvalue;
-    }
+    
+    
     public static List<String> subList(List<String> master, Integer index) {
         List<String> sList = new List<String>();
         for(Integer i = index; i < master.size(); i ++) {
