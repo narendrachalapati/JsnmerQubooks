@@ -4,9 +4,7 @@
 		<members>SYS_ApplicationService</members>
 		<members>SYS_Constants</members>
 		<members>SYS_DataCache</members>
-		<members>SYS_DataCacheTest</members>
 		<members>SYS_ExceptionHandler</members>
-		<members>SYS_HttpBuilder</members>
 		<members>SYS_IntegrationLogInboundImmediate</members>
 		<members>SYS_IntegrationLogOutboundImmediate</members>
 		<members>SYS_IntegrationLogOutboundQueueable</members>
@@ -14,11 +12,9 @@
 		<members>SYS_InvocableHandler</members>
 		<members>SYS_OAuthRedirectHandler</members>
 		<members>SYS_QueueableForInboundChild</members>
-		<members>SYS_RelationshipMapper</members>
 		<members>SYS_Transformer</members>
 		<members>SYS_Webservice</members>
 		<members>SYS_debug</members>
-		<members>override_SYS_ApplicationService</members>
 		<members>SYS_ParentingQueueable</members>
 		<name>ApexClass</name>
 	</types>
@@ -26,13 +22,13 @@
 		<members>SYS_IntegrationLogTrigger</members>
 		<name>ApexTrigger</name>
 	</types>
+	<!--
 	<types>
 		<members>*</members>
 		<name>CustomMetadata</name>
 	</types>
+	-->
 	<types>
-		<members>Custom_Child_Object__c</members>
-		<members>Custom_Parent__c</members>
 		<members>FieldSetting__mdt</members>
 		<members>HttpHeaders__mdt</members>
 		<members>IntegrationEnablement__mdt</members>
