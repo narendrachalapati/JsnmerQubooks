@@ -177,11 +177,47 @@ global virtual class SYS_ApplicationService {
 
 
     /* ------------------------------------------------------------------------ */ 
+    /**
+     * This hook is called from SYS_Transformer to set values for sObject record
+     * Default is mapping based on field type
+     * Relies on Integration Setting in DataCache
+     * Override if custom field mapping is required
+     */
+    global virtual sObject processFieldMappingOutbound(FieldSetting__mdt mapping,sObject sObj,Object value, String sObjectApiName){
 
+        SObjectType r = ((SObject)(Type.forName('Schema.'+sObjectApiName).newInstance())).getSObjectType();
+        DescribeSObjectResult d = r.getDescribe();
+                
+        String fieldType = d.fields
+                            .getMap()
+                            .get(mapping.FieldApiName__c)
+                            .getDescribe()
+                            .getType()+'';
+
+        
+        //TODO add other field types
+        if(fieldType=='DATE'){
+            try{
+                sObj.put(mapping.FieldApiName__c, date.valueOf((String)value));
+            }catch(Exception e){
+                
+            }
+        }else if (fieldType == 'STRING') {
+            sObj.put(mapping.FieldApiName__c, String.valueof(value));
+        }else if (fieldType == 'BOOLEAN') {
+            sObj.put(mapping.FieldApiName__c, String.valueof(value));
+        }
+        else{
+            sObj.put(mapping.FieldApiName__c, value);
+        }
+
+        SYS_debug.log('MS FINAL SOBJ:'+sObj);
+        return sObj;
+    }
     
     /**
      * This hook is called from SYS_Transformer to set values for sObject record
-     * Default is map based on field type
+     * Default is mapping based on field type
      * Relies on Integration Setting in DataCache
      * Override if custom field mapping is required
      */

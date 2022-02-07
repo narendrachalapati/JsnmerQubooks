@@ -345,7 +345,7 @@ public virtual class SYS_Transformer {
         //TODO - refactor the below code
         String rootKey;
 
-        /* --MS Repested code block
+        /* --MS Repeated code block
         for(String jsonObj : jsonList) {
             if(jsonObj != null || jsonObj != ''){
                 Map<String, Object> mapDeserialized = (Map<String, Object>)JSON.deserializeUntyped(jsonObj);
