@@ -176,46 +176,50 @@ global virtual class SYS_ApplicationService {
     }
 
 
-    /* ------------------------------------------------------------------------ */ 
+    /* ------------------------------------------------------------------------ */
     /**
-     * This hook is called from SYS_Transformer to set values for sObject record
-     * Default is mapping based on field type
+     * OUTBOUND
+     * This hook is called from SYS_Transformer to set values for JSON record
      * Relies on Integration Setting in DataCache
      * Override if custom field mapping is required
      */
-    global virtual sObject processFieldMappingOutbound(FieldSetting__mdt mapping,sObject sObj,Object value, String sObjectApiName){
+    global virtual Object getFieldValues(sObject obj, FieldSetting__mdt mapping, String fieldAPIName){
+        //TODO - handle case - Account."CreatedBy".Name, where CreatedBy is not an sobject - This can be handled by overriding the current method and add the handler
+        // on field setting
 
-        SObjectType r = ((SObject)(Type.forName('Schema.'+sObjectApiName).newInstance())).getSObjectType();
-        DescribeSObjectResult d = r.getDescribe();
-                
-        String fieldType = d.fields
-                            .getMap()
-                            .get(mapping.FieldApiName__c)
-                            .getDescribe()
-                            .getType()+'';
-
-        
-        //TODO add other field types
-        if(fieldType=='DATE'){
+        String fvalue='';
+        if(fieldAPIName == null){
+            fvalue = mapping.StaticValue__c;
+        }
+        else if(fieldAPIName.contains('.')){
+            List<String> splitedFields = fieldAPIName.split('\\.');
             try{
-                sObj.put(mapping.FieldApiName__c, date.valueOf((String)value));
-            }catch(Exception e){
-                
+                for(Integer i = 0; i < splitedFields.size() - 1; i++){
+                    obj = obj.getSobject(splitedFields[i]);   
+                } 
+                return obj.get(splitedFields[splitedFields.size()-1]);
+            }catch(exception ex){
+               System.debug('******exception while fetching fieldValues as relationship '+fieldAPIName+'  value is blank.'+ex.getmessage()); 
+               return null;
             }
-        }else if (fieldType == 'STRING') {
-            sObj.put(mapping.FieldApiName__c, String.valueof(value));
-        }else if (fieldType == 'BOOLEAN') {
-            sObj.put(mapping.FieldApiName__c, String.valueof(value));
+            
+        } 
+        /*
+        else if(obj.get(fieldAPIName)!=null && fieldAPIName == SYS_DataCache.namespacePrefix + 'Is_Taxable__c') { //TODO - specific to quickbooks
+            return ((Boolean)obj.get(fieldAPIName)) ? 'TAX' : 'NON';
+        } 
+        else if(obj.get(fieldAPIName) != null && fieldAPIName == SYS_DataCache.namespacePrefix + 'Total_Tax__c') {
+            return ((Decimal)obj.get(fieldAPIName)) == 0.00 ? 'null' : obj.get(fieldAPIName);  
         }
-        else{
-            sObj.put(mapping.FieldApiName__c, value);
+        */
+        else if(obj.get(fieldAPIName)!=null){
+            return obj.get(fieldAPIName);
         }
-
-        SYS_debug.log('MS FINAL SOBJ:'+sObj);
-        return sObj;
+        return fvalue;
     }
     
     /**
+     * INBOUND
      * This hook is called from SYS_Transformer to set values for sObject record
      * Default is mapping based on field type
      * Relies on Integration Setting in DataCache
@@ -378,7 +382,7 @@ global virtual class SYS_ApplicationService {
         if(log.Resource__c!=NULL){
             return log.Resource__c;
         }
-        
+
         if(log.Flat_Key_for_Resource__c == NULL || log.Flat_Key_for_Resource__c == ''){
             //Root element identifies Resource
             Object responseType = JSON.deserializeUntyped(jsonBody);
