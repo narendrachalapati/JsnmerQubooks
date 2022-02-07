@@ -71,6 +71,7 @@ public class SYS_QB_ApplicationServiceOutbound extends SYS_ApplicationService {
 
         return logResp;
     }
+    //ToDo override  the transform method to sobject istead of Do inbound method
     //immediate response for outbond processing response 
    public override Boolean doInbound(SYS_IntegrationLog__c log) {
         String jsonBody = '';

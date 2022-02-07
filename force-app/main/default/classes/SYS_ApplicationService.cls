@@ -159,9 +159,9 @@ global virtual class SYS_ApplicationService {
         if(additionalSetting=='')
             results = Database.upsert(records, false);
         else{
+            System.debug('--MS SYS_DataCache.sObjectApiName in Applicaiton Service:'+SYS_DataCache.sObjectApiName);
             Schema.SObjectField externalIdField = Schema.getGlobalDescribe().get(SYS_DataCache.sObjectApiName).getDescribe().fields.getMap().get(additionalSetting); 
             results = Database.upsert(records, externalIdField, false);
-            system.debug('results==++'+results);
         }
         
         if(!results[0].isSuccess()){
@@ -252,9 +252,8 @@ global virtual class SYS_ApplicationService {
         else{
             sObj.put(mapping.FieldApiName__c, value);
         }
- 
+
         SYS_debug.log('MS FINAL SOBJ:'+sObj);
-       
         return sObj;
     }
 
@@ -294,10 +293,15 @@ global virtual class SYS_ApplicationService {
     global virtual SYS_IntegrationLog__c generateLogForWebhookReq(String method) {
         String requestBody = RestContext.request.requestBody.toString();
         SYS_IntegrationLog__c log = SYS_ApplicationService.getLogsToInsert(requestBody);
+
+        String algo = SYS_DataCache.integrationSetting.get(SYS_DataCache.INT_TYPE).Hashing_Algo__c;
+        if(algo!=NULL && algo!='')
+        log.Request_Digest__c = generateHash(requestBody,algo);
+
         log.Type__c = 'INBOUND';
         log.SYS_Operation_Type__c = getOperationTypeFor(method);
         log.Flat_Key_for_Resource__c = 'attributes.type';
-        log.SYS_IntegrationSettings__c = 'SFsource';
+        log.SYS_IntegrationSettings__c = SYS_DataCache.INT_TYPE;
         log.Status__c = 'NEW';
         log.External_Id_Field_API_Name__c = 'SYS_Key__c';
         log.How_to_process__c = 'use_custom_apex_handler';
@@ -388,12 +392,8 @@ global virtual class SYS_ApplicationService {
         }
         else{
             //Key mentioned in Flat_Key_for_Resource__c identifies Resource
-<<<<<<< HEAD
-            Map<String, Object> flatKeyMap = SYS_Transformer.makeJsonIntoKeyValuePairs(jsonBody);
-=======
             Map<String, Object> flatKeyMap = getFlatKeys(jsonBody);
             System.debug('-- MS flatKeyMap in getResourceFromJSON:'+flatKeyMap);
->>>>>>> 8154664cbb395202c0f2292e7f8abf68ef963c12
             resource = (String)flatKeyMap.get(log.Flat_Key_for_Resource__c);
         }
 
@@ -743,12 +743,7 @@ global virtual class SYS_ApplicationService {
     /* ------------------------------------------------------------------------ */
 
     public void insertWebhookLog(SYS_IntegrationLog__c log){
-
         try{
-<<<<<<< HEAD
-            insert log;
-            setSuccessHttpResponse();
-=======
             Database.SaveResult result = Database.insert(log,false);
             //TODO check if result is success/error and take action
 
@@ -758,7 +753,6 @@ global virtual class SYS_ApplicationService {
             else{
                 setSuccessHttpResponse();
             }
->>>>>>> 8154664cbb395202c0f2292e7f8abf68ef963c12
         } catch ( Exception e ) {
             setErrorHttpResponse(e.getStackTraceString());
         }

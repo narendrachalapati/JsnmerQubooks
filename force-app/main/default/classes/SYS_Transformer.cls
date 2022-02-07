@@ -322,7 +322,7 @@ public virtual class SYS_Transformer {
         //     //-- M sObjectApiName = mapping.ObjectSetting__r.Object__r.QualifiedAPIName;
         // }
         for(FieldSetting__mdt item : SYS_DataCache.FieldMappingOutbound) { 
-            if(resource.equals(item.RestResource__c) && item.ChildRootElement__c == null) {
+            if(resource.equals(item.RestResource__c) /*&& item.ChildRootElement__c == null*/) {
                 mappings.add(item);
                 String newKey = item.Key__c;//--M .replace( SYS_DataCache.ESCAPE_CHAR, '.'); 
                 mapOfPaths.put(newKey, item);
@@ -338,13 +338,11 @@ public virtual class SYS_Transformer {
         if(!SYS_Transformer.isChild && mappings.size()>0){
             // sObjectApiName = mappings[0].ObjectSetting__r.Object__r.QualifiedAPIName;
             sObjectApiName = mappings[0].ObjectApiName__c;
-<<<<<<< HEAD
-            SYS_DataCache.sObjectApiName = sObjectApiName; 
-=======
             SYS_DataCache.sObjectApiName = sObjectApiName;
             SYS_DataCache.OBJ_TYPE = mappings[0].ObjectSetting__r.DeveloperName;
->>>>>>> 8154664cbb395202c0f2292e7f8abf68ef963c12
         }
+
+        System.debug('-- MS SYS_DataCache.sObjectApiName in SYS_Transformer:'+SYS_DataCache.sObjectApiName);
         //--M String sObjectApiName = null;
         SYS_DataCache.load();
         //TODO - To automate selection of integration setting
@@ -353,11 +351,8 @@ public virtual class SYS_Transformer {
         
         //TODO - refactor the below code
         String rootKey;
-<<<<<<< HEAD
-=======
 
         /* --MS Repeated code block
->>>>>>> 8154664cbb395202c0f2292e7f8abf68ef963c12
         for(String jsonObj : jsonList) {
             if(jsonObj != null || jsonObj != ''){
                 Map<String, Object> mapDeserialized = (Map<String, Object>)JSON.deserializeUntyped(jsonObj);
@@ -365,12 +360,14 @@ public virtual class SYS_Transformer {
                 break;
             }
         }
+        */
         
         
         for(String jsonObj : jsonList) {
             Map<String, Object> mapDeserialized = (Map<String, Object>)JSON.deserializeUntyped(jsonObj);
             rootKey = new List<String>(mapDeserialized.keySet())[0];
-            objectsToUpsert.add(parseJsonToObject(jsonObj, sObjectApiName, mapOfPaths));
+            System.debug('-- MS SYS_DataCache.sObjectApiName in SYS_Transformer b4 method call:'+SYS_DataCache.sObjectApiName);
+            objectsToUpsert.add(parseJsonToObject(jsonObj, SYS_DataCache.sObjectApiName, mapOfPaths));
         }
         
         
@@ -477,10 +474,8 @@ public virtual class SYS_Transformer {
 
     public static sObject parseJsonToObject(String jsonObj, String sObjectApiName, Map<String, FieldSetting__mdt> mapOfPaths) {
         Map<String, Object> flatKeyMap = makeJsonIntoKeyValuePairs(jsonObj);
-        system.debug('flatKeyMap======+++++'+flatKeyMap);
-        sObject sObj = Schema.getGlobalDescribe().get(sObjectApiName).newSObject();
-       
-        system.debug('sObj======++++'+sObj);
+        System.debug('SYS_DataCache.sObjectApiName in parseJsonToObject:'+SYS_DataCache.sObjectApiName);
+        sObject sObj = Schema.getGlobalDescribe().get(SYS_DataCache.sObjectApiName).newSObject();
         if(SYS_Transformer.isChild){
         	System.debug('\n\n++++++++++++ flatKeyMap: '+flatKeyMap);
             System.debug('\n\n++++++++++++ mapOfPaths: '+mapOfPaths);
@@ -591,26 +586,20 @@ public virtual class SYS_Transformer {
                     //TODO - Verify accuracy on what needs to be done
                     result.put(String.isBlank(parentKey) ? key : parentkey+'.'+ key, null);
                 }
-                else if (currentObj instanceof List<Object> && SYS_Transformer.isChild && key == childRootElement) {
+                else if (currentObj instanceof List<Object> /*&& SYS_Transformer.isChild && key == childRootElement*/) {
                 	List<String> childRecList = new List<String>();
-                    result.clear();
+                    //result.clear();
                     if (((List<Object>)currentObj).size() > 0) {
                         for(Object obj:(List<Object>)currentObj){
                             if(obj instanceof Map<String, Object>) {
                                 System.debug('obj list inside@@ parent=='+result);
-                                recursiveJsonParser((Map<String, Object>)obj, new List<String>(), result);
+                                // --MS recursiveJsonParser((Map<String, Object>)obj, new List<String>(), result);
                                 System.debug('result after=='+result);
                                 childFlatKeyList.add(result.clone());
                                 System.debug('check**'+childFlatKeyList[0]);
                             }
-                            result.clear();
+                            //--MSresult.clear();
                             String objString = JSON.serialize(obj);
-<<<<<<< HEAD
-                            childRecList.add(objString);
-                        }
-                        System.debug('in else=='+result);
-                        //ID jobID = System.enqueueJob(new SYS_QueueableJSONTOSObject(childRecList,key,''));
-=======
                             //-- MS childRecList.add('{\"'+key+'\":'+objString+'}');
                             //-- MS Root element of array is not required. The Resource field on log record
                             // will be used to identify fieldmappings
@@ -623,7 +612,6 @@ public virtual class SYS_Transformer {
                         //24 jan 2022
                         
                         ID jobID = System.enqueueJob(new SYS_QueueableForInboundChild(SYS_DataCache.log,childRecList,key,SYS_DataCache.INT_TYPE));
->>>>>>> 8154664cbb395202c0f2292e7f8abf68ef963c12
                         //System.debug('job id is==='+jobID);
                     }
                 }
