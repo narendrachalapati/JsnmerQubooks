@@ -375,6 +375,10 @@ global virtual class SYS_ApplicationService {
     global virtual String getResourceFromJSON(SYS_IntegrationLog__c log,String jsonBody){
 
         String resource = '';
+        if(log.Resource__c!=NULL){
+            return log.Resource__c;
+        }
+        
         if(log.Flat_Key_for_Resource__c == NULL || log.Flat_Key_for_Resource__c == ''){
             //Root element identifies Resource
             Object responseType = JSON.deserializeUntyped(jsonBody);

@@ -590,7 +590,11 @@ public virtual class SYS_Transformer {
                             }
                             //--MSresult.clear();
                             String objString = JSON.serialize(obj);
-                            childRecList.add('{\"'+key+'\":'+objString+'}');
+                            //-- MS childRecList.add('{\"'+key+'\":'+objString+'}');
+                            //-- MS Root element of array is not required. The Resource field on log record
+                            // will be used to identify fieldmappings
+                            childRecList.add(objString);
+                            
                         }
                         System.debug('in else=='+result);
                         System.debug('MS Child Objects to be processed:'+childRecList);
@@ -613,6 +617,7 @@ public virtual class SYS_Transformer {
         //TODO - handle case - Account."CreatedBy".Name, where CreatedBy is not an sobject
         System.debug('\n\n++++++++++++++ \n obj:'+obj+'\n++++++++++++++\n');
         System.debug('\n\n++++++++++++++ \n fieldAPIName:'+fieldAPIName+'\n++++++++++++++\n');
+
         String fvalue='';
         if(fieldAPIName == null){
             fvalue = mapping.StaticValue__c;
@@ -629,12 +634,15 @@ public virtual class SYS_Transformer {
                return null;
             }
             
-        } else if(obj.get(fieldAPIName)!=null && fieldAPIName == SYS_DataCache.namespacePrefix + 'Is_Taxable__c') { //TODO - specific to quickbooks
+        } 
+        /*
+        else if(obj.get(fieldAPIName)!=null && fieldAPIName == SYS_DataCache.namespacePrefix + 'Is_Taxable__c') { //TODO - specific to quickbooks
             return ((Boolean)obj.get(fieldAPIName)) ? 'TAX' : 'NON';
         } 
         else if(obj.get(fieldAPIName) != null && fieldAPIName == SYS_DataCache.namespacePrefix + 'Total_Tax__c') {
             return ((Decimal)obj.get(fieldAPIName)) == 0.00 ? 'null' : obj.get(fieldAPIName);  
         }
+        */
         else if(obj.get(fieldAPIName)!=null){
             return obj.get(fieldAPIName);
         }
