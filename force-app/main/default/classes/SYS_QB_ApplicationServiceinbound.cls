@@ -149,28 +149,7 @@ public class SYS_QB_ApplicationServiceinbound extends SYS_ApplicationService {
           system.debug('jsonBody++++===='+jsonBody);
         return jsonBody;
     }
-   /*public override Boolean doUpsert(List<sObject> records,String additionalSetting){
-       Database.UpsertResult[] results;
-        Boolean success = true;
-        if(additionalSetting=='')
-           
-            results = Database.upsert(records, false);
-        else{
-            Schema.SObjectField externalIdField = Schema.getGlobalDescribe().get(SYS_DataCache.sObjectApiName).getDescribe().fields.getMap().get(additionalSetting); 
-            
-            
-            results = Database.upsert(records, externalIdField, false);
-            system.debug('results==++'+results);
-        }
-        
-        if(!results[0].isSuccess()){
-            success = false;
-            handleDMLErrors(results[0].getErrors());
-        }
-
-        return success; 
-   }*/
-   
+  
     class QBResponse {
         public cls_eventNotifications[] eventNotifications;
     }

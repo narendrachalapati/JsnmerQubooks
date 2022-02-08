@@ -67,27 +67,21 @@ public class SYS_QB_ApplicationServiceOutbound extends SYS_ApplicationService {
             if (Schema.sObjectType.SYS_IntegrationLog__c.fields.SYS_Operation_Type__c.isCreateable()) {
                 logResp.SYS_Operation_Type__c = 'UPSERT';
             }
-        }
-
-        return logResp;
-    }
-    //ToDo override  the transform method to sobject istead of Do inbound method
-    //immediate response for outbond processing response 
-   public override Boolean doInbound(SYS_IntegrationLog__c log) {
-        String jsonBody = '';
+            //////////////
+            String jsonBody = '';
         
-        jsonBody =  log.data0__c != null ? log.data0__c : '' +
-                    log.data1__c != null ? log.data1__c : '' +
-                    log.data2__c != null ? log.data2__c : '' +
-                    log.data3__c != null ? log.data3__c : '' +
-                    log.data4__c != null ? log.data4__c : '' +
-                    log.data5__c != null ? log.data5__c : '' +
-                    log.data6__c != null ? log.data6__c : '' +
-                    log.data7__c != null ? log.data7__c : '' +
-                    log.data8__c != null ? log.data8__c : '' +
-                    log.data9__c != null ? log.data9__c : '' ;
+        jsonBody =  logResp.data0__c != null ? logResp.data0__c : '' +
+                    logResp.data1__c != null ? logResp.data1__c : '' +
+                    logResp.data2__c != null ? logResp.data2__c : '' +
+                    logResp.data3__c != null ? logResp.data3__c : '' +
+                    logResp.data4__c != null ? logResp.data4__c : '' +
+                    logResp.data5__c != null ? logResp.data5__c : '' +
+                    logResp.data6__c != null ? logResp.data6__c : '' +
+                    logResp.data7__c != null ? logResp.data7__c : '' +
+                    logResp.data8__c != null ? logResp.data8__c : '' +
+                    logResp.data9__c != null ? logResp.data9__c : '' ;
 
-        jsonBody = preprocessJSONForInbound(log,jsonBody);
+      
         List<sObject> recordList = new List<sObject>();
          Map<String, Object> flatKeyMap = SYS_Transformer.makeJsonIntoKeyValuePairs(jsonBody);
         String recId = log.WhatId__c;
@@ -110,19 +104,18 @@ public class SYS_QB_ApplicationServiceOutbound extends SYS_ApplicationService {
         SYS_debug.log('\n\n ------------------------------- \n\n Application Service sObjects to DML:'+sObjectsToDML);
 
         String externalIdFieldAPIName = log.External_Id_Field_API_Name__c!=NULL?log.External_Id_Field_API_Name__c:'';
-        //Schema.SObjectField externalIdField = Schema.getGlobalDescribe().get(SYS_DataCache.sObjectApiName).getDescribe().fields.getMap().get(externalIdFieldAPIName);
-
-        //TODO DML Based on log operation type
-        //Database.UpsertResult[] results = Database.upsert(sObjectsToDML,externalIdField, false);
+       
                
-        return doDML(sObjectsToDML,log.SYS_Operation_Type__c,externalIdFieldAPIName);
-    }   
+        Boolean sobj =   doDML(sObjectsToDML,logResp.SYS_Operation_Type__c,externalIdFieldAPIName);
     
- 
-    //public override HttpResponse doOutbound(SYS_IntegrationLog__c log){
-        //System.debug('\n In override_SYS_ApplicationService');
-        //return super.doOutbound(log);
-   // }
+            
+            
+            
+            
+        }
 
-      
-}
+        return logResp;
+    }
+    
+    
+ }
