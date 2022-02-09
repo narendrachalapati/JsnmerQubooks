@@ -227,8 +227,12 @@ global virtual class SYS_ApplicationService {
      */
     global virtual sObject processFieldMapping(FieldSetting__mdt mapping,sObject sObj,Object value, String sObjectApiName){
 
+        System.debug(mapping.FieldApiName__c+' +MS+ '+value);
         if(mapping.Get_value_from_Log__c)
             value = SYS_DataCache.log.get(mapping.Log_API_for_field_mapping__c);
+            
+
+        if(value==NULL) return sObj;
 
         System.debug('--MS In Field Mapping. Value check:'+mapping.Log_API_for_field_mapping__c);
         System.debug('--MS In Field Mapping. Value check Log:'+SYS_DataCache.log);
@@ -245,7 +249,7 @@ global virtual class SYS_ApplicationService {
         
         //TODO add other field types
         if(fieldType=='DATE'){
-                sObj.put(mapping.FieldApiName__c, date.valueOf((String)value));
+            sObj.put(mapping.FieldApiName__c, date.valueOf((String)value));
         }else if (fieldType == 'STRING') {
             sObj.put(mapping.FieldApiName__c, String.valueof(value));
         }else if (fieldType == 'BOOLEAN') {
