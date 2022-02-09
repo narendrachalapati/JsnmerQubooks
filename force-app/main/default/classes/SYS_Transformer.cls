@@ -514,7 +514,7 @@ public virtual class SYS_Transformer {
             //sObj.put('SYS_Key__c', '001');
             System.debug('\n\nRunning for '+mapping.FieldApiName__c+' on:'+sObjectApiName + ' '+fieldObj+ 'key=='+key);
             
-            if(mapping.FieldApiName__c==null || flatKeyMap.get(key) == NULL){
+            if(mapping.FieldApiName__c==null){
                 continue;
             }
    
