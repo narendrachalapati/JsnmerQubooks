@@ -3,14 +3,16 @@
 // callouts
 public class SYS_IntegrationLogOutboundImmediate{ 
     
-    private List<Id> sysLogIds = new List<Id>();
+    //private List<Id> sysLogIds = new List<Id>();
+    List<SYS_IntegrationLog__c> sysLogs;
     
-    public SYS_IntegrationLogOutboundImmediate(List<Id> idList){
-        this.sysLogIds = idList;
+    public SYS_IntegrationLogOutboundImmediate(List<SYS_IntegrationLog__c> uncommittedLogs){
+        this.sysLogs = uncommittedLogs;
     }
     public void execute(){
         
         List<sObject> outboundResultLogs = new List<sObject>();
+        /*
         List<SYS_IntegrationLog__c> sysLogs = 
                                             [SELECT 
                                                 id,
@@ -30,6 +32,7 @@ public class SYS_IntegrationLogOutboundImmediate{
                                                 How_to_process__c,Custom_Apex_Handler__c,
                                                 Type__c,WhatId__c,Parent__c,Order__c,ObjectSettingId__c,SYS_IntegrationSettings__c
                                             FROM SYS_IntegrationLog__c WHERE Id in:sysLogIds];
+        */
         
         List<Id> pendingProcessLogs = new List<Id>();
         for(SYS_IntegrationLog__c log:sysLogs) {
@@ -50,8 +53,8 @@ public class SYS_IntegrationLogOutboundImmediate{
                         continue;
                     }
                     else{
-                        //Log Message
-                        continue;
+                        appService = (SYS_ApplicationService)Type.forName('SYS_ApplicationService').newInstance();
+                        //EX continue;
                     }
                     HttpResponse outboundResponse = appService.doOutbound(log);
                     outboundResultLogs.add(appService.generatelogForOutboundResult(outboundResponse,log));
