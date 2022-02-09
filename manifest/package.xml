@@ -23,6 +23,7 @@
 		<members>SYS_QueueableForInboundChild</members>
 		<members>SYS_Transformer</members>
 		<members>SYS_Webservice</members>
+		<members>override_SYS_ApplicationService</members>
 <<<<<<< HEAD
 =======
 		<members>SYS_debug</members>
