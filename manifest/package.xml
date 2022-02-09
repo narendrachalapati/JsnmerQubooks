@@ -4,7 +4,6 @@
 		<members>SYS_ApplicationService</members>
 		<members>SYS_Constants</members>
 		<members>SYS_DataCache</members>
-		<members>SYS_ExceptionHandler</members>
 		<members>SYS_IntegrationLogInboundImmediate</members>
 		<members>SYS_IntegrationLogOutboundImmediate</members>
 		<members>SYS_IntegrationLogOutboundQueueable</members>
@@ -16,6 +15,7 @@
 		<members>SYS_Webservice</members>
 		<members>SYS_debug</members>
 		<members>SYS_ParentingQueueable</members>
+		<members>override_SYS_ApplicationService</members>
 		<name>ApexClass</name>
 	</types>
 	<types>
