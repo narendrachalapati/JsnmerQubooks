@@ -5,11 +5,14 @@
 		<members>SYS_Constants</members>
 		<members>SYS_DataCache</members>
 <<<<<<< HEAD
+<<<<<<< HEAD
 		<members>SYS_DataCacheTest</members>
 		<members>SYS_debug</members>
 =======
 >>>>>>> 8154664cbb395202c0f2292e7f8abf68ef963c12
 		<members>SYS_ExceptionHandler</members>
+=======
+>>>>>>> 79e2bd10cca80a1918338f3482359441195f051b
 		<members>SYS_IntegrationLogInboundImmediate</members>
 		<members>SYS_IntegrationLogOutboundImmediate</members>
 		<members>SYS_IntegrationLogOutboundQueueable</members>
@@ -24,7 +27,11 @@
 =======
 		<members>SYS_debug</members>
 		<members>SYS_ParentingQueueable</members>
+<<<<<<< HEAD
 >>>>>>> 8154664cbb395202c0f2292e7f8abf68ef963c12
+=======
+		<members>override_SYS_ApplicationService</members>
+>>>>>>> 79e2bd10cca80a1918338f3482359441195f051b
 		<name>ApexClass</name>
 		</types>
 	<types>
