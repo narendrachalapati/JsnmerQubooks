@@ -2,7 +2,7 @@ public class SYS_QB_ApplicationServiceOutbound extends SYS_ApplicationService {
     public SYS_QB_ApplicationServiceOutbound() {
 
     }
- public override SYS_IntegrationLog__c generatelogForOutboundResult(HttpResponse resp,SYS_IntegrationLog__c log){
+ /*public override SYS_IntegrationLog__c generatelogForOutboundResult(HttpResponse resp,SYS_IntegrationLog__c log){
        SYS_IntegrationLog__c logResp = getLogsToInsert(resp.getBody());
         if(resp.getStatusCode() != 201 && resp.getStatusCode() != 200){
             SYS_debug.log('#### resp status: '+resp.getStatus());
@@ -59,7 +59,7 @@ public class SYS_QB_ApplicationServiceOutbound extends SYS_ApplicationService {
                 logResp.SYS_IntegrationSettings__c = SYS_DataCache.INT_TYPE;
             }
             if (Schema.sObjectType.SYS_IntegrationLog__c.fields.How_To_Process__c.isCreateable()) {
-                logResp.How_To_Process__c = 'use_custom_apex_handler';
+                logResp.How_To_Process__c = 'ignore_log';
             }
             if (Schema.sObjectType.SYS_IntegrationLog__c.fields.How_To_Process__c.isCreateable()) {
                 logResp.Custom_Apex_Handler__c  = 'SYS_QB_ApplicationServiceOutbound';
@@ -69,6 +69,7 @@ public class SYS_QB_ApplicationServiceOutbound extends SYS_ApplicationService {
             }
             //////////////
             String jsonBody = '';
+             SYS_DataCache.sObjectApiName = 'Account';
         
         jsonBody =  logResp.data0__c != null ? logResp.data0__c : '' +
                     logResp.data1__c != null ? logResp.data1__c : '' +
@@ -103,7 +104,7 @@ public class SYS_QB_ApplicationServiceOutbound extends SYS_ApplicationService {
                       sObjectsToDML.add(record);
         SYS_debug.log('\n\n ------------------------------- \n\n Application Service sObjects to DML:'+sObjectsToDML);
 
-        String externalIdFieldAPIName = log.External_Id_Field_API_Name__c!=NULL?log.External_Id_Field_API_Name__c:'';
+        String externalIdFieldAPIName = 'Quickbooks_Id__c';
        
                
         Boolean sobj =   doDML(sObjectsToDML,logResp.SYS_Operation_Type__c,externalIdFieldAPIName);
@@ -115,7 +116,7 @@ public class SYS_QB_ApplicationServiceOutbound extends SYS_ApplicationService {
         }
 
         return logResp;
-    }
+    }*/
     
     
  }
