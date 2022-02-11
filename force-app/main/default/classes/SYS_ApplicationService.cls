@@ -478,7 +478,7 @@ global virtual class SYS_ApplicationService {
             SYS_debug.log('MS Header:'+req.getHeader('Authorization'));
         }
 
-        String resourceUrl = integrationSetting.BaseAPIEndPoint__c+SYS_DataCache.objectSettingMap.get(SYS_DataCache.OBJ_TYPE).ResourcePath__c;
+        String resourceUrl = integrationSetting.BaseAPIEndPoint__c+SYS_DataCache.objectSettingMap.get(SYS_DataCache.OBJ_TYPE).ResourcePath__c+'/';
         req.setEndpoint(resourceUrl);
         return req;
     }

@@ -4,8 +4,8 @@ public class SYS_QB_ApplicationServiceOutbound extends SYS_ApplicationService {
     }
 
 public override SYS_IntegrationLog__c generatelogForOutboundResult(HttpResponse resp,SYS_IntegrationLog__c log){
-        SYS_IntegrationLog__c logResp = getLogsToInsert(resp.getBody());
-        //SYS_IntegrationLog__c logResp;//EX = getLogsToInsert(resp.getBody());
+         SYS_IntegrationLog__c logResp = SYS_Helper.getLogsToInsert(resp.getBody());
+         system.debug('logResp++'+logResp);
         if(resp.getStatusCode() != 201 && resp.getStatusCode() != 200){
             SYS_debug.log('#### resp status: '+resp.getStatus());
             SYS_debug.log('#### resp code: '+resp.getStatusCode()); 
@@ -72,7 +72,7 @@ public override SYS_IntegrationLog__c generatelogForOutboundResult(HttpResponse 
             }
             if (Schema.sObjectType.SYS_IntegrationLog__c.fields.How_To_Process__c.isCreateable()) {
                 //todo
-             logResp.How_To_Process__c = 'ignore_log';
+             logResp.How_To_Process__c = 'use_object_setting';
                 // logResp.How_To_Process__c = 'use_object_setting';
             }
             // if (Schema.sObjectType.SYS_IntegrationLog__c.fields.How_To_Process__c.isCreateable()) {
@@ -90,60 +90,60 @@ public override SYS_IntegrationLog__c generatelogForOutboundResult(HttpResponse 
             logResp.Custom_Field_Value__c = 'false';
         }
 
-        //here we are doing comparison with the what id in the syslog to elemenate the duplicate record creation
-        String jsonBody = '';
+    //     //here we are doing comparison with the what id in the syslog to elemenate the duplicate record creation
+    //     String jsonBody = '';
        
-        jsonBody =  logResp.data0__c != null ? logResp.data0__c : '' +
-                    logResp.data1__c != null ? logResp.data1__c : '' +
-                    logResp.data2__c != null ? logResp.data2__c : '' +
-                    logResp.data3__c != null ? logResp.data3__c : '' +
-                    logResp.data4__c != null ? logResp.data4__c : '' +
-                    logResp.data5__c != null ? logResp.data5__c : '' +
-                    logResp.data6__c != null ? logResp.data6__c : '' +
-                    logResp.data7__c != null ? logResp.data7__c : '' +
-                    logResp.data8__c != null ? logResp.data8__c : '' +
-                    logResp.data9__c != null ? logResp.data9__c : '' ;
+    //     jsonBody =  logResp.data0__c != null ? logResp.data0__c : '' +
+    //                 logResp.data1__c != null ? logResp.data1__c : '' +
+    //                 logResp.data2__c != null ? logResp.data2__c : '' +
+    //                 logResp.data3__c != null ? logResp.data3__c : '' +
+    //                 logResp.data4__c != null ? logResp.data4__c : '' +
+    //                 logResp.data5__c != null ? logResp.data5__c : '' +
+    //                 logResp.data6__c != null ? logResp.data6__c : '' +
+    //                 logResp.data7__c != null ? logResp.data7__c : '' +
+    //                 logResp.data8__c != null ? logResp.data8__c : '' +
+    //                 logResp.data9__c != null ? logResp.data9__c : '' ;
 
       
-        List<sObject> recordList = new List<sObject>();
+    //     List<sObject> recordList = new List<sObject>();
         
-         Map<String, Object> flatKeyMap = SYS_Transformer.makeJsonIntoKeyValuePairs(jsonBody);
-            system.debug('flatKeyMap'+flatKeyMap);
-        String recId = log.WhatId__c;
-        //String triggering_flow__c = logResp.Custom_Field_Value__c;
+    //      Map<String, Object> flatKeyMap = SYS_Transformer.makeJsonIntoKeyValuePairs(jsonBody);
+    //         system.debug('flatKeyMap'+flatKeyMap);
+    //     String recId = log.WhatId__c;
+    //     //String triggering_flow__c = logResp.Custom_Field_Value__c;
         
-        if( (recId !='' || recId != null) && log.SYS_Operation_Type__c =='INSERT'){
-        String objectApiName = ((Id)recId).getSobjectType() + '';
-        Object responseType = JSON.deserializeUntyped(jsonBody);
-           String rootKey;
-        if(responseType instanceof Map<String , Object>) {
-             rootKey = new List<String>(((Map<String, Object>)responseType).keySet())[0];
-        }
+    //     if( (recId !='' || recId != null) && log.SYS_Operation_Type__c =='INSERT'){
+    //     String objectApiName = ((Id)recId).getSobjectType() + '';
+    //     Object responseType = JSON.deserializeUntyped(jsonBody);
+    //        String rootKey;
+    //     if(responseType instanceof Map<String , Object>) {
+    //          rootKey = new List<String>(((Map<String, Object>)responseType).keySet())[0];
+    //     }
 
-        String constructKey = rootKey +'.Id';
-        String constructToken =  rootKey +'.SyncToken';
+    //     String constructKey = rootKey +'.Id';
+    //     String constructToken =  rootKey +'.SyncToken';
         
-        String externalId = String.valueof(flatKeyMap.get(constructKey));
-        String syncToken = String.valueof(flatKeyMap.get(constructToken));
-        sObject record = Schema.getGlobalDescribe().get(objectApiName).newSObject(((Id)recId));
-        // if(rootKey.equalsIgnoreCase('Invoice') ) {
-        //     record.put('CloseDate',System.Today());
-        //     record.put(' Name','testing');
-        //     record.put('StageName','Qualification');
-        // }
-        record.put('Id' , recId); 
-        //record.put ('triggering_flow__c',logResp.Custom_Field_Value__c);
-        record.put('Quickbooks_Id__c' , externalId); 
-        record.put('QB_SyncToken__c', syncToken);
-        List<sObject> sObjectsToDML= new List<sObject>();
-                      sObjectsToDML.add(record);
-        SYS_debug.log('\n\n ------------------------------- \n\n Application Service sObjects to DML:'+sObjectsToDML);
+    //     String externalId = String.valueof(flatKeyMap.get(constructKey));
+    //     String syncToken = String.valueof(flatKeyMap.get(constructToken));
+    //     sObject record = Schema.getGlobalDescribe().get(objectApiName).newSObject(((Id)recId));
+    //     // if(rootKey.equalsIgnoreCase('Invoice') ) {
+    //     //     record.put('CloseDate',System.Today());
+    //     //     record.put(' Name','testing');
+    //     //     record.put('StageName','Qualification');
+    //     // }
+    //     record.put('Id' , recId); 
+    //     //record.put ('triggering_flow__c',logResp.Custom_Field_Value__c);
+    //     record.put('Quickbooks_Id__c' , externalId); 
+    //     record.put('QB_SyncToken__c', syncToken);
+    //     List<sObject> sObjectsToDML= new List<sObject>();
+    //                   sObjectsToDML.add(record);
+    //     SYS_debug.log('\n\n ------------------------------- \n\n Application Service sObjects to DML:'+sObjectsToDML);
 
-        String externalIdFieldAPIName = '';
-      // Boolean triggering_flow__c = logResp.Custom_Field_Value__c ;
+    //     String externalIdFieldAPIName = '';
+    //   // Boolean triggering_flow__c = logResp.Custom_Field_Value__c ;
                
-       Boolean sobj =   doDML(sObjectsToDML,logResp.SYS_Operation_Type__c,externalIdFieldAPIName);
-        }
+    //    Boolean sobj =   doDML(sObjectsToDML,logResp.SYS_Operation_Type__c,externalIdFieldAPIName);
+    //     }
         return logResp;
     }
    
