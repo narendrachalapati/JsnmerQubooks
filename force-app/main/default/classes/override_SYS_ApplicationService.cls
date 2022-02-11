@@ -84,7 +84,7 @@ public class override_SYS_ApplicationService extends SYS_ApplicationService {
     
             //logResp.Custom_Apex_Handler__c = 'SYS_ApplicationService';
             logResp.Flat_Key_for_Resource__c = 'attributes.type'; //not required if JSON has root
-            logResp.External_Id_Field_API_Name__c = SYS_DataCache.objectSettingsMap.get(SYS_DataCache.OBJ_TYPE).ExternalFieldApi__c;
+            //logResp.External_Id_Field_API_Name__c = SYS_DataCache.objectSettingsMap.get(SYS_DataCache.OBJ_TYPE).ExternalFieldApi__c;
             logResp.Custom_Field_Value__c = 'false';
         }
     

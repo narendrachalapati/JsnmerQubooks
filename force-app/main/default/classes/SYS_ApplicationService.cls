@@ -309,7 +309,7 @@ global virtual class SYS_ApplicationService {
         log.Flat_Key_for_Resource__c = 'attributes.type';
         log.SYS_IntegrationSettings__c = SYS_DataCache.INT_TYPE;
         log.Status__c = 'NEW';
-        log.External_Id_Field_API_Name__c = 'SYS_Key__c';
+        //log.External_Id_Field_API_Name__c = 'SYS_Key__c';
         log.How_to_process__c = 'use_custom_apex_handler';
         log.Custom_Apex_Handler__c = 'SYS_ApplicationService';
 
@@ -344,7 +344,7 @@ global virtual class SYS_ApplicationService {
         log.On_Complete_Handler__c = 'SYS_ApplicationService';
         /** */
 
-        log.External_Id_Field_API_Name__c = 'SYS_Child_Key__c';
+        //log.External_Id_Field_API_Name__c = 'SYS_Child_Key__c';
         log.How_to_process__c = 'use_custom_apex_handler';
         log.Custom_Apex_Handler__c = 'SYS_ApplicationService';
 
@@ -424,16 +424,16 @@ global virtual class SYS_ApplicationService {
                     log.data9__c != null ? log.data9__c : '' ;
 
         jsonBody = preprocessJSONForInbound(log,jsonBody);
-        List<sObject> sObjectsToDML = transformJsonToSObject(jsonBody, getResourceFromJSON(log,jsonBody));
+        String resource = getResourceFromJSON(log,jsonBody);
+        List<sObject> sObjectsToDML = transformJsonToSObject(jsonBody, resource);
+
+        SYS_debug.log('\n\n ------------------------------- \n\n Application Service resource:'+resource);
 
         SYS_debug.log('\n\n ------------------------------- \n\n Application Service sObjects to DML:'+sObjectsToDML);
+        SYS_debug.log('\n\n ------------------------------- \n\n Application Service externalKeyByResourceMap:'+SYS_DataCache.externalKeyByResourceMap);
 
-        String externalIdFieldAPIName = log.External_Id_Field_API_Name__c!=NULL?log.External_Id_Field_API_Name__c:'';
-        //Schema.SObjectField externalIdField = Schema.getGlobalDescribe().get(SYS_DataCache.sObjectApiName).getDescribe().fields.getMap().get(externalIdFieldAPIName);
-
-        //TODO DML Based on log operation type
-        //Database.UpsertResult[] results = Database.upsert(sObjectsToDML,externalIdField, false);
-        
+        String externalIdFieldAPIName = SYS_DataCache.externalKeyByResourceMap.get(resource);
+        //String externalIdFieldAPIName = log.External_Id_Field_API_Name__c!=NULL?log.External_Id_Field_API_Name__c:'';
                
         return doDML(sObjectsToDML,log.SYS_Operation_Type__c,externalIdFieldAPIName);
     }
@@ -575,7 +575,7 @@ global virtual class SYS_ApplicationService {
     global virtual void fixParent(String parentLogId,SYS_IntegrationLog__c childLog){
 
         List<FieldSetting__mdt> fsm = new List<FieldSetting__mdt>();
-        fsm = [SELECT ParentField__c,ObjectApiName__c FROM FieldSetting__mdt WHERE RestResource__c = :childLog.Resource__c AND Get_value_from_Log__c=true];
+        fsm = [SELECT FieldApiName__c,ParentField__c,ObjectApiName__c FROM FieldSetting__mdt WHERE RestResource__c = :childLog.Resource__c AND Is_Lookup__c=true];
         System.debug('MS Fixing Relationship:'+fsm);
         List<sObject> childRecords = new List<sObject>();
         
@@ -585,7 +585,7 @@ global virtual class SYS_ApplicationService {
             System.debug('MS cLog:'+cLog);
             System.debug('MS cLog.Parent__r.WhatId__c:'+cLog.Parent__r.WhatId__c);
             sObj.put('Id',cLog.WhatId__c);
-            sObj.put(fsm[0].ParentField__c,cLog.Parent__r.WhatId__c);
+            sObj.put(fsm[0].FieldApiName__c,cLog.Parent__r.WhatId__c);
             childRecords.add(sObj);
         }
         System.debug('MS Child Records for Parenting:'+childRecords);

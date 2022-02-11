@@ -4,7 +4,7 @@
     <defaultValue>false</defaultValue>
     <description>If this checkbox is checked then the value for the field corresponding to this field setting will be derived from the field referred by the API name in ParentField__c field</description>
     <externalId>false</externalId>
-    <fieldManageability>DeveloperControlled</fieldManageability>
+    <fieldManageability>SubscriberControlled</fieldManageability>
     <inlineHelpText>If this checkbox is checked then the value for the field corresponding to this field setting will be derived from the field referred by the API name in ParentField__c field</inlineHelpText>
     <label>Get value from Log</label>
     <type>Checkbox</type>
