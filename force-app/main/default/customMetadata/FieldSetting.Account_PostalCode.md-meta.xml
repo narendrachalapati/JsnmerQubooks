@@ -23,6 +23,10 @@
         <value xsi:type="xsd:string">SYS_ApplicationService</value>
     </values>
     <values>
+        <field>Get_value_from_Log__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
         <field>IsChild__c</field>
         <value xsi:type="xsd:boolean">false</value>
     </values>
@@ -33,6 +37,10 @@
     <values>
         <field>Key__c</field>
         <value xsi:type="xsd:string">BillAddr.PostalCode</value>
+    </values>
+    <values>
+        <field>Log_API_for_field_mapping__c</field>
+        <value xsi:nil="true"/>
     </values>
     <values>
         <field>ObjectApiName__c</field>

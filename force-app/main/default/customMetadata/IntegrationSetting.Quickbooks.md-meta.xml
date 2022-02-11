@@ -31,6 +31,10 @@
         <value xsi:nil="true"/>
     </values>
     <values>
+        <field>OAuth_Config_Record_Id__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
         <field>UpdateMethod__c</field>
         <value xsi:type="xsd:string">POST</value>
     </values>
