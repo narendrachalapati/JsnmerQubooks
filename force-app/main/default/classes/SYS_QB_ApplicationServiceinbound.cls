@@ -71,6 +71,8 @@ public class SYS_QB_ApplicationServiceinbound extends SYS_ApplicationService {
         log.External_Id_Field_API_Name__c = 'Quickbooks_Id__c';
         log.How_to_process__c = 'use_custom_apex_handler';
         log.Custom_Apex_Handler__c = 'SYS_QB_ApplicationServiceinbound';
+        //todo
+        logResp.Custom_Field_Value__c = 'false';
        // log.Requires_process_on_complete__c = true;
 
         return log;

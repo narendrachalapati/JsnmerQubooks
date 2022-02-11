@@ -71,8 +71,9 @@ public override SYS_IntegrationLog__c generatelogForOutboundResult(HttpResponse 
                 logResp.SYS_IntegrationSettings__c = SYS_DataCache.INT_TYPE;
             }
             if (Schema.sObjectType.SYS_IntegrationLog__c.fields.How_To_Process__c.isCreateable()) {
-                //--EX logResp.How_To_Process__c = 'ignore_log';
-                logResp.How_To_Process__c = 'use_object_setting';
+                //todo
+             logResp.How_To_Process__c = 'ignore_log';
+                // logResp.How_To_Process__c = 'use_object_setting';
             }
             // if (Schema.sObjectType.SYS_IntegrationLog__c.fields.How_To_Process__c.isCreateable()) {
             //     //--EX logResp.How_To_Process__c = 'ignore_log';
@@ -105,6 +106,7 @@ public override SYS_IntegrationLog__c generatelogForOutboundResult(HttpResponse 
 
       
         List<sObject> recordList = new List<sObject>();
+        
          Map<String, Object> flatKeyMap = SYS_Transformer.makeJsonIntoKeyValuePairs(jsonBody);
             system.debug('flatKeyMap'+flatKeyMap);
         String recId = log.WhatId__c;
@@ -131,7 +133,7 @@ public override SYS_IntegrationLog__c generatelogForOutboundResult(HttpResponse 
         // }
         record.put('Id' , recId); 
         //record.put ('triggering_flow__c',logResp.Custom_Field_Value__c);
-        record.put(logResp.External_Id_Field_API_Name__c , externalId); 
+        record.put('Quickbooks_Id__c' , externalId); 
         record.put('QB_SyncToken__c', syncToken);
         List<sObject> sObjectsToDML= new List<sObject>();
                       sObjectsToDML.add(record);
@@ -140,7 +142,7 @@ public override SYS_IntegrationLog__c generatelogForOutboundResult(HttpResponse 
         String externalIdFieldAPIName = '';
       // Boolean triggering_flow__c = logResp.Custom_Field_Value__c ;
                
-        Boolean sobj =   doDML(sObjectsToDML,logResp.SYS_Operation_Type__c,externalIdFieldAPIName);
+       Boolean sobj =   doDML(sObjectsToDML,logResp.SYS_Operation_Type__c,externalIdFieldAPIName);
         }
         return logResp;
     }
