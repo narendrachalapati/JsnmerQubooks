@@ -10,7 +10,7 @@ public class override_SYS_ApplicationService extends SYS_ApplicationService {
 
     public override SYS_IntegrationLog__c generatelogForOutboundResult(HttpResponse resp,SYS_IntegrationLog__c log){
 
-        SYS_IntegrationLog__c logResp;//EX = getLogsToInsert(resp.getBody());
+        SYS_IntegrationLog__c logResp;//EX = SYS_Helper.getLogsToInsert(resp.getBody());
         if(resp.getStatusCode() != 201 && resp.getStatusCode() != 200){
             SYS_debug.log('#### resp status: '+resp.getStatus());
             SYS_debug.log('#### resp code: '+resp.getStatusCode()); 
