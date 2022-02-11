@@ -11,6 +11,8 @@ public class SYS_IntegrationLogInboundImmediate{
         List<sObject> inboundResultLogs = new List<sObject>();
     
         List<SYS_IntegrationLog__c> sysLogs = 
+        Database.query('SELECT '+SYS_Helper.getAllFieldsFor('SYS_IntegrationLog__c')+' FROM SYS_IntegrationLog__c WHERE Id in (' + '\'' + String.join(sysLogIds,'\',\'') + '\')');
+/*
                                             [SELECT 
                                                 id,
                                                 data0__c,
@@ -32,6 +34,7 @@ public class SYS_IntegrationLogInboundImmediate{
                                                 Type__c,WhatId__c,Parent__c,Order__c,ObjectSettingId__c,SYS_IntegrationSettings__c
                                             FROM SYS_IntegrationLog__c 
                                             WHERE Id in:sysLogIds];
+                                            */
         
         for(SYS_IntegrationLog__c log:sysLogs) {
             

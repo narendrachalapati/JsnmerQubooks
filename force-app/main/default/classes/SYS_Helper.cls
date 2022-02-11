@@ -2,6 +2,21 @@ public class SYS_Helper {
     public SYS_Helper() {
 
     }
+    /* ------------------------------------------------------------------------ */
+    public static String getAllFieldsFor(String objName){
+
+        List<String> fields = new List<String>();
+        Map <String, Schema.SObjectType> schemaMap = Schema.getGlobalDescribe();
+        Map <String, Schema.SObjectField> fieldMap = schemaMap.get(objName).getDescribe().fields.getMap();
+        for(Schema.SObjectField sfield : fieldMap.Values())
+        {
+            Schema.DescribefieldResult field = sfield.getDescribe();
+            fields.add(field.getname());
+        }
+
+        return (String.join(fields,', '));
+    }
+
 
     /* ------------------------------------------------------------------------ */
 
