@@ -9,7 +9,7 @@ string tempvar = 'Enter_your_name_here';
 System.debug('Hello World!');
 System.debug('My name is ' + tempvar);
 
-SYS_IntegrationLog__c  newSysLog = SYS_ApplicationService.getLogsToInsert('{\"Text_Field__c\":\"OB Async 2\"}');
+SYS_IntegrationLog__c  newSysLog = SYS_Helper.getLogsToInsert('{\"Text_Field__c\":\"OB Async 2\"}');
 newSysLog.Status__c = 'NEW';
 newSysLog.Type__c = 'OUTBOUND';
 newSysLog.SYS_IntegrationSettings__c = 'SFsource';
@@ -18,3 +18,7 @@ newSysLog.whatid__c = 'a005f000007K9hlAAC';
 newSysLog.ObjectSettingId__c = 'Custom_Parent_Object_Setting';
 newSysLog.How_to_process__c = 'use_object_setting';
 new SYS_IntegrationLogOutboundImmediate(new List<SYS_IntegrationLog__c>{newSysLog}).execute(); 
+
+
+System.debug(System.now());
+System.debug(System.now().addHours(-1));

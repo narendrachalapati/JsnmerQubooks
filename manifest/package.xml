@@ -18,8 +18,13 @@
 		<members>SYS_IntegrationLogOutboundQueueable</members>
 		<members>SYS_IntegrationLogTriggerHandler</members>
 		<members>SYS_InvocableHandler</members>
+<<<<<<< HEAD
 		<members>SYS_QB_ApplicationServiceinbound</members>
 		<members>SYS_QB_ApplicationServiceOutbound</members>
+=======
+		<members>SYS_OAuthRedirectHandler</members>
+		<members>SYS_ParentingQueueable</members>
+>>>>>>> b73e914b22e3964a69baafdb4bce405861e57ce7
 		<members>SYS_QueueableForInboundChild</members>
 		<members>SYS_Transformer</members>
 		<members>SYS_Webservice</members>
@@ -27,10 +32,13 @@
 <<<<<<< HEAD
 =======
 		<members>SYS_debug</members>
+<<<<<<< HEAD
 		<members>SYS_ParentingQueueable</members>
 <<<<<<< HEAD
 >>>>>>> 8154664cbb395202c0f2292e7f8abf68ef963c12
 =======
+=======
+>>>>>>> b73e914b22e3964a69baafdb4bce405861e57ce7
 		<members>override_SYS_ApplicationService</members>
 >>>>>>> 79e2bd10cca80a1918338f3482359441195f051b
 		<name>ApexClass</name>
@@ -39,12 +47,10 @@
 		<members>SYS_IntegrationLogTrigger</members>
 		<name>ApexTrigger</name>
 	</types>
-	<!--
 	<types>
 		<members>*</members>
 		<name>CustomMetadata</name>
 	</types>
-	-->
 	<types>
 		<members>FieldSetting__mdt</members>
 		<members>HttpHeaders__mdt</members>
@@ -60,6 +66,15 @@
 		<members>SYS_IntegrationLog_Record_Page</members>
 		<members>SYS_OAuth_Configs</members>
 		<name>FlexiPage</name>
+	</types>
+	<types>
+		<members>FieldSetting__mdt-FieldSetting Layout</members>
+		<members>HttpHeaders__mdt-HttpHeader Layout</members>
+		<members>IntegrationEnablement__mdt-IntegrationEnablement Layout</members>
+		<members>IntegrationSetting__mdt-IntegrationSetting Layout</members>
+		<members>ObjectSetting__mdt-ObjectSetting Layout</members>
+		<members>RelationshipSetting__mdt-RelationshipSetting Layout</members>
+		<name>Layout</name>
 	</types>
 	<version>53.0</version>
 </Package>
