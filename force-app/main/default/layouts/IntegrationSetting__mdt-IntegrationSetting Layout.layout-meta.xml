@@ -15,24 +15,16 @@
                 <field>DeveloperName</field>
             </layoutItems>
             <layoutItems>
-                <behavior>Required</behavior>
-                <field>AuthenticationType__c</field>
+                <behavior>Edit</behavior>
+                <field>DebugCheck__c</field>
             </layoutItems>
             <layoutItems>
-                <behavior>Required</behavior>
-                <field>BaseAPIEndPoint__c</field>
+                <behavior>Edit</behavior>
+                <field>ApexHandler__c</field>
             </layoutItems>
             <layoutItems>
                 <behavior>Required</behavior>
                 <field>UpdateMethod__c</field>
-            </layoutItems>
-            <layoutItems>
-                <behavior>Edit</behavior>
-                <field>Hashing_Algo__c</field>
-            </layoutItems>
-            <layoutItems>
-                <behavior>Edit</behavior>
-                <field>OAuth_Config_Record_Id__c</field>
             </layoutItems>
         </layoutColumns>
         <layoutColumns>
@@ -46,11 +38,7 @@
             </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
-                <field>DebugCheck__c</field>
-            </layoutItems>
-            <layoutItems>
-                <behavior>Edit</behavior>
-                <field>ApexHandler__c</field>
+                <field>Hashing_Algo__c</field>
             </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
@@ -81,6 +69,28 @@
             </layoutItems>
         </layoutColumns>
         <style>TwoColumnsTopToBottom</style>
+    </layoutSections>
+    <layoutSections>
+        <customLabel>true</customLabel>
+        <detailHeading>true</detailHeading>
+        <editHeading>true</editHeading>
+        <label>Authorization</label>
+        <layoutColumns>
+            <layoutItems>
+                <behavior>Required</behavior>
+                <field>BaseAPIEndPoint__c</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Required</behavior>
+                <field>AuthenticationType__c</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>OAuth_Config_Record_Id__c</field>
+            </layoutItems>
+        </layoutColumns>
+        <layoutColumns/>
+        <style>TwoColumnsLeftToRight</style>
     </layoutSections>
     <layoutSections>
         <customLabel>true</customLabel>
