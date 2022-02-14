@@ -36,7 +36,7 @@
     </values>
     <values>
         <field>UpdateMethod__c</field>
-        <value xsi:type="xsd:string">PATCH</value>
+        <value xsi:type="xsd:string">POST</value>
     </values>
     <values>
         <field>webhookToken__c</field>
