@@ -452,9 +452,12 @@ global virtual class SYS_ApplicationService {
     global virtual HttpRequest buildOutboundHttpRequest(SYS_IntegrationLog__c log){
         HttpRequest req = new HttpRequest();
         IntegrationSetting__mdt integrationSetting = SYS_DataCache.integrationSetting.get(SYS_Datacache.INT_TYPE);
+
         String baseEndpoint = integrationSetting.BaseAPIEndPoint__c;
+        system.debug('baseEndpoint'+baseEndpoint);
 
         List<HttpHeaders__mdt> httpHeader = SYS_DataCache.headerSetting;
+        system.debug('httpHeader=='+httpHeader);
         req.setMethod(integrationSetting.UpdateMethod__c);
         for(HttpHeaders__mdt head:httpHeader){
             SYS_debug.log('header is = '+head.header_name__c + ''+head.Value__c);

@@ -2,7 +2,51 @@ public class SYS_QB_ApplicationServiceOutbound extends SYS_ApplicationService {
     public SYS_QB_ApplicationServiceOutbound() {
 
     }
+    //We are overriding this class because we need to frame the end point URL with lower case 
+    public override HttpRequest buildOutboundHttpRequest(SYS_IntegrationLog__c log){
+        HttpRequest req = new HttpRequest();
+        IntegrationSetting__mdt integrationSetting = SYS_DataCache.integrationSetting.get(SYS_Datacache.INT_TYPE);
 
+        String baseEndpoint = integrationSetting.BaseAPIEndPoint__c;
+        system.debug('baseEndpoint'+baseEndpoint);
+
+        List<HttpHeaders__mdt> httpHeader = SYS_DataCache.headerSetting;
+        system.debug('httpHeader=='+httpHeader);
+        req.setMethod(integrationSetting.UpdateMethod__c);
+        for(HttpHeaders__mdt head:httpHeader){
+            SYS_debug.log('header is = '+head.header_name__c + ''+head.Value__c);
+            req.setHeader(String.valueOf(head.header_name__c), String.valueOf(head.Value__c));       
+        }
+        
+        String oauthGrantType = SYS_DataCache.integrationSetting.get(SYS_Datacache.INT_TYPE).AuthenticationType__c;
+        if(oauthGrantType.toLowerCase() == 'oauth'){
+            String configId = SYS_DataCache.integrationSetting.get(SYS_Datacache.INT_TYPE).OAuth_Config_Record_Id__c;
+            List<SYS_OAuthConfig__c> configs = [SELECT 
+                                                    Id, 
+                                                    Access_Token__c,
+                                                    Token_type__c 
+                                                FROM SYS_OAuthConfig__c 
+                                           	    WHERE Id =:configId];
+
+            if(configs.size()>0){
+                req.setHeader('Authorization',configs[0].Token_type__c+' '+configs[0].Access_Token__c);                                       
+            }
+            SYS_debug.log('MS Header:'+req.getHeader('Authorization'));
+        }
+
+        String resourceUrl = 
+       // entityName = entity[0].name.toLowercase();
+            integrationSetting.BaseAPIEndPoint__c+
+            SYS_DataCache.objectSettingMap.get(SYS_DataCache.OBJ_TYPE).ResourcePath__c.toLowercase()+'/';
+            system.debug('resourceUrl==='+resourceUrl);
+        String urlParams='';
+        if(SYS_DataCache.objectSettingMap.get(SYS_DataCache.OBJ_TYPE).url_params__c != NULL)
+                urlParams = SYS_DataCache.objectSettingMap.get(SYS_DataCache.OBJ_TYPE).url_params__c;
+            
+        resourceUrl+=urlParams;
+        req.setEndpoint(resourceUrl);
+        return req;
+    }
 public override SYS_IntegrationLog__c generatelogForOutboundResult(HttpResponse resp,SYS_IntegrationLog__c log){
          SYS_IntegrationLog__c logResp = SYS_Helper.getLogsToInsert(resp.getBody());
          system.debug('logResp++'+logResp);
