@@ -110,13 +110,18 @@ public class override_SYS_ApplicationService extends SYS_ApplicationService {
             List<HttpHeaders__mdt> httpHeader = SYS_DataCache.headerSetting;
             req.setMethod('PATCH');//req.setMethod(integrationSetting.UpdateMethod__c);
             for(HttpHeaders__mdt head:httpHeader){
-                SYS_debug.log('header is = '+head.MasterLabel + ''+head.Value__c);
-                req.setHeader(String.valueOf(head.MasterLabel), String.valueOf(head.Value__c));
+                SYS_debug.log('header is = '+head.header_name__c + ''+head.Value__c);
+                req.setHeader(String.valueOf(head.header_name__c), String.valueOf(head.Value__c));  
                     
             }
-            String resourceUrl = integrationSetting.BaseAPIEndPoint__c+SYS_DataCache.objectSettingMap.get(SYS_DataCache.OBJ_TYPE).ResourcePath__c+'/';
+            String resourceUrl = 
+            integrationSetting.BaseAPIEndPoint__c+
+            SYS_DataCache.objectSettingMap.get(SYS_DataCache.OBJ_TYPE).ResourcePath__c+'/';
+            String urlParams='';
+            if(SYS_DataCache.objectSettingMap.get(SYS_DataCache.OBJ_TYPE).url_params__c != NULL)
+                urlParams = SYS_DataCache.objectSettingMap.get(SYS_DataCache.OBJ_TYPE).url_params__c;
             List<Custom_Parent__c> rec = [SELECT SYS_Key__c FROM Custom_Parent__c WHERE Id = :log.WhatId__c LIMIT 1];
-            req.setEndpoint(resourceUrl+'Id'+'/'+rec[0].SYS_Key__c);
+            req.setEndpoint(resourceUrl+'Id'+'/'+rec[0].SYS_Key__c+urlParams);
             return req;
         }
         
