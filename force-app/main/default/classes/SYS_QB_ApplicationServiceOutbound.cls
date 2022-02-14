@@ -2,8 +2,22 @@ public class SYS_QB_ApplicationServiceOutbound extends SYS_ApplicationService {
     public SYS_QB_ApplicationServiceOutbound() {
 
     }
+    public override List<sObject> transformJsonToSObject(String jsonBody,String resource) {
+        Object responseType = JSON.deserializeUntyped(jsonBody);
+        Object JSONwithoutrootkey ;
+        if(responseType instanceof Map<String,Object>){
+            JSONwithoutrootkey = (((Map<String, Object>)responseType).values())[0];
+            system.debug('JSONForUpsert+++'+JSONwithoutrootkey);
+            //((Map<String, Object>)responseType).get(JSONForUpsert);
+            jsonBody = JSON.serialize(JSONwithoutrootkey);
+              system.debug('jsonBody++++===='+jsonBody);
+        }
+      system.debug('jsonBody++++===='+jsonBody);
+
+        return SYS_Transformer.getSObjectsToUpsert(new List<String>{jsonBody},resource);
+    }
     //We are overriding this class because we need to frame the end point URL with lower case 
-    public override HttpRequest buildOutboundHttpRequest(SYS_IntegrationLog__c log){
+   /* public override HttpRequest buildOutboundHttpRequest(SYS_IntegrationLog__c log){
         HttpRequest req = new HttpRequest();
         IntegrationSetting__mdt integrationSetting = SYS_DataCache.integrationSetting.get(SYS_Datacache.INT_TYPE);
 
@@ -46,7 +60,7 @@ public class SYS_QB_ApplicationServiceOutbound extends SYS_ApplicationService {
         resourceUrl+=urlParams;
         req.setEndpoint(resourceUrl);
         return req;
-    }
+    }*/
 public override SYS_IntegrationLog__c generatelogForOutboundResult(HttpResponse resp,SYS_IntegrationLog__c log){
          SYS_IntegrationLog__c logResp = SYS_Helper.getLogsToInsert(resp.getBody());
          system.debug('logResp++'+logResp);

@@ -78,7 +78,7 @@ public class SYS_QB_ApplicationServiceinbound extends SYS_ApplicationService {
         return log;
     }
    //we overriding this method removing the root key because to maintain the custom metadata same for the outbound and inbound
-   public override String preprocessJSONForInbound(SYS_IntegrationLog__c log,String jsonBody) {
+  /*  public override String preprocessJSONForInbound(SYS_IntegrationLog__c log,String jsonBody) {
           Object responseType = JSON.deserializeUntyped(jsonBody);
             Object JSONForUpsert ;
             if(responseType instanceof Map<String,Object>){
@@ -91,7 +91,7 @@ public class SYS_QB_ApplicationServiceinbound extends SYS_ApplicationService {
             }
           system.debug('jsonBody++++===='+jsonBody);
         return jsonBody;
-    }
+    } */
     //when we removed the root key it not returing the restresorce that path so it not identifying the sobject so thats why 
     //we overriden the get resource method for identifying the ecaxt resource path 
 
@@ -101,40 +101,20 @@ public class SYS_QB_ApplicationServiceinbound extends SYS_ApplicationService {
      * Default is return the root if it exists or the value of falt key mentioned in Flat_Key_for_Resource__c field on log record
      * Override if custom implementation is required for identifying the resoruce for inbound request
      */
-    public override String getResourceFromJSON(SYS_IntegrationLog__c log,String jsonBody){
-        SYS_IntegrationLog__c logResp = SYS_DataCache.log;
-        jsonBody =  logResp.data0__c != null ? logResp.data0__c : '' +
-        logResp.data1__c != null ? logResp.data1__c : '' +
-        logResp.data2__c != null ? logResp.data2__c : '' +
-        logResp.data3__c != null ? logResp.data3__c : '' +
-        logResp.data4__c != null ? logResp.data4__c : '' +
-        logResp.data5__c != null ? logResp.data5__c : '' +
-        logResp.data6__c != null ? logResp.data6__c : '' +
-        logResp.data7__c != null ? logResp.data7__c : '' +
-        logResp.data8__c != null ? logResp.data8__c : '' +
-        logResp.data9__c != null ? logResp.data9__c : '' ;
-        String resource = '';
-        if(log.Resource__c!=NULL){
-            return log.Resource__c;
+    public override List<sObject> transformJsonToSObject(String jsonBody,String resource) {
+        Object responseType = JSON.deserializeUntyped(jsonBody);
+        Object JSONwithoutrootkey ;
+        if(responseType instanceof Map<String,Object>){
+            JSONwithoutrootkey = (((Map<String, Object>)responseType).values())[0];
+            system.debug('JSONForUpsert+++'+JSONwithoutrootkey);
+            //((Map<String, Object>)responseType).get(JSONForUpsert);
+            jsonBody = JSON.serialize(JSONwithoutrootkey);
+              system.debug('jsonBody++++===='+jsonBody);
         }
+      system.debug('jsonBody++++===='+jsonBody);
 
-        if(log.Flat_Key_for_Resource__c == NULL || log.Flat_Key_for_Resource__c == ''){
-            //Root element identifies Resource
-            Object responseType = JSON.deserializeUntyped(jsonBody);
-            if(responseType instanceof Map<String,Object>){
-                resource = new List<String>(((Map<String, Object>)responseType).keySet())[0];
-            }
-        }
-        else{
-            //Key mentioned in Flat_Key_for_Resource__c identifies Resource
-            Map<String, Object> flatKeyMap = SYS_Helper.getFlatKeys(jsonBody);
-            System.debug('-- MS flatKeyMap in getResourceFromJSON:'+flatKeyMap);
-            resource = (String)flatKeyMap.get(log.Flat_Key_for_Resource__c);
-        }
-
-        return resource;
+        return SYS_Transformer.getSObjectsToUpsert(new List<String>{jsonBody},resource);
     }
-
     class QBResponse {
         public cls_eventNotifications[] eventNotifications;
     }

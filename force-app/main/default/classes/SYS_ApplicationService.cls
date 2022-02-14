@@ -489,6 +489,7 @@ global virtual class SYS_ApplicationService {
             
         resourceUrl+=urlParams;
         req.setEndpoint(resourceUrl);
+        system.debug('resourceUrl=='+resourceUrl);
         return req;
     }
     
