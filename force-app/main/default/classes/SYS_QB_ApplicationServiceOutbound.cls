@@ -52,7 +52,7 @@ public override SYS_IntegrationLog__c generatelogForOutboundResult(HttpResponse 
     
             if (Schema.sObjectType.SYS_IntegrationLog__c.fields.Status__c.isCreateable()) {
                 //--EX logResp.Status__c = 'DONE';
-                logResp.Status__c = 'DONE';
+                logResp.Status__c = 'NEW';
             }
             
             if (Schema.sObjectType.SYS_IntegrationLog__c.fields.SYS_Http_Status__c.isCreateable()) {
@@ -81,9 +81,14 @@ public override SYS_IntegrationLog__c generatelogForOutboundResult(HttpResponse 
             // }
             
             if (Schema.sObjectType.SYS_IntegrationLog__c.fields.SYS_Operation_Type__c.isCreateable()) {
-                logResp.SYS_Operation_Type__c = 'UPSERT'; //-EX RESPONSE
+                System.debug('MS log.SYS_Operation_Type__c:'+log.Parent__r.SYS_Operation_Type__c);
+                if(log.SYS_Operation_Type__c == 'INSERT'){
+                    logResp.SYS_Operation_Type__c = 'UPDATE';
+                }
+                else{
+                    logResp.SYS_Operation_Type__c = log.SYS_Operation_Type__c;
+                }
             }
-    
             //logResp.Custom_Apex_Handler__c = 'SYS_ApplicationService';
            // logResp.Flat_Key_for_Resource__c = 'attributes.type'; //not required if JSON has root
             logResp.External_Id_Field_API_Name__c = SYS_DataCache.objectSettingsMap.get(SYS_DataCache.OBJ_TYPE).ExternalFieldApi__c;
@@ -146,5 +151,13 @@ public override SYS_IntegrationLog__c generatelogForOutboundResult(HttpResponse 
     //     }
         return logResp;
     }
-   
- }
+    public override List<sObject> getMissingIdForUpdate(List<sObject> sObjectsToDML) {
+        for(sObject s:sObjectsToDML){
+            if(s.Id == NULL){
+                s.Id = SYS_DataCache.log.WhatId__c;
+            }
+        }
+        return sObjectsToDML;
+    }
+}
+ 

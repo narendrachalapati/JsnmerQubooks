@@ -187,7 +187,6 @@ public class SYS_DataCache {
             }
             System.debug('Field Settings ####:'+mappings);
             return mappings;
-            
         }
         
     }

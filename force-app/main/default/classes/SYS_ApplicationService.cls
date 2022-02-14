@@ -230,7 +230,6 @@ global virtual class SYS_ApplicationService {
         System.debug(mapping.FieldApiName__c+' +MS+ '+value);
         if(mapping.Get_value_from_Log__c)
             value = SYS_DataCache.log.get(mapping.Log_API_for_field_mapping__c);
-            system.debug('value==+++++=='+value);
             
 
         if(value==NULL) return sObj;

@@ -10,7 +10,7 @@ public class SYS_OutboundTest {
         }
         insert parents;
 
-        SYS_IntegrationLog__c  newSysLog = SYS_ApplicationService.getLogsToInsert('{\"Text_Field__c\":\"OB Async 2\"}');
+        SYS_IntegrationLog__c  newSysLog = SYS_Helper.getLogsToInsert('{\"Text_Field__c\":\"OB Async 2\"}');
         newSysLog.Status__c = 'NEW';
         newSysLog.Type__c = 'OUTBOUND';
         newSysLog.SYS_IntegrationSettings__c = 'SFsource';

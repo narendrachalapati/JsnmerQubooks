@@ -54,7 +54,7 @@ public class SYS_QB_ApplicationServiceinbound extends SYS_ApplicationService {
          
         
                
-        SYS_IntegrationLog__c log = SYS_ApplicationService.getLogsToInsert(getResponse);
+        SYS_IntegrationLog__c log = SYS_Helper.getLogsToInsert(getResponse);
 
         //String algo = SYS_DataCache.integrationSetting.get(SYS_DataCache.INT_TYPE).Hashing_Algo__c;
         //if(algo!=NULL && algo!='')
@@ -72,7 +72,7 @@ public class SYS_QB_ApplicationServiceinbound extends SYS_ApplicationService {
         log.How_to_process__c = 'use_custom_apex_handler';
         log.Custom_Apex_Handler__c = 'SYS_QB_ApplicationServiceinbound';
         //todo
-        logResp.Custom_Field_Value__c = 'false';
+        log.Custom_Field_Value__c = 'false';
        // log.Requires_process_on_complete__c = true;
 
         return log;
@@ -127,7 +127,7 @@ public class SYS_QB_ApplicationServiceinbound extends SYS_ApplicationService {
         }
         else{
             //Key mentioned in Flat_Key_for_Resource__c identifies Resource
-            Map<String, Object> flatKeyMap = getFlatKeys(jsonBody);
+            Map<String, Object> flatKeyMap = SYS_Helper.getFlatKeys(jsonBody);
             System.debug('-- MS flatKeyMap in getResourceFromJSON:'+flatKeyMap);
             resource = (String)flatKeyMap.get(log.Flat_Key_for_Resource__c);
         }
