@@ -8,7 +8,7 @@
     </values>
     <values>
         <field>ChildRootElement__c</field>
-        <value xsi:type="xsd:string">WhatId__c</value>
+        <value xsi:nil="true"/>
     </values>
     <values>
         <field>Direction__c</field>
@@ -16,7 +16,7 @@
     </values>
     <values>
         <field>FieldApiName__c</field>
-        <value xsi:type="xsd:string">Custom_Parent__c</value>
+        <value xsi:type="xsd:string">AccountId</value>
     </values>
     <values>
         <field>Field_Mapping_Handler__c</field>
@@ -40,15 +40,15 @@
     </values>
     <values>
         <field>Is_Lookup__c</field>
-        <value xsi:type="xsd:boolean">false</value>
+        <value xsi:type="xsd:boolean">true</value>
     </values>
     <values>
         <field>Key__c</field>
-        <value xsi:type="xsd:string">Key1</value>
+        <value xsi:type="xsd:string">NoKey2</value>
     </values>
     <values>
         <field>Log_API_for_field_mapping__c</field>
-        <value xsi:type="xsd:string">TRUE</value>
+        <value xsi:type="xsd:string">WhatId__c</value>
     </values>
     <values>
         <field>ObjectApiName__c</field>
@@ -68,6 +68,6 @@
     </values>
     <values>
         <field>StaticValue__c</field>
-        <value xsi:type="xsd:string">Contact</value>
+        <value xsi:nil="true"/>
     </values>
 </CustomMetadata>
