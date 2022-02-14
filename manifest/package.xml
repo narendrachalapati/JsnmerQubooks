@@ -28,6 +28,7 @@
 		<members>SYS_QueueableForInboundChild</members>
 		<members>SYS_Transformer</members>
 		<members>SYS_Webservice</members>
+<<<<<<< HEAD
 		<members>override_SYS_ApplicationService</members>
 <<<<<<< HEAD
 =======
@@ -41,6 +42,10 @@
 >>>>>>> b73e914b22e3964a69baafdb4bce405861e57ce7
 		<members>override_SYS_ApplicationService</members>
 >>>>>>> 79e2bd10cca80a1918338f3482359441195f051b
+=======
+		<members>SYS_debug</members>
+		<members>Override_SYS_ApplicationService</members>
+>>>>>>> 7dde845b4cc61fa9696948d835ed525afc20869d
 		<name>ApexClass</name>
 		</types>
 	<types>
@@ -63,6 +68,7 @@
 	</types>
 	<types>
         <members>Account.SYS_Key__c</members>
+		<members>Account.Trigger_Flow__c</members>
 		<members>Contact.SYS_Child_Key__c</members>
         <name>CustomField</name>
     </types>

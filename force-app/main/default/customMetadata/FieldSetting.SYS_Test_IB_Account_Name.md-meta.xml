@@ -68,6 +68,6 @@
     </values>
     <values>
         <field>StaticValue__c</field>
-        <value xsi:type="xsd:string">FALSE</value>
+        <value xsi:nil="true"/>
     </values>
 </CustomMetadata>
