@@ -57,11 +57,15 @@
 		<members>IntegrationEnablement__mdt</members>
 		<members>IntegrationSetting__mdt</members>
 		<members>ObjectSetting__mdt</members>
-		<members>RelationshipSetting__mdt</members>
 		<members>SYS_IntegrationLog__c</members>
 		<members>SYS_OAuthConfig__c</members>
 		<name>CustomObject</name>
 	</types>
+	<types>
+        <members>Account.SYS_Key__c</members>
+		<members>Contact.SYS_Child_Key__c</members>
+        <name>CustomField</name>
+    </types>
 	<types>
 		<members>SYS_IntegrationLog_Record_Page</members>
 		<members>SYS_OAuth_Configs</members>

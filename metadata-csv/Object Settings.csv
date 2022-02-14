@@ -1,2 +1,2 @@
-ApexHandler__c,BypassTrigger__c,DeveloperName,Direction__c,ExternalFieldApi__c,Id,IntegrationType__c,Label,Language,MasterLabel,NamespacePrefix,ObjectApiName__c,Object__c,QualifiedApiName,QueryClause__c,ResourcePath__c,TriggerEvents__c,Trigger_Condition__c,isInboundList__c
-override_SYS_ApplicationService,false,Custom_Parent_Object_Setting,TWOWAY,SYS_Key__c,m045f000000mxPRAAY,m035f000000fJ64AAE,Custom Parent Object Setting,en_US,Custom Parent Object Setting,,Custom_Parent__c,01I5f000002ccc8,Custom_Parent_Object_Setting,,Custom_Parent__c/,,,false
+IntegrationType__c,Label,ObjectApiName__c,Object__c,isInboundList__c,url_params__c,ResourcePath__c,ExternalFieldApi__c,Direction__c,ApexHandler__c
+SYS_Test_IntegrationSetting,SYS Test Account Object Setting,Account,Account,FALSE,?testParam=testVal&new=123,Account,SYS_Key__c,TWOWAY,override_SYS_ApplicationService

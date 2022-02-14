@@ -44,7 +44,7 @@
     </values>
     <values>
         <field>Key__c</field>
-        <value xsi:type="xsd:string">Id</value>
+        <value xsi:type="xsd:string">id</value>
     </values>
     <values>
         <field>Log_API_for_field_mapping__c</field>
