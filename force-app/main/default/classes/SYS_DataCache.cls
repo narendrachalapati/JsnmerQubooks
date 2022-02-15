@@ -20,6 +20,8 @@ public class SYS_DataCache {
         
     }
 
+    //NOT USED
+    /*
     private static Map<String,ObjectSetting__mdt> objectSettingsMapVar;
     public static Map<String,ObjectSetting__mdt> objectSettingsMap{
         get{
@@ -30,6 +32,7 @@ public class SYS_DataCache {
         }
  
     }
+    */
 
 
 
@@ -64,10 +67,13 @@ public class SYS_DataCache {
     //TODO - 'Account' is hardcoded
     private static String context;
     
+    //NOT USED
+    /*
     public static String ObjectContext{ 
         get{ return context;}
         //set{context = value;}
     }
+    */
 
     /******* NEW VARIABLES START*******/
 
@@ -105,6 +111,8 @@ public class SYS_DataCache {
         }
     }
     
+    //NOT USED
+    /*
     public static Map<Id, sObject> oldMap{
         get{ return oldObjMap;}
         set{
@@ -116,7 +124,10 @@ public class SYS_DataCache {
             }
         }
     }
+    */
     
+    //NOT USED
+    /*
     public static Map<Id, sObject> newMap{
         get{ return newObjMap;}
         set{
@@ -127,6 +138,9 @@ public class SYS_DataCache {
             }
         }
     }
+    */
+
+
     public static Map<String,IntegrationSetting__mdt> intMap;
     public static Map<String,IntegrationSetting__mdt> integrationSetting {
         get{
@@ -222,6 +236,7 @@ public class SYS_DataCache {
     }
     
     //NOT USED
+    /*
     public static Map<String, List<FieldSetting__mdt>> GetChildFieldSettingMap{
         get{
             if(childFieldSettingMap == null){
@@ -247,8 +262,10 @@ public class SYS_DataCache {
             return childFieldSettingMap.get(context);
         }
     }
+    */
     
     //NOT USED
+    /*
     public static List<FieldSetting__mdt> FieldSettingMappings{
         get{
             if(objectFieldSettingMap == null){
@@ -270,6 +287,7 @@ public class SYS_DataCache {
             return objectFieldSettingMap.get(context);
         }
     }
+    */
 
     //CONSIDERS OUTBOUND FIELDS ONLY
     public static List<FieldSetting__mdt> fieldSettingMappingUsingObjSetting {
@@ -292,6 +310,7 @@ public class SYS_DataCache {
     }
     
     //NOT USED
+    /*
     public static void load(String primaryObj,List<sObject> objsList) {
             //String primaryObj; //TODO-fix this
             if(objectFieldSettingMap == null || objectFieldSettingMap.keySet().size() == 0) {
@@ -301,6 +320,7 @@ public class SYS_DataCache {
                 
             }
     }
+    */
 
     public static Map<String, String> escCharMap = new Map<String, String>(); 
     
@@ -383,6 +403,7 @@ public class SYS_DataCache {
     public static String objectApiName;  
     
     //NOT USED
+    /*
     public static List<ObjectSetting__mdt> objMap = new List<ObjectSetting__mdt>();
     public static List<ObjectSetting__mdt> objSettings {
         get{
@@ -393,7 +414,10 @@ public class SYS_DataCache {
             return objMap;
         }
     }
+    */
 
+    //NOT USED
+    /*
     public static Map<String, Map<String, String>> externalIdmap = new Map<String, Map<String, String>>();
     public static Map<String, Map<String, String>> getExtId {
         get {
@@ -414,8 +438,10 @@ public class SYS_DataCache {
             return externalIdmap;
         }
     }
+    */
 
     //NOT USED
+    /*
     public static Map<String, String> extFieldName = new Map<String, String>();
     public static Map<String, String> objExternalField {
         get{
@@ -430,6 +456,7 @@ public class SYS_DataCache {
             return extFieldName;
         }
     }
+    */
 
     public static map<String, ObjectSetting__mdt> objectSettingInit = new Map<String, ObjectSetting__mdt>();
     public static map<String, ObjectSetting__mdt> objectSettingMap {
@@ -572,6 +599,7 @@ public class SYS_DataCache {
     }
 
     //NOT USED - Need to update. Create map for each INT_TYPE. Same as Enable checkbox
+    /*
     public static Date expiry;
     public static Date expiryDate {
         get {
@@ -583,9 +611,11 @@ public class SYS_DataCache {
             return expiry;
         }
     }
+    */
 
 
-    // NOT USED/REQUIRED.
+    // NOT USED/REQUIRED. 
+    /*
     public static String token = '';
     public static String webhookToken {
         get {
@@ -599,6 +629,6 @@ public class SYS_DataCache {
             return token;
         }
     }
-
+    */
     
 }

@@ -8,7 +8,7 @@
     </values>
     <values>
         <field>ChildRootElement__c</field>
-        <value xsi:type="xsd:string">Contact</value>
+        <value xsi:type="xsd:string">Contacts</value>
     </values>
     <values>
         <field>Direction__c</field>
@@ -44,7 +44,7 @@
     </values>
     <values>
         <field>Key__c</field>
-        <value xsi:type="xsd:string">LastName</value>
+        <value xsi:type="xsd:string">Contact.LastName</value>
     </values>
     <values>
         <field>Log_API_for_field_mapping__c</field>
@@ -64,7 +64,7 @@
     </values>
     <values>
         <field>RestResource__c</field>
-        <value xsi:type="xsd:string">Contact</value>
+        <value xsi:type="xsd:string">contact</value>
     </values>
     <values>
         <field>StaticValue__c</field>
