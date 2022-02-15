@@ -15,7 +15,7 @@
 		<members>SYS_Transformer</members>
 		<members>SYS_Webservice</members>
 		<members>SYS_debug</members>
-		<members>Override_SYS_ApplicationService</members>
+		<members>SYS_Override_ApplicationService</members>
 		<name>ApexClass</name>
 	</types>
 	<types>
