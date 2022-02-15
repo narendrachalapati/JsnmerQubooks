@@ -77,21 +77,7 @@ public class SYS_QB_ApplicationServiceinbound extends SYS_ApplicationService {
 
         return log;
     }
-   //we overriding this method removing the root key because to maintain the custom metadata same for the outbound and inbound
-  /*  public override String preprocessJSONForInbound(SYS_IntegrationLog__c log,String jsonBody) {
-          Object responseType = JSON.deserializeUntyped(jsonBody);
-            Object JSONForUpsert ;
-            if(responseType instanceof Map<String,Object>){
-                JSONForUpsert = (((Map<String, Object>)responseType).values())[0];
-                system.debug('JSONForUpsert+++'+JSONForUpsert);
-                //((Map<String, Object>)responseType).get(JSONForUpsert);
-               
-                jsonBody = JSON.serialize(JSONForUpsert);
-                  system.debug('jsonBody++++===='+jsonBody);
-            }
-          system.debug('jsonBody++++===='+jsonBody);
-        return jsonBody;
-    } */
+  
     //when we removed the root key it not returing the restresorce that path so it not identifying the sobject so thats why 
     //we overriden the get resource method for identifying the ecaxt resource path 
 

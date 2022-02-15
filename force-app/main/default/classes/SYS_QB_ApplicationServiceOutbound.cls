@@ -16,51 +16,7 @@ public class SYS_QB_ApplicationServiceOutbound extends SYS_ApplicationService {
 
         return SYS_Transformer.getSObjectsToUpsert(new List<String>{jsonBody},resource);
     }
-    //We are overriding this class because we need to frame the end point URL with lower case 
-   /* public override HttpRequest buildOutboundHttpRequest(SYS_IntegrationLog__c log){
-        HttpRequest req = new HttpRequest();
-        IntegrationSetting__mdt integrationSetting = SYS_DataCache.integrationSetting.get(SYS_Datacache.INT_TYPE);
-
-        String baseEndpoint = integrationSetting.BaseAPIEndPoint__c;
-        system.debug('baseEndpoint'+baseEndpoint);
-
-        List<HttpHeaders__mdt> httpHeader = SYS_DataCache.headerSetting;
-        system.debug('httpHeader=='+httpHeader);
-        req.setMethod(integrationSetting.UpdateMethod__c);
-        for(HttpHeaders__mdt head:httpHeader){
-            SYS_debug.log('header is = '+head.header_name__c + ''+head.Value__c);
-            req.setHeader(String.valueOf(head.header_name__c), String.valueOf(head.Value__c));       
-        }
-        
-        String oauthGrantType = SYS_DataCache.integrationSetting.get(SYS_Datacache.INT_TYPE).AuthenticationType__c;
-        if(oauthGrantType.toLowerCase() == 'oauth'){
-            String configId = SYS_DataCache.integrationSetting.get(SYS_Datacache.INT_TYPE).OAuth_Config_Record_Id__c;
-            List<SYS_OAuthConfig__c> configs = [SELECT 
-                                                    Id, 
-                                                    Access_Token__c,
-                                                    Token_type__c 
-                                                FROM SYS_OAuthConfig__c 
-                                           	    WHERE Id =:configId];
-
-            if(configs.size()>0){
-                req.setHeader('Authorization',configs[0].Token_type__c+' '+configs[0].Access_Token__c);                                       
-            }
-            SYS_debug.log('MS Header:'+req.getHeader('Authorization'));
-        }
-
-        String resourceUrl = 
-       // entityName = entity[0].name.toLowercase();
-            integrationSetting.BaseAPIEndPoint__c+
-            SYS_DataCache.objectSettingMap.get(SYS_DataCache.OBJ_TYPE).ResourcePath__c.toLowercase()+'/';
-            system.debug('resourceUrl==='+resourceUrl);
-        String urlParams='';
-        if(SYS_DataCache.objectSettingMap.get(SYS_DataCache.OBJ_TYPE).url_params__c != NULL)
-                urlParams = SYS_DataCache.objectSettingMap.get(SYS_DataCache.OBJ_TYPE).url_params__c;
-            
-        resourceUrl+=urlParams;
-        req.setEndpoint(resourceUrl);
-        return req;
-    }*/
+  
 public override SYS_IntegrationLog__c generatelogForOutboundResult(HttpResponse resp,SYS_IntegrationLog__c log){
          SYS_IntegrationLog__c logResp = SYS_Helper.getLogsToInsert(resp.getBody());
          system.debug('logResp++'+logResp);
@@ -153,69 +109,8 @@ public override SYS_IntegrationLog__c generatelogForOutboundResult(HttpResponse 
             logResp.Custom_Field_Value__c = 'false';
         }
 
-    //     //here we are doing comparison with the what id in the syslog to elemenate the duplicate record creation
-    //     String jsonBody = '';
-       
-    //     jsonBody =  logResp.data0__c != null ? logResp.data0__c : '' +
-    //                 logResp.data1__c != null ? logResp.data1__c : '' +
-    //                 logResp.data2__c != null ? logResp.data2__c : '' +
-    //                 logResp.data3__c != null ? logResp.data3__c : '' +
-    //                 logResp.data4__c != null ? logResp.data4__c : '' +
-    //                 logResp.data5__c != null ? logResp.data5__c : '' +
-    //                 logResp.data6__c != null ? logResp.data6__c : '' +
-    //                 logResp.data7__c != null ? logResp.data7__c : '' +
-    //                 logResp.data8__c != null ? logResp.data8__c : '' +
-    //                 logResp.data9__c != null ? logResp.data9__c : '' ;
-
-      
-    //     List<sObject> recordList = new List<sObject>();
-        
-    //      Map<String, Object> flatKeyMap = SYS_Transformer.makeJsonIntoKeyValuePairs(jsonBody);
-    //         system.debug('flatKeyMap'+flatKeyMap);
-    //     String recId = log.WhatId__c;
-    //     //String triggering_flow__c = logResp.Custom_Field_Value__c;
-        
-    //     if( (recId !='' || recId != null) && log.SYS_Operation_Type__c =='INSERT'){
-    //     String objectApiName = ((Id)recId).getSobjectType() + '';
-    //     Object responseType = JSON.deserializeUntyped(jsonBody);
-    //        String rootKey;
-    //     if(responseType instanceof Map<String , Object>) {
-    //          rootKey = new List<String>(((Map<String, Object>)responseType).keySet())[0];
-    //     }
-
-    //     String constructKey = rootKey +'.Id';
-    //     String constructToken =  rootKey +'.SyncToken';
-        
-    //     String externalId = String.valueof(flatKeyMap.get(constructKey));
-    //     String syncToken = String.valueof(flatKeyMap.get(constructToken));
-    //     sObject record = Schema.getGlobalDescribe().get(objectApiName).newSObject(((Id)recId));
-    //     // if(rootKey.equalsIgnoreCase('Invoice') ) {
-    //     //     record.put('CloseDate',System.Today());
-    //     //     record.put(' Name','testing');
-    //     //     record.put('StageName','Qualification');
-    //     // }
-    //     record.put('Id' , recId); 
-    //     //record.put ('triggering_flow__c',logResp.Custom_Field_Value__c);
-    //     record.put('Quickbooks_Id__c' , externalId); 
-    //     record.put('QB_SyncToken__c', syncToken);
-    //     List<sObject> sObjectsToDML= new List<sObject>();
-    //                   sObjectsToDML.add(record);
-    //     SYS_debug.log('\n\n ------------------------------- \n\n Application Service sObjects to DML:'+sObjectsToDML);
-
-    //     String externalIdFieldAPIName = '';
-    //   // Boolean triggering_flow__c = logResp.Custom_Field_Value__c ;
-               
-    //    Boolean sobj =   doDML(sObjectsToDML,logResp.SYS_Operation_Type__c,externalIdFieldAPIName);
-    //     }
         return logResp;
     }
-    public override List<sObject> getMissingIdForUpdate(List<sObject> sObjectsToDML) {
-        for(sObject s:sObjectsToDML){
-            if(s.Id == NULL){
-                s.Id = SYS_DataCache.log.WhatId__c;
-            }
-        }
-        return sObjectsToDML;
-    }
+  
 }
  
