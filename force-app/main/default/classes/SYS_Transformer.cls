@@ -525,7 +525,7 @@ public virtual class SYS_Transformer {
                         System.debug('MS Child Objects to be processed:'+childRecList);
                         
                         //AP-106
-                        if(SYS_DataCache.externalKeyByResourceMap.containsKey(key))
+                        if(SYS_DataCache.externalKeyByResourceMap.containsKey(key.toLowerCase()))
                             ID jobID = System.enqueueJob(new SYS_QueueableForInboundChild(SYS_DataCache.log,childRecList,key,SYS_DataCache.INT_TYPE));
                         //System.debug('job id is==='+jobID);
                     }
