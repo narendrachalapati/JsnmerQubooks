@@ -23,6 +23,7 @@
 		<members>SYS_QB_ApplicationServiceOutbound</members>
 =======
 		<members>SYS_OAuthRedirectHandler</members>
+		<members>SYS_Override_ApplicationService</members>
 		<members>SYS_ParentingQueueable</members>
 >>>>>>> b73e914b22e3964a69baafdb4bce405861e57ce7
 		<members>SYS_QueueableForInboundChild</members>
@@ -44,13 +45,22 @@
 >>>>>>> 79e2bd10cca80a1918338f3482359441195f051b
 =======
 		<members>SYS_debug</members>
+<<<<<<< HEAD
 		<members>Override_SYS_ApplicationService</members>
 >>>>>>> 7dde845b4cc61fa9696948d835ed525afc20869d
+=======
+>>>>>>> b335cbe28f8f4c7a86832febb61c6a6581cd1de3
 		<name>ApexClass</name>
 		</types>
 	<types>
 		<members>SYS_IntegrationLogTrigger</members>
 		<name>ApexTrigger</name>
+	</types>
+	<types>
+		<members>Account.SYS_Key__c</members>
+		<members>Account.Trigger_Flow__c</members>
+		<members>Contact.SYS_Child_Key__c</members>
+		<name>CustomField</name>
 	</types>
 	<types>
 		<members>*</members>
@@ -67,12 +77,6 @@
 		<name>CustomObject</name>
 	</types>
 	<types>
-        <members>Account.SYS_Key__c</members>
-		<members>Account.Trigger_Flow__c</members>
-		<members>Contact.SYS_Child_Key__c</members>
-        <name>CustomField</name>
-    </types>
-	<types>
 		<members>SYS_IntegrationLog_Record_Page</members>
 		<members>SYS_OAuth_Configs</members>
 		<name>FlexiPage</name>
@@ -85,6 +89,12 @@
 		<members>ObjectSetting__mdt-ObjectSetting Layout</members>
 		<members>RelationshipSetting__mdt-RelationshipSetting Layout</members>
 		<name>Layout</name>
+	</types>
+	<types>
+		<members>SYS_Test_Inbound_Body_Large</members>
+		<members>SYS_Test_Inbound_Body</members>
+		<members>SYS_Test_Outbound_Response_Body</members>
+		<name>StaticResource</name>
 	</types>
 	<version>53.0</version>
 </Package>

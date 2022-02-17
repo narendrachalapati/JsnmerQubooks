@@ -425,17 +425,8 @@ global virtual class SYS_ApplicationService {
         
         String jsonBody = '';
         
-        jsonBody =  log.data0__c != null ? log.data0__c : '' +
-                    log.data1__c != null ? log.data1__c : '' +
-                    log.data2__c != null ? log.data2__c : '' +
-                    log.data3__c != null ? log.data3__c : '' +
-                    log.data4__c != null ? log.data4__c : '' +
-                    log.data5__c != null ? log.data5__c : '' +
-                    log.data6__c != null ? log.data6__c : '' +
-                    log.data7__c != null ? log.data7__c : '' +
-                    log.data8__c != null ? log.data8__c : '' +
-                    log.data9__c != null ? log.data9__c : '' ;
-
+        jsonBody =  SYS_Helper.getDataFrom(log); 
+        
         jsonBody = preprocessJSONForInbound(log,jsonBody);
         String resource = getResourceFromJSON(log,jsonBody);
         List<sObject> sObjectsToDML = transformJsonToSObject(jsonBody, resource);
@@ -451,16 +442,27 @@ global virtual class SYS_ApplicationService {
     }
     /* ------------------------------------------------------------------------ */
 
-    global virtual HttpRequest buildOutboundHttpRequest(SYS_IntegrationLog__c log){
-        HttpRequest req = new HttpRequest();
-        IntegrationSetting__mdt integrationSetting = SYS_DataCache.integrationSetting.get(SYS_Datacache.INT_TYPE);
+    global virtual String getHttpRequestEndpoint(){
+        String baseEndpoint = SYS_DataCache.integrationSetting.get(SYS_Datacache.INT_TYPE).BaseAPIEndPoint__c;
+        String resourceUrl = 
+            baseEndpoint+
+            SYS_DataCache.objectSettingMap.get(SYS_DataCache.OBJ_TYPE).ResourcePath__c+'/';
+        String urlParams='';
+        if(SYS_DataCache.objectSettingMap.get(SYS_DataCache.OBJ_TYPE).url_params__c != NULL)
+                urlParams = SYS_DataCache.objectSettingMap.get(SYS_DataCache.OBJ_TYPE).url_params__c;
+            
+        resourceUrl+=urlParams;
+        return resourceUrl;
+    }
 
-        String baseEndpoint = integrationSetting.BaseAPIEndPoint__c;
-        system.debug('baseEndpoint'+baseEndpoint);
+    global virtual String getHttpRequestMethod(){
+        
+        return SYS_DataCache.integrationSetting.get(SYS_Datacache.INT_TYPE).UpdateMethod__c;
+    }
 
+    global virtual void setHttpRequestHeaders(HttpRequest req){
+        
         List<HttpHeaders__mdt> httpHeader = SYS_DataCache.headerSetting;
-        system.debug('httpHeader=='+httpHeader);
-        req.setMethod(integrationSetting.UpdateMethod__c);
         for(HttpHeaders__mdt head:httpHeader){
             SYS_debug.log('header is = '+head.header_name__c + ''+head.Value__c);
             req.setHeader(String.valueOf(head.header_name__c), String.valueOf(head.Value__c));       
@@ -481,17 +483,15 @@ global virtual class SYS_ApplicationService {
             }
             SYS_debug.log('MS Header:'+req.getHeader('Authorization'));
         }
+    }
 
-        String resourceUrl = 
-            integrationSetting.BaseAPIEndPoint__c+
-            SYS_DataCache.objectSettingMap.get(SYS_DataCache.OBJ_TYPE).ResourcePath__c+'/';
-        String urlParams='';
-        if(SYS_DataCache.objectSettingMap.get(SYS_DataCache.OBJ_TYPE).url_params__c != NULL)
-                urlParams = SYS_DataCache.objectSettingMap.get(SYS_DataCache.OBJ_TYPE).url_params__c;
-            
-        resourceUrl+=urlParams;
-        req.setEndpoint(resourceUrl);
-        system.debug('resourceUrl=='+resourceUrl);
+    global virtual HttpRequest buildOutboundHttpRequest(SYS_IntegrationLog__c log){
+        HttpRequest req = new HttpRequest();
+        
+        req.setEndpoint(getHttpRequestEndpoint());
+        req.setMethod(getHttpRequestMethod());
+        setHttpRequestHeaders(req);
+ 
         return req;
     }
     
@@ -504,18 +504,7 @@ global virtual class SYS_ApplicationService {
         Http http = new Http();
         HttpRequest req = buildOutboundHttpRequest(log);
 
-        String body = log.data0__c != null ? log.data0__c : '' +
-                            log.data1__c != null ? log.data1__c : '' +
-                            log.data2__c != null ? log.data2__c : '' +
-                            log.data3__c != null ? log.data3__c : '' +
-                            log.data4__c != null ? log.data4__c : '' +
-                            log.data5__c != null ? log.data5__c : '' +
-                            log.data6__c != null ? log.data6__c : '' +
-                            log.data7__c != null ? log.data7__c : '' + 
-                            log.data8__c != null ? log.data8__c : '' +
-                            log.data9__c != null ? log.data9__c : '' ; 
-        
-        
+        String body = SYS_Helper.getDataFrom(log); 
 
         body = preprocessJSONForOutbound(log,body);
         req.setBody(body);
