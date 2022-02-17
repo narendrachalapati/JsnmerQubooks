@@ -32,11 +32,11 @@
     </values>
     <values>
         <field>QueryClause__c</field>
-        <value xsi:nil="true"/>
+        <value xsi:type="xsd:string">FALSE</value>
     </values>
     <values>
         <field>ResourcePath__c</field>
-        <value xsi:type="xsd:string">invoice?minorversion=63</value>
+        <value xsi:type="xsd:string">invoice</value>
     </values>
     <values>
         <field>TriggerEvents__c</field>
@@ -49,5 +49,9 @@
     <values>
         <field>isInboundList__c</field>
         <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>url_params__c</field>
+        <value xsi:type="xsd:string">?minorversion=63</value>
     </values>
 </CustomMetadata>

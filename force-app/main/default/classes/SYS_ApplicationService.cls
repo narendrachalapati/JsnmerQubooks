@@ -162,6 +162,7 @@ global virtual class SYS_ApplicationService {
             System.debug('--MS SYS_DataCache.sObjectApiName in Applicaiton Service:'+SYS_DataCache.sObjectApiName);
             Schema.SObjectField externalIdField = Schema.getGlobalDescribe().get(SYS_DataCache.sObjectApiName).getDescribe().fields.getMap().get(additionalSetting); 
             results = Database.upsert(records, externalIdField, false);
+            system.debug('results*****'+results);
         }
         
         if(!results[0].isSuccess()){
@@ -284,9 +285,10 @@ global virtual class SYS_ApplicationService {
     global virtual String generateHash(String requestBody,String algo) {
 
         Blob requestBlob = Blob.valueOf(requestBody);
+       
         Blob hashBlob = Crypto.generateDigest(algo,requestBlob);
         String base64EncodedHash = EncodingUtil.base64encode(hashBlob);
-
+        system.debug('base64EncodedHash====++++'+requestBlob+''+hashBlob+''+base64EncodedHash);
         return base64EncodedHash;
     }
 
@@ -332,7 +334,7 @@ global virtual class SYS_ApplicationService {
         log.Parent__c = parentLogId;
         log.Resource__c = resource;
         log.Type__c = 'INBOUND';
-        log.SYS_Operation_Type__c = 'UPSERT';
+        log.SYS_Operation_Type__c = 'UPDATE';
         log.Flat_Key_for_Resource__c = '';
         log.SYS_IntegrationSettings__c = integrationSetting;
         log.Status__c = 'NEW';//'WAITING_FOR_PARENT';
@@ -535,6 +537,7 @@ global virtual class SYS_ApplicationService {
         if(!result){
             
             String errorMessage = 'Error while processing inbound';
+            
             /*
             String errorMessage = 'The following error has occurred.';
             for(Database.Error err : result.getErrors()) {

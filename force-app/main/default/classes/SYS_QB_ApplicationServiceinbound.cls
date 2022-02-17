@@ -101,6 +101,36 @@ public class SYS_QB_ApplicationServiceinbound extends SYS_ApplicationService {
 
         return SYS_Transformer.getSObjectsToUpsert(new List<String>{jsonBody},resource);
     }
+   
+    public override virtual void fixParent(String parentLogId,SYS_IntegrationLog__c childLog){
+        list<SYS_IntegrationLog__c> parentlog = [SELECT Parent__r.WhatId__c FROM SYS_IntegrationLog__c WHERE Parent__c = :parentLogId AND Status__c='DONE'];
+        list <OpportunityLineItem>opp = [select id from OpportunityLineItem WHERE OpportunityId=:parentlog[0].Parent__r.WhatId__c];
+       system.debug('opp'+opp);
+         if(opp !=NULL){
+            Database.DeleteResult[] results;
+        Boolean success = true;
+        results = Database.delete(opp, false);
+         }
+        List<FieldSetting__mdt> fsm = new List<FieldSetting__mdt>();
+        fsm = [SELECT FieldApiName__c,ParentField__c,ObjectApiName__c FROM FieldSetting__mdt WHERE RestResource__c = :childLog.Resource__c AND Is_Lookup__c=true];
+        System.debug('MS Fixing Relationship:'+fsm);
+        List<sObject> childRecords = new List<sObject>();
+        
+        for(SYS_IntegrationLog__c cLog:[SELECT Id,WhatId__c,Parent__r.WhatId__c FROM SYS_IntegrationLog__c WHERE Parent__c = :parentLogId AND Status__c='DONE'])
+        {
+            sObject sObj = Schema.getGlobalDescribe().get(fsm[0].ObjectApiName__c).newSObject();
+            System.debug('MS cLog:'+cLog);
+            System.debug('MS cLog.Parent__r.WhatId__c:'+cLog.Parent__r.WhatId__c);
+            sObj.put('Id',cLog.WhatId__c);
+            sObj.put(fsm[0].FieldApiName__c,cLog.Parent__r.WhatId__c);
+            childRecords.add(sObj);
+        }
+        System.debug('MS Child Records for Parenting:'+childRecords);
+       
+        doDML(childRecords, 'UPDATE', '');
+        
+
+    }
     class QBResponse {
         public cls_eventNotifications[] eventNotifications;
     }
@@ -117,5 +147,6 @@ public class SYS_QB_ApplicationServiceinbound extends SYS_ApplicationService {
         public String operation; //Create
         public String lastUpdated; //2021-08-02T07:54:33.000Z
     }
+   
 
 }
