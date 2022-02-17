@@ -23,6 +23,10 @@
 		<name>ApexTrigger</name>
 	</types>
 	<types>
+		<members>SYS_Aura_JWTAuthFlow</members>
+		<name>AuraDefinitionBundle</name>
+	</types>
+	<types>
 		<members>Account.SYS_Key__c</members>
 		<members>Account.Trigger_Flow__c</members>
 		<members>Contact.SYS_Child_Key__c</members>
@@ -57,8 +61,8 @@
 		<name>Layout</name>
 	</types>
 	<types>
-		<members>SYS_Test_Inbound_Body_Large</members>
 		<members>SYS_Test_Inbound_Body</members>
+		<members>SYS_Test_Inbound_Body_Large</members>
 		<members>SYS_Test_Outbound_Response_Body</members>
 		<name>StaticResource</name>
 	</types>

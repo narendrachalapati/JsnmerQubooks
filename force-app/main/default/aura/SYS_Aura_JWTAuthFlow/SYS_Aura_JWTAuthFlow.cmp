@@ -1,0 +1,17 @@
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId" 
+                controller="SYS_JWTAuth_ApplicationService" 
+                access="global">
+
+    <aura:attribute name="recordId" type="String"/>
+    <aura:attribute name="responseStatus" type="String"/>
+
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+
+    <div>
+        <div class="slds-card slds-var-p-around_xx-large">
+         <button class="slds-button slds-button_brand" onclick="{!c.invokeTokenFlowJS}">Start JWT Flow</button>
+        </div>
+    </div>
+    
+
+</aura:component>

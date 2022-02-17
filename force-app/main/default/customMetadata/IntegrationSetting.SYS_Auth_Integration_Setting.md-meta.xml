@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-    <label>SYS Test Integration Setting</label>
+    <label>SYS Auth Integration Setting</label>
     <protected>false</protected>
     <values>
         <field>ApexHandler__c</field>
@@ -8,11 +8,11 @@
     </values>
     <values>
         <field>AuthenticationType__c</field>
-        <value xsi:type="xsd:string">NamedCredential</value>
+        <value xsi:type="xsd:string">public</value>
     </values>
     <values>
         <field>BaseAPIEndPoint__c</field>
-        <value xsi:type="xsd:string">callout:Municorn_Destination_NC/services/data/v53.0/sobjects/</value>
+        <value xsi:type="xsd:string">https://www.googleapis.com/oauth2/v4/</value>
     </values>
     <values>
         <field>DebugCheck__c</field>
@@ -24,7 +24,7 @@
     </values>
     <values>
         <field>Hashing_Algo__c</field>
-        <value xsi:type="xsd:string">SHA1</value>
+        <value xsi:nil="true"/>
     </values>
     <values>
         <field>NamedCredential__c</field>
@@ -40,6 +40,6 @@
     </values>
     <values>
         <field>webhookToken__c</field>
-        <value xsi:type="xsd:string">9LR99107DF7343549</value>
+        <value xsi:nil="true"/>
     </values>
 </CustomMetadata>

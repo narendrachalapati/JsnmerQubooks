@@ -64,7 +64,7 @@
     </values>
     <values>
         <field>RestResource__c</field>
-        <value xsi:type="xsd:string">Custom_Parent__c</value>
+        <value xsi:type="xsd:string">custom_parent__c</value>
     </values>
     <values>
         <field>StaticValue__c</field>

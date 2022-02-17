@@ -111,34 +111,39 @@ public class SYS_DataCache {
         }
     }
     
-    //NOT USED
-    /*
+    
+     /* NOT USED
     public static Map<Id, sObject> oldMap{
         get{ return oldObjMap;}
         set{
-            //TODO should mappings be reset?
             oldObjMap = value;
+            
             if(oldObjMap!=NULL && oldObjMap.size()>0){
                 SObjectType objectType = oldObjMap.values()[0].getSObjectType();
                 context = JSON.serialize(objectType.getDescribe().getName()).replace('\"','');
             }
+            
         }
     }
     */
     
-    //NOT USED
-    /*
+    
+    
+    /* NOT USED
     public static Map<Id, sObject> newMap{
         get{ return newObjMap;}
         set{
             newObjMap = value;
+            
             if(newObjMap!=NULL && newObjMap.size()>0){
                 SObjectType objectType = newObjMap.values()[0].getSObjectType();
                 context = JSON.serialize(objectType.getDescribe().getName()).replace('\"','');
             }
+            
         }
     }
     */
+    
 
 
     public static Map<String,IntegrationSetting__mdt> intMap;

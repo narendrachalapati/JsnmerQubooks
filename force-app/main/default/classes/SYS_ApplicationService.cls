@@ -372,7 +372,7 @@ global virtual class SYS_ApplicationService {
     }
 
     global virtual String preprocessJSONForOutbound(SYS_IntegrationLog__c log,String jsonBody) {
-
+        System.debug('Default preprocessJSONForOutbound called');
         return jsonBody;
     }
 
@@ -648,7 +648,13 @@ global virtual class SYS_ApplicationService {
 
 
             if (Schema.sObjectType.SYS_IntegrationLog__c.fields.Status__c.isCreateable()) {
-                logResp.Status__c = 'DONE';
+                
+                if(log.SYS_Operation_Type__c == 'INSERT'){
+                    logResp.Status__c = 'NEW';
+                }
+                else{
+                    logResp.Status__c = 'DONE';
+                }
             }
             
             if (Schema.sObjectType.SYS_IntegrationLog__c.fields.SYS_Http_Status__c.isCreateable()) {
@@ -667,10 +673,22 @@ global virtual class SYS_ApplicationService {
                 logResp.SYS_IntegrationSettings__c = SYS_DataCache.INT_TYPE;
             }
             if (Schema.sObjectType.SYS_IntegrationLog__c.fields.How_To_Process__c.isCreateable()) {
-                logResp.How_To_Process__c = 'ignore_log';
+                if(log.SYS_Operation_Type__c == 'INSERT'){
+                    logResp.How_To_Process__c = 'use_custom_apex_handler';
+                    logResp.Custom_Apex_Handler__c = 'SYS_ApplicationService';
+                }
+                else{
+                    logResp.How_To_Process__c = 'ignore_log';
+                }
             }
             if (Schema.sObjectType.SYS_IntegrationLog__c.fields.SYS_Operation_Type__c.isCreateable()) {
-                logResp.SYS_Operation_Type__c = 'RESPONSE';
+                if(log.SYS_Operation_Type__c == 'INSERT'){
+                    logResp.SYS_Operation_Type__c = 'UPDATE';
+                    logResp.Resource__c = SYS_DataCache.objectSettingMap.get(SYS_DataCache.OBJ_TYPE).ResourcePath__c;
+                }
+                else{
+                    logResp.SYS_Operation_Type__c = 'RESPONSE';
+                }
             }
         }
 
