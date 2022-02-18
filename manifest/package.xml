@@ -61,6 +61,16 @@
 		<name>Layout</name>
 	</types>
 	<types>
+		<members>GCPJWT</members>
+		<members>Municorn_Destination_NC</members>
+		<name>NamedCredential</name>
+	</types>
+	<types>
+		<members>DrChrono</members>
+		<members>Gmail_Token_API</members>
+		<name>RemoteSiteSetting</name>
+	</types>
+	<types>
 		<members>SYS_Test_Inbound_Body</members>
 		<members>SYS_Test_Inbound_Body_Large</members>
 		<members>SYS_Test_Outbound_Response_Body</members>

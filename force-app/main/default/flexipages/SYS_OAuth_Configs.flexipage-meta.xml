@@ -4,12 +4,47 @@
         <itemInstances>
             <componentInstance>
                 <componentInstanceProperties>
+                    <name>actionNames</name>
+                    <valueList>
+                        <valueListItems>
+                            <value>CustomButton.SYS_OAuthConfig__c.Start_Authentication_Flow</value>
+                            <visibilityRule>
+                                <criteria>
+                                    <leftValue>{!Record.Grant_Type__c}</leftValue>
+                                    <operator>NE</operator>
+                                    <rightValue>jwt</rightValue>
+                                </criteria>
+                            </visibilityRule>
+                        </valueListItems>
+                        <valueListItems>
+                            <value>SYS_OAuthConfig__c.Start_JWT_Flow</value>
+                            <visibilityRule>
+                                <criteria>
+                                    <leftValue>{!Record.Grant_Type__c}</leftValue>
+                                    <operator>EQUAL</operator>
+                                    <rightValue>jwt</rightValue>
+                                </criteria>
+                            </visibilityRule>
+                        </valueListItems>
+                        <valueListItems>
+                            <value>Edit</value>
+                        </valueListItems>
+                        <valueListItems>
+                            <value>Delete</value>
+                        </valueListItems>
+                    </valueList>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
                     <name>collapsed</name>
                     <value>true</value>
                 </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>enableActionsConfiguration</name>
-                    <value>false</value>
+                    <value>true</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>enableActionsInNative</name>
+                    <value>true</value>
                 </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>hideChatterActions</name>
@@ -79,12 +114,6 @@
                         <rightValue>jwt</rightValue>
                     </criteria>
                 </visibilityRule>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldItem>Record.Private_Key__c</fieldItem>
-                <identifier>RecordPrivate_Key_cField1</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -205,18 +234,6 @@
         </itemInstances>
         <itemInstances>
             <fieldInstance>
-                <fieldItem>Record.iat__c</fieldItem>
-                <identifier>Recordiat_cField1</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldItem>Record.exp__c</fieldItem>
-                <identifier>Recordexp_cField1</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
                 <fieldItem>Record.target_audience__c</fieldItem>
                 <identifier>Recordtarget_audience_cField1</identifier>
                 <visibilityRule>
@@ -229,20 +246,6 @@
             </fieldInstance>
         </itemInstances>
         <name>Facet-c96ee710-759a-4b92-a0b0-a677c6495fd4</name>
-        <type>Facet</type>
-    </flexiPageRegions>
-    <flexiPageRegions>
-        <itemInstances>
-            <componentInstance>
-                <componentInstanceProperties>
-                    <name>body</name>
-                    <value>Facet-c96ee710-759a-4b92-a0b0-a677c6495fd4</value>
-                </componentInstanceProperties>
-                <componentName>flexipage:column</componentName>
-                <identifier>flexipage_column1</identifier>
-            </componentInstance>
-        </itemInstances>
-        <name>Facet-35b3f862-5469-4e24-8ebe-9427914f2805</name>
         <type>Facet</type>
     </flexiPageRegions>
     <flexiPageRegions>
@@ -316,7 +319,7 @@
                 <identifier>RecordSchedule_Refresh_Token_cField1</identifier>
             </fieldInstance>
         </itemInstances>
-        <name>Facet-a0504235-0a42-4cdd-9a26-79cb75c84783</name>
+        <name>Facet-929ffce9-88bd-49b0-a6d1-aba23c59b41d</name>
         <type>Facet</type>
     </flexiPageRegions>
     <flexiPageRegions>
@@ -324,13 +327,47 @@
             <componentInstance>
                 <componentInstanceProperties>
                     <name>body</name>
-                    <value>Facet-a0504235-0a42-4cdd-9a26-79cb75c84783</value>
+                    <value>Facet-c96ee710-759a-4b92-a0b0-a677c6495fd4</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:column</componentName>
+                <identifier>flexipage_column1</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>Facet-929ffce9-88bd-49b0-a6d1-aba23c59b41d</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:column</componentName>
+                <identifier>flexipage_column5</identifier>
+            </componentInstance>
+        </itemInstances>
+        <name>Facet-35b3f862-5469-4e24-8ebe-9427914f2805</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+    <flexiPageRegions>
+        <itemInstances>
+            <fieldInstance>
+                <fieldItem>Record.Private_Key__c</fieldItem>
+                <identifier>RecordPrivate_Key_cField1</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <name>Facet-00329e38-536c-4b67-8f8b-c554cc3bc25a</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+    <flexiPageRegions>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>Facet-00329e38-536c-4b67-8f8b-c554cc3bc25a</value>
                 </componentInstanceProperties>
                 <componentName>flexipage:column</componentName>
                 <identifier>flexipage_column2</identifier>
             </componentInstance>
         </itemInstances>
-        <name>Facet-54d356be-b972-45f9-86bc-1c0e40045d37</name>
+        <name>Facet-d47e40da-8204-4bd5-b559-c0c4b72050e2</name>
         <type>Facet</type>
     </flexiPageRegions>
     <flexiPageRegions>
@@ -352,11 +389,11 @@
             <componentInstance>
                 <componentInstanceProperties>
                     <name>columns</name>
-                    <value>Facet-54d356be-b972-45f9-86bc-1c0e40045d37</value>
+                    <value>Facet-d47e40da-8204-4bd5-b559-c0c4b72050e2</value>
                 </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>label</name>
-                    <value>Token Details</value>
+                    <value>Keys</value>
                 </componentInstanceProperties>
                 <componentName>flexipage:fieldSection</componentName>
                 <identifier>flexipage_fieldSection3</identifier>
@@ -444,7 +481,7 @@
                 </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>label</name>
-                    <value>Standard.Tab.fields</value>
+                    <value>Standard.Tab.detail</value>
                 </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>name</name>
@@ -535,27 +572,10 @@
         <name>main</name>
         <type>Region</type>
     </flexiPageRegions>
-    <flexiPageRegions>
-        <itemInstances>
-            <componentInstance>
-                <componentName>SYS_Aura_JWTAuthFlow</componentName>
-                <identifier>c_SYS_Aura_JWTAuthFlow1</identifier>
-                <visibilityRule>
-                    <criteria>
-                        <leftValue>{!Record.Grant_Type__c}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>jwt</rightValue>
-                    </criteria>
-                </visibilityRule>
-            </componentInstance>
-        </itemInstances>
-        <name>sidebar</name>
-        <type>Region</type>
-    </flexiPageRegions>
     <masterLabel>SYS OAuth Configs</masterLabel>
     <sobjectType>SYS_OAuthConfig__c</sobjectType>
     <template>
-        <name>flexipage:recordHomeTemplateDesktop</name>
+        <name>flexipage:recordHomeSimpleViewTemplate</name>
         <properties>
             <name>enablePageActionConfig</name>
             <value>false</value>
