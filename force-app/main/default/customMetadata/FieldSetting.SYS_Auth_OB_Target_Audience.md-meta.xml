@@ -16,7 +16,7 @@
     </values>
     <values>
         <field>FieldApiName__c</field>
-        <value xsi:nil="true"/>
+        <value xsi:type="xsd:string">target_audience__c</value>
     </values>
     <values>
         <field>Field_Mapping_Handler__c</field>
@@ -51,6 +51,14 @@
         <value xsi:nil="true"/>
     </values>
     <values>
+        <field>Lookup_External_Key__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>Lookup_Object_API_Name__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
         <field>ObjectApiName__c</field>
         <value xsi:type="xsd:string">SYS_OAuthConfig__c</value>
     </values>
@@ -68,6 +76,6 @@
     </values>
     <values>
         <field>StaticValue__c</field>
-        <value xsi:type="xsd:string">Test</value>
+        <value xsi:nil="true"/>
     </values>
 </CustomMetadata>

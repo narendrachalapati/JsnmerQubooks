@@ -217,6 +217,15 @@ global virtual class SYS_ApplicationService {
         }
         return fvalue;
     }
+
+    //TODO Test coverage
+    global virtual String getIdFromExternalKey(String objectApiName, String externalKey, String externalId){
+        sObject parentRecord = Database.query('SELECT Id FROM '+objectApiName+' WHERE '+externalKey+'= \''+externalId+'\'');
+        if(parentRecord!=NULL)
+            return String.valueOf(parentRecord.get('Id'));
+        else
+            return '';
+    }
     
     /**
      * INBOUND
@@ -230,6 +239,10 @@ global virtual class SYS_ApplicationService {
         System.debug(mapping.FieldApiName__c+' +MS+ '+value);
         if(mapping.Get_value_from_Log__c)
             value = SYS_DataCache.log.get(mapping.Log_API_for_field_mapping__c);
+
+        if(mapping.Is_Lookup__c && mapping.Lookup_External_Key__c!=NULL && mapping.Lookup_Object_API_Name__c!=NULL){
+            value = getIdFromExternalKey(mapping.Lookup_Object_API_Name__c,mapping.Lookup_External_Key__c,String.valueOf(value));
+        }
             
 
         if(value==NULL) return sObj;
@@ -585,7 +598,13 @@ global virtual class SYS_ApplicationService {
     global virtual void fixParent(String parentLogId,SYS_IntegrationLog__c childLog){
 
         List<FieldSetting__mdt> fsm = new List<FieldSetting__mdt>();
-        fsm = [SELECT FieldApiName__c,ParentField__c,ObjectApiName__c FROM FieldSetting__mdt WHERE RestResource__c = :childLog.Resource__c AND Is_Lookup__c=true];
+        fsm = [SELECT FieldApiName__c,
+                        ObjectApiName__c 
+                        FROM FieldSetting__mdt 
+                        WHERE RestResource__c = :childLog.Resource__c 
+                        AND Is_Lookup__c=true 
+                        AND Lookup_External_Key__c=NULL 
+                        AND Lookup_Object_API_Name__c=NULL];
         System.debug('MS Fixing Relationship:'+fsm);
         List<sObject> childRecords = new List<sObject>();
         
