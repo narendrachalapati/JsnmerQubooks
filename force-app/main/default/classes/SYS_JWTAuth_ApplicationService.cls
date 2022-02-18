@@ -11,7 +11,9 @@ public with sharing class SYS_JWTAuth_ApplicationService extends SYS_Application
     }
 
     public override String preprocessJSONForOutbound(SYS_IntegrationLog__c log, String jsonBody){
-        System.debug('Hello Howdy:'+jsonBody);
+
+        // TODO add other supported algos. Handle RSA-SHA256 using Certificate
+
         List<SYS_OAuthConfig__c> authConfigList = 
             Database.query('SELECT '+SYS_Helper.getAllFieldsFor('SYS_OAuthConfig__c') +' FROM SYS_OAuthConfig__c WHERE Id = \'' + log.WhatId__c + '\'');
 
@@ -79,49 +81,5 @@ public with sharing class SYS_JWTAuth_ApplicationService extends SYS_Application
         }
     }
 
-    /*
-
-      JWT jwt = new JWT(SYS_DataCache.JWT_ALGO);
-
-        jwt.validFor = 600;
-        jwt.iss = SYS_DataCache.JWT_ISS;
-        jwt.sub = SYS_DataCache.JWT_SUB;
-        jwt.aud = SYS_DataCache.JWT_AUD;
-        Map<String,String> claims = new  Map<String,String>();
-        claims.put('target_audience', SYS_DataCache.JWT_TARGET_AUD);
-        jwt.claims = claims;
-        String access_token = JWTBearerFlow.getAccessToken(SYS_DataCache.JWT_TOKEN_URL , jwt);
-		
-
-    public class JWTBearerFlow { 
-
-        public static String getAccessToken(String tokenEndpoint, JWT jwt) {
-        
-            String access_token = null;
-            String body = 'grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer&assertion=' + jwt.issue();
-            HttpRequest req = new HttpRequest();                            
-            req.setMethod('POST');
-            req.setEndpoint(tokenEndpoint);
-            req.setHeader('Content-type', 'application/x-www-form-urlencoded');
-            req.setBody(body);
-            Http http = new Http();               
-            HTTPResponse res = http.send(req);
-            
-            if ( res.getStatusCode() == 200 ) {
-                System.debug(res.getBody());
-                System.JSONParser parser = System.JSON.createParser(res.getBody());
-                while (parser.nextToken() != null) {
-                    if ((parser.getCurrentToken() == JSONToken.FIELD_NAME) && (parser.getText() == 'id_token')) {
-                        parser.nextToken();
-                        access_token = parser.getText();
-                        break;
-                    }
-                }
-            }
-            return access_token;
-            
-        }
-
-    }
-    */
+   
 }
