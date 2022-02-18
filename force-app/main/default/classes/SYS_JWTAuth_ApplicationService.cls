@@ -1,7 +1,7 @@
 public with sharing class SYS_JWTAuth_ApplicationService extends SYS_ApplicationService {
 
-    public String base64URLencode(Blob input){ 
-        String output = encodingUtil.base64Encode(input);
+    public String base64UrlEncode(Blob input){ 
+        String output = EncodingUtil.base64Encode(input);
         output = output.replace('+', '-');
         output = output.replace('/', '_');
         while ( output.endsWith('=')){
@@ -19,21 +19,20 @@ public with sharing class SYS_JWTAuth_ApplicationService extends SYS_Application
     
         JSONGenerator header = JSON.createGenerator(false);
         header.writeStartObject();
-        header.writeStringField('alg', authConfigList[0].alog__c);
+        header.writeStringField('alg', authConfigList[0].algo__c);
         header.writeStringField('typ', 'JWT');
         header.writeEndObject();
         
-        String encodedHeader = base64URLencode(Blob.valueOf(header.getAsString()));
+        String encodedHeader = base64UrlEncode(Blob.valueOf(header.getAsString()));
 
-        jwt = encodedHeader + '.' + base64URLencode(Blob.valueOf(jsonBody));
+        jwt = encodedHeader + '.' + base64UrlEncode(Blob.valueOf(jsonBody));
         Blob key = EncodingUtil.base64Decode(authConfigList[0].Private_Key__c);
         Blob signature = Crypto.sign('rsa-sha256', Blob.valueOf(jwt), key);
-        jwt += '.' + base64URLencode(signature); 
+        jwt += '.' + base64UrlEncode(signature); 
 
-        jsonBody = 'grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer&assertion='+jwt;
+        jsonBody = 'grant_type='+EncodingUtil.urlEncode(authConfigList[0].Scope__c,'UTF-8')+'&assertion='+jwt;
 
         log.data1__c = jsonBody;
-        //upsert log;
 
         return jsonBody;
     }

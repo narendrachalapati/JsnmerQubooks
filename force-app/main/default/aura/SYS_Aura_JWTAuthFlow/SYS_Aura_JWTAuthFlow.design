@@ -1,3 +1,6 @@
-<design:component >
-
+<design:component>
+    <!--
+    <design:attribute name="buttonVariant"
+                    label="Button Variant"/>
+    -->
 </design:component>
