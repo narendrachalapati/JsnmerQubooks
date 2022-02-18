@@ -3,14 +3,13 @@
                 access="global">
 
     <aura:attribute name="recordId" type="String"/>
+    <aura:attribute name="message" type="String"/>
    
 
     <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
 
     <div>
-        <div class="slds-card slds-var-p-around_xx-large">
-         <button class="slds-button slds-button_brand" onclick="{!c.invokeTokenFlowJS}">Start JWT Flow</button>
-        </div>
+        {!v.message}
     </div>
     
 

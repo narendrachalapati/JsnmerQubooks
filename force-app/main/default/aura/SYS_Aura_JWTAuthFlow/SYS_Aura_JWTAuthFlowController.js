@@ -1,20 +1,31 @@
 ({
     doInit : function(component, event, helper) {
-        
+        component.set("v.message", 'Please wait while we fetch the token...');
+        var invokeTokenFlowJSaction = component.get("c.invokeTokenFlowJS");
+        $A.enqueueAction(invokeTokenFlowJSaction);
+
     },
 
     invokeTokenFlowJS : function(component, event, helper){
-        alert("Version 1");
-        component.set("v.responseStatus", 'Please wait while we fetch the token...');
-
+        
         let action = component.get("c.invokeTokenFlow");
         action.setParams({"oauthConfigId" : component.get("v.recordId")});
         action.setCallback(this,function(response){
             let state = response.getState();
             if(state === 'SUCCESS'){
-                alert("Sucess");
+                var toastEvent = $A.get("e.force:showToast");
+                toastEvent.setParams({
+                    "title": "Success",
+                    "type":"success",
+                    "message": "Token successfully generated."
+                });
+                toastEvent.fire();
+                $A.get("e.force:closeQuickAction").fire();
+                $A.get('e.force:refreshView').fire();
+                
             }else{
-                alert("Error");
+                component.set("v.message", 'Token could not be generated. Please try after some time');
+
             }
         });
 
