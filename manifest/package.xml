@@ -6,6 +6,7 @@
 		<members>SYS_DataCache</members>
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 		<members>SYS_DataCacheTest</members>
 		<members>SYS_debug</members>
 =======
@@ -13,15 +14,22 @@
 		<members>SYS_ExceptionHandler</members>
 =======
 >>>>>>> 79e2bd10cca80a1918338f3482359441195f051b
+=======
+		<members>SYS_Helper</members>
+>>>>>>> 07db0968a0e69adf1c551df030f50c0bbe65d618
 		<members>SYS_IntegrationLogInboundImmediate</members>
 		<members>SYS_IntegrationLogOutboundImmediate</members>
 		<members>SYS_IntegrationLogOutboundQueueable</members>
 		<members>SYS_IntegrationLogTriggerHandler</members>
 		<members>SYS_InvocableHandler</members>
 <<<<<<< HEAD
+<<<<<<< HEAD
 		<members>SYS_QB_ApplicationServiceinbound</members>
 		<members>SYS_QB_ApplicationServiceOutbound</members>
 =======
+=======
+		<members>SYS_JWTAuth_ApplicationService</members>
+>>>>>>> 07db0968a0e69adf1c551df030f50c0bbe65d618
 		<members>SYS_OAuthRedirectHandler</members>
 		<members>SYS_Override_ApplicationService</members>
 		<members>SYS_ParentingQueueable</members>
@@ -34,6 +42,7 @@
 <<<<<<< HEAD
 =======
 		<members>SYS_debug</members>
+<<<<<<< HEAD
 <<<<<<< HEAD
 		<members>SYS_ParentingQueueable</members>
 <<<<<<< HEAD
@@ -50,11 +59,23 @@
 >>>>>>> 7dde845b4cc61fa9696948d835ed525afc20869d
 =======
 >>>>>>> b335cbe28f8f4c7a86832febb61c6a6581cd1de3
+=======
+
+		<members>SYS_OutboundTest</members>
+		<members>SYS_InboundTest</members>
+		<members>SYS_TestUtil</members>
+		<members>SYS_TestDataFactory</members>
+		<members>SYS_MockServer</members>
+>>>>>>> 07db0968a0e69adf1c551df030f50c0bbe65d618
 		<name>ApexClass</name>
 		</types>
 	<types>
 		<members>SYS_IntegrationLogTrigger</members>
 		<name>ApexTrigger</name>
+	</types>
+	<types>
+		<members>SYS_Aura_JWTAuthFlow</members>
+		<name>AuraDefinitionBundle</name>
 	</types>
 	<types>
 		<members>Account.SYS_Key__c</members>
@@ -72,6 +93,7 @@
 		<members>IntegrationEnablement__mdt</members>
 		<members>IntegrationSetting__mdt</members>
 		<members>ObjectSetting__mdt</members>
+		<members>RelationshipSetting__mdt</members>
 		<members>SYS_IntegrationLog__c</members>
 		<members>SYS_OAuthConfig__c</members>
 		<name>CustomObject</name>
@@ -88,13 +110,32 @@
 		<members>IntegrationSetting__mdt-IntegrationSetting Layout</members>
 		<members>ObjectSetting__mdt-ObjectSetting Layout</members>
 		<members>RelationshipSetting__mdt-RelationshipSetting Layout</members>
+		<members>SYS_IntegrationLog__c-SYS_IntegrationLog Layout</members>
+		<members>SYS_OAuthConfig__c-SYS_OAuthConfig Layout</members>
 		<name>Layout</name>
 	</types>
 	<types>
-		<members>SYS_Test_Inbound_Body_Large</members>
+		<members>GCPJWT</members>
+		<name>NamedCredential</name>
+	</types>
+	<types>
+		<members>SYS_OAuthConfig__c.Start_JWT_Flow</members>
+		<name>QuickAction</name>
+	</types>
+	<types>
+		<members>DrChrono</members>
+		<members>Gmail_Token_API</members>
+		<name>RemoteSiteSetting</name>
+	</types>
+	<types>
 		<members>SYS_Test_Inbound_Body</members>
+		<members>SYS_Test_Inbound_Body_Large</members>
 		<members>SYS_Test_Outbound_Response_Body</members>
 		<name>StaticResource</name>
+	</types>
+	<types>
+		<members>SYS_OAuthConfig__c.Start_Authentication_Flow</members>
+		<name>WebLink</name>
 	</types>
 	<version>53.0</version>
 </Package>
