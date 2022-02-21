@@ -73,8 +73,8 @@ public class SYS_QB_ApplicationServiceinbound extends SYS_ApplicationService {
         log.Custom_Apex_Handler__c = 'SYS_QB_ApplicationServiceinbound';
         //todo
         log.Custom_Field_Value__c = 'false';
-       // log.Requires_process_on_complete__c = true;
-
+        log.Requires_process_on_complete__c = true;
+         
         return log;
     }
   
@@ -102,6 +102,38 @@ public class SYS_QB_ApplicationServiceinbound extends SYS_ApplicationService {
         return SYS_Transformer.getSObjectsToUpsert(new List<String>{jsonBody},resource);
     }
    
+    
+    public override SYS_IntegrationLog__c generateLogForChildRecords(String parentLogId,String resource,String recordsJson,String integrationSetting) {
+        SYS_IntegrationLog__c log = SYS_Helper.getLogsToInsert(recordsJson);
+        system.debug('log+++'+log);
+
+        String algo = SYS_DataCache.integrationSetting.get(SYS_DataCache.INT_TYPE).Hashing_Algo__c;
+        if(algo!=NULL && algo!='')
+            log.Request_Digest__c = generateHash(recordsJson,algo);
+
+        SYS_debug.log('MS SYS_DataCache.log in generate child log:'+SYS_DataCache.log.Id);
+        log.Parent__c = parentLogId;
+        log.Resource__c = resource;
+        log.Type__c = 'INBOUND';
+        //Todo
+        log.SYS_Operation_Type__c = 'INSERT';
+        log.Flat_Key_for_Resource__c = '';
+        log.SYS_IntegrationSettings__c = integrationSetting;
+        log.Status__c = 'NEW';//'WAITING_FOR_PARENT';
+       
+        /**
+         * Applies when the child records require parenting after creation
+         */
+        log.Requires_process_on_complete__c = true;
+        log.On_Complete_Handler__c = 'SYS_ApplicationService';
+        /** */
+
+        //log.External_Id_Field_API_Name__c = 'SYS_Child_Key__c';
+        log.How_to_process__c = 'use_custom_apex_handler';
+        log.Custom_Apex_Handler__c = 'SYS_QB_ApplicationServiceinbound';
+
+        return log;
+    }
     public override virtual void fixParent(String parentLogId,SYS_IntegrationLog__c childLog){
         list<SYS_IntegrationLog__c> parentlog = [SELECT Parent__r.WhatId__c FROM SYS_IntegrationLog__c WHERE Parent__c = :parentLogId AND Status__c='DONE'];
         list <OpportunityLineItem>opp = [select id from OpportunityLineItem WHERE OpportunityId=:parentlog[0].Parent__r.WhatId__c];

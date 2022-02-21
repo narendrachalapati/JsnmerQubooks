@@ -133,6 +133,7 @@ global virtual class SYS_ApplicationService {
         }
         else{
             SYS_DataCache.log.WhatId__c = results[0].getId();
+            system.debug(' SYS_DataCache.log.WhatId__c++'+ SYS_DataCache.log.WhatId__c);
         }
 
         return success;
@@ -325,6 +326,7 @@ global virtual class SYS_ApplicationService {
      */
     global virtual SYS_IntegrationLog__c generateLogForChildRecords(String parentLogId,String resource,String recordsJson,String integrationSetting) {
         SYS_IntegrationLog__c log = SYS_Helper.getLogsToInsert(recordsJson);
+        system.debug('log+++'+log);
 
         String algo = SYS_DataCache.integrationSetting.get(SYS_DataCache.INT_TYPE).Hashing_Algo__c;
         if(algo!=NULL && algo!='')
@@ -334,11 +336,12 @@ global virtual class SYS_ApplicationService {
         log.Parent__c = parentLogId;
         log.Resource__c = resource;
         log.Type__c = 'INBOUND';
-        log.SYS_Operation_Type__c = 'UPDATE';
+        //Todo
+        log.SYS_Operation_Type__c = 'UPSERT';
         log.Flat_Key_for_Resource__c = '';
         log.SYS_IntegrationSettings__c = integrationSetting;
         log.Status__c = 'NEW';//'WAITING_FOR_PARENT';
-
+       
         /**
          * Applies when the child records require parenting after creation
          */
@@ -414,6 +417,7 @@ global virtual class SYS_ApplicationService {
         for(sObject s:sObjectsToDML){
             if(s.Id == NULL){
                 s.Id = SYS_DataCache.log.WhatId__c;
+                system.debug('s.Id==='+ s.Id);
             }
         }
         return sObjectsToDML;
