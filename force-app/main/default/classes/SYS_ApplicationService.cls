@@ -245,15 +245,11 @@ global virtual class SYS_ApplicationService {
 
         if(mapping.Is_Lookup__c && mapping.Lookup_External_Key__c!=NULL && mapping.Lookup_Object_API_Name__c!=NULL){
             value = getIdFromExternalKey(mapping.Lookup_Object_API_Name__c,mapping.Lookup_External_Key__c,String.valueOf(value));
-            system.debug('value Lookup_Object_API_Name__c'+value);
-           //Todo
-           
-            List<Product2> prod=[Select Id,ProductCode from Product2 where id ='01t5j0000049r8LAAQ'];
-            system.debug('prod==='+prod);
+        }
 
-      }
-       
-             
+        if(mapping.StaticValue__c != NULL)
+            value = mapping.StaticValue__c;
+            
 
         if(value==NULL) return sObj;
 
