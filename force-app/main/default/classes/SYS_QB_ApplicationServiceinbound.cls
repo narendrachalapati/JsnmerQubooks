@@ -89,7 +89,9 @@ public class SYS_QB_ApplicationServiceinbound extends SYS_ApplicationService {
      */
     public override List<sObject> transformJsonToSObject(String jsonBody,String resource) {
         Object responseType = JSON.deserializeUntyped(jsonBody);
+        system.debug('jsonBody+++===**'+jsonBody);
         Object JSONwithoutrootkey ;
+        if(SYS_DataCache.log.Parent__c==Null){
         if(responseType instanceof Map<String,Object>){
             JSONwithoutrootkey = (((Map<String, Object>)responseType).values())[0];
             system.debug('JSONForUpsert+++'+JSONwithoutrootkey);
@@ -97,9 +99,12 @@ public class SYS_QB_ApplicationServiceinbound extends SYS_ApplicationService {
             jsonBody = JSON.serialize(JSONwithoutrootkey);
               system.debug('jsonBody++++===='+jsonBody);
         }
+    }
       system.debug('jsonBody++++===='+jsonBody);
 
+
         return SYS_Transformer.getSObjectsToUpsert(new List<String>{jsonBody},resource);
+    
     }
    
     
@@ -137,7 +142,7 @@ public class SYS_QB_ApplicationServiceinbound extends SYS_ApplicationService {
     public override virtual void fixParent(String parentLogId,SYS_IntegrationLog__c childLog){
         list<SYS_IntegrationLog__c> parentlog = [SELECT Parent__r.WhatId__c FROM SYS_IntegrationLog__c WHERE Parent__c = :parentLogId AND Status__c='DONE'];
         list <OpportunityLineItem>opp = [select id from OpportunityLineItem WHERE OpportunityId=:parentlog[0].Parent__r.WhatId__c];
-       system.debug('opp'+opp);
+       system.debug('opp++++*******'+opp);
          if(opp !=NULL){
             Database.DeleteResult[] results;
         Boolean success = true;

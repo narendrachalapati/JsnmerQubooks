@@ -241,11 +241,19 @@ global virtual class SYS_ApplicationService {
         System.debug(mapping.FieldApiName__c+' +MS+ '+value);
         if(mapping.Get_value_from_Log__c)
             value = SYS_DataCache.log.get(mapping.Log_API_for_field_mapping__c);
+            system.debug('valueGet_value_from_Log__c'+value);
 
         if(mapping.Is_Lookup__c && mapping.Lookup_External_Key__c!=NULL && mapping.Lookup_Object_API_Name__c!=NULL){
             value = getIdFromExternalKey(mapping.Lookup_Object_API_Name__c,mapping.Lookup_External_Key__c,String.valueOf(value));
-        }
-            
+            system.debug('value Lookup_Object_API_Name__c'+value);
+           //Todo
+           
+            List<Product2> prod=[Select Id,ProductCode from Product2 where id ='01t5j0000049r8LAAQ'];
+            system.debug('prod==='+prod);
+
+      }
+       
+             
 
         if(value==NULL) return sObj;
 
@@ -275,6 +283,7 @@ global virtual class SYS_ApplicationService {
         }
 
         SYS_debug.log('MS FINAL SOBJ:'+sObj);
+        system.debug('final sobjectfor insert+++***'+sObj);
         return sObj;
     }
 

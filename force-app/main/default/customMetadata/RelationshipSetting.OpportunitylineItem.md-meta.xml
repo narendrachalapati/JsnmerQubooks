@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>OpportunitylineItem</label>
+    <protected>false</protected>
+    <values>
+        <field>ChildFieldNew__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>ChildField__c</field>
+        <value xsi:type="xsd:string">SYS_Parent__c</value>
+    </values>
+    <values>
+        <field>ChildObjectNew__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>ChildObject__c</field>
+        <value xsi:type="xsd:string">OpportunityLineItem</value>
+    </values>
+    <values>
+        <field>ChildRelationshipFieldNew__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>ChildRelationshipField__c</field>
+        <value xsi:type="xsd:string">OpportunityId</value>
+    </values>
+    <values>
+        <field>ObjectSetting__c</field>
+        <value xsi:type="xsd:string">OpportunityQB</value>
+    </values>
+    <values>
+        <field>ParentObject__c</field>
+        <value xsi:type="xsd:string">Opportunity</value>
+    </values>
+</CustomMetadata>
