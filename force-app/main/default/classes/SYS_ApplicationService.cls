@@ -706,7 +706,8 @@ global virtual class SYS_ApplicationService {
             if (Schema.sObjectType.SYS_IntegrationLog__c.fields.SYS_Operation_Type__c.isCreateable()) {
                 if(log.SYS_Operation_Type__c == 'INSERT'){
                     logResp.SYS_Operation_Type__c = 'UPDATE';
-                    logResp.Resource__c = SYS_DataCache.objectSettingMap.get(SYS_DataCache.OBJ_TYPE).ResourcePath__c;
+                    logResp.Resource__c = SYS_DataCache.fieldSettingMappingUsingObjSetting[0].RestResource__c;
+                    //SYS_DataCache.objectSettingMap.get(SYS_DataCache.OBJ_TYPE).ResourcePath__c;
                 }
                 else{
                     logResp.SYS_Operation_Type__c = 'RESPONSE';
