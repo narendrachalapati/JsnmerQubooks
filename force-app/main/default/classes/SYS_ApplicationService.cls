@@ -578,8 +578,7 @@ global virtual class SYS_ApplicationService {
             //ID jobID = System.enqueueJob(new SYS_ParentChildRecordsQueueable(log,SYS_DataCache.INT_TYPE));
             logResp = SYS_DataCache.log;
             logResp.ObjectSettingId__c = SYS_DataCache.OBJ_TYPE;
-            logResp.Status__c = 'DONE';
-            logResp.Message__c = 'Record created/updated successfully';
+            //logResp.Status__c = 'DONE';
 
             /**
              * Check if there are other siblings. Call parenting queueable only if all are done
@@ -588,9 +587,29 @@ global virtual class SYS_ApplicationService {
             System.debug('MS totalChildRecords B4:'+SYS_QueueableForInboundChild.totalChildRecords);
             SYS_QueueableForInboundChild.totalChildRecords--;
             System.debug('MS totalChildRecords After:'+SYS_QueueableForInboundChild.totalChildRecords);
-            if(SYS_DataCache.log.Requires_process_on_complete__c && (SYS_QueueableForInboundChild.totalChildRecords==0))
+            System.debug('MS Condition chck for Parenting:'+SYS_DataCache.log.Requires_process_on_complete__c);
+            System.debug('MS Condition chck for Parenting:'+(SYS_QueueableForInboundChild.totalChildRecords==0));
+            System.debug('MS Condition chck for Parenting:'+SYS_DataCache.log.Status__c);
+
+            if(SYS_DataCache.log.Requires_process_on_complete__c 
+                && (SYS_QueueableForInboundChild.totalChildRecords==0 || SYS_DataCache.log.Status__c=='READY_FOR_PROCESSING'))
             {
-                System.enqueueJob(new SYS_ParentingQueueable(String.valueOf(SYS_DataCache.log.Parent__c),SYS_DataCache.INT_TYPE,SYS_DataCache.log));
+                System.debug('MS Queueable Jobs in queue:'+Limits.getQueueableJobs());
+                System.debug('MS Queueable Allowed:'+Limits.getLimitQueueableJobs());
+
+                logResp.Status__c = 'PENDING_PARENT';
+
+                if(!(Limits.getQueueableJobs() + 1 > Limits.getLimitQueueableJobs())){
+                    System.enqueueJob(new SYS_ParentingQueueable(String.valueOf(SYS_DataCache.log.Parent__c),SYS_DataCache.INT_TYPE,SYS_DataCache.log));
+
+                }
+            }
+            else{
+                
+                logResp.Message__c = 'Record created/updated successfully';
+                logResp.Status__c = 'DONE';
+                
+
             }
             
         }
@@ -611,7 +630,7 @@ global virtual class SYS_ApplicationService {
         System.debug('MS Fixing Relationship:'+fsm);
         List<sObject> childRecords = new List<sObject>();
         
-        for(SYS_IntegrationLog__c cLog:[SELECT Id,WhatId__c,Parent__r.WhatId__c FROM SYS_IntegrationLog__c WHERE Parent__c = :parentLogId AND Status__c='DONE'])
+        for(SYS_IntegrationLog__c cLog:[SELECT Id,WhatId__c,Parent__r.WhatId__c FROM SYS_IntegrationLog__c WHERE Parent__c = :parentLogId /*AND Status__c='PENDING_PARENT'*/])
         {
             sObject sObj = Schema.getGlobalDescribe().get(fsm[0].ObjectApiName__c).newSObject();
             System.debug('MS cLog:'+cLog);
@@ -622,7 +641,14 @@ global virtual class SYS_ApplicationService {
         }
         System.debug('MS Child Records for Parenting:'+childRecords);
        
-        doDML(childRecords, 'UPDATE', '');
+        childLog.Status__c ='DONE';
+        childRecords.add(childLog);
+        if(doDML(childRecords, 'UPDATE', '')){
+            childLog.Status__c ='DONE';
+            childRecords.clear();
+            childRecords.add(childLog);
+            doDML(childRecords, 'UPDATE', '');
+        }
         
 
     }
@@ -713,7 +739,9 @@ global virtual class SYS_ApplicationService {
                     logResp.SYS_Operation_Type__c = 'RESPONSE';
                 }
             }
+            
         }
+        
 
         return logResp;
     }

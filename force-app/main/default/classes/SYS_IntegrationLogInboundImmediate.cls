@@ -40,8 +40,9 @@ public class SYS_IntegrationLogInboundImmediate{
             
             try{
                 SYS_DataCache.log = log;
-                SYS_debug.log('MS SYS_DataCache.log in Inbound queueable:'+SYS_DataCache.log);
+                
                 SYS_DataCache.INT_TYPE = log.SYS_IntegrationSettings__c;
+                SYS_debug.log('MS SYS_DataCache.log in Inbound queueable:'+SYS_DataCache.log);
                 // NA SYS_DataCache.OBJ_TYPE = log.ObjectSettingId__c;
                 SYS_ApplicationService appService;
 

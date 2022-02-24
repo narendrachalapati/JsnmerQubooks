@@ -523,6 +523,7 @@ public virtual class SYS_Transformer {
                         }
                         System.debug('in else=='+result);
                         System.debug('MS Child Objects to be processed:'+childRecList);
+                        System.debug('MS condition for Key: '+key+' = '+(SYS_DataCache.externalKeyByResourceMap.containsKey(key.toLowerCase())));
                         
                         //AP-106
                         if(SYS_DataCache.externalKeyByResourceMap.containsKey(key.toLowerCase()))
