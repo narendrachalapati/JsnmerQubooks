@@ -551,6 +551,7 @@ global virtual class SYS_ApplicationService {
 
             if (Schema.sObjectType.SYS_IntegrationLog__c.fields.Status__c.isCreateable()) {
                 logResp.Status__c = 'FAIL';
+                SYS_Helper.flagLogForRetry(logResp.Id);
             }
 
             if (Schema.sObjectType.SYS_IntegrationLog__c.fields.Message__c.isCreateable()) {
@@ -598,6 +599,7 @@ global virtual class SYS_ApplicationService {
                 System.debug('MS Queueable Allowed:'+Limits.getLimitQueueableJobs());
 
                 logResp.Status__c = 'PENDING_PARENT';
+                SYS_Helper.flagLogForRetry(logResp.Id);
 
                 if(!(Limits.getQueueableJobs() + 1 > Limits.getLimitQueueableJobs())){
                     System.enqueueJob(new SYS_ParentingQueueable(String.valueOf(SYS_DataCache.log.Parent__c),SYS_DataCache.INT_TYPE,SYS_DataCache.log));
@@ -666,6 +668,7 @@ global virtual class SYS_ApplicationService {
             
             if (Schema.sObjectType.SYS_IntegrationLog__c.fields.Status__c.isCreateable()) {
                 logResp.Status__c = 'ERROR';
+                SYS_Helper.flagLogForRetry(logResp.Id);
             }
             if (Schema.sObjectType.SYS_IntegrationLog__c.fields.SYS_Http_Status__c.isCreateable()) {
                 logresp.SYS_Http_Status__c = integer.valueOf(resp.getStatusCode());

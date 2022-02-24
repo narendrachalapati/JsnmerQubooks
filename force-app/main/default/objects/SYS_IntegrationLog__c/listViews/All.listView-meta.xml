@@ -9,6 +9,8 @@
     <columns>Type__c</columns>
     <columns>WhatId__c</columns>
     <columns>LAST_UPDATE</columns>
+    <columns>Retry_Count__c</columns>
+    <columns>retry__c</columns>
     <filterScope>Everything</filterScope>
     <label>All</label>
 </ListView>

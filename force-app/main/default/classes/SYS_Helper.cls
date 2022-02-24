@@ -79,9 +79,20 @@ public class SYS_Helper {
 
     public static void logException(SYS_IntegrationLog__c log,String stackTrace){
         //log.Type__c = 'EXCEPTION';
+
+        flagLogForRetry(log.Id);
+        
         log.Status__c = 'FAIL';
         log.Message__c = stackTrace;
+        
         upsert log;
+    }
+
+    @future
+    public static void flagLogForRetry(Id logId){
+        SYS_IntegrationLog__c log = new SYS_IntegrationLog__c(Id=logId);
+        log.retry__c = true;
+        update log;
     }
 
     /* ------------------------------------------------------------------------ */

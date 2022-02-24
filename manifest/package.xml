@@ -5,25 +5,24 @@
 		<members>SYS_Constants</members>
 		<members>SYS_DataCache</members>
 		<members>SYS_Helper</members>
+		<members>SYS_InboundTest</members>
 		<members>SYS_IntegrationLogInboundImmediate</members>
 		<members>SYS_IntegrationLogOutboundImmediate</members>
 		<members>SYS_IntegrationLogOutboundQueueable</members>
 		<members>SYS_IntegrationLogTriggerHandler</members>
 		<members>SYS_InvocableHandler</members>
 		<members>SYS_JWTAuth_ApplicationService</members>
+		<members>SYS_MockServer</members>
 		<members>SYS_OAuthRedirectHandler</members>
+		<members>SYS_OutboundTest</members>
 		<members>SYS_Override_ApplicationService</members>
 		<members>SYS_ParentingQueueable</members>
 		<members>SYS_QueueableForInboundChild</members>
+		<members>SYS_TestDataFactory</members>
+		<members>SYS_TestUtil</members>
 		<members>SYS_Transformer</members>
 		<members>SYS_Webservice</members>
 		<members>SYS_debug</members>
-
-		<members>SYS_OutboundTest</members>
-		<members>SYS_InboundTest</members>
-		<members>SYS_TestUtil</members>
-		<members>SYS_TestDataFactory</members>
-		<members>SYS_MockServer</members>
 		<name>ApexClass</name>
 	</types>
 	<types>
@@ -60,6 +59,10 @@
 		<members>SYS_IntegrationLog_Record_Page</members>
 		<members>SYS_OAuth_Configs</members>
 		<name>FlexiPage</name>
+	</types>
+	<types>
+		<members>SYS_Flow_for_log_retry</members>
+		<name>Flow</name>
 	</types>
 	<types>
 		<members>FieldSetting__mdt-FieldSetting Layout</members>

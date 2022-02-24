@@ -20,6 +20,7 @@ public class SYS_Override_ApplicationService extends SYS_ApplicationService{
             
             if (Schema.sObjectType.SYS_IntegrationLog__c.fields.Status__c.isCreateable()) {
                 logResp.Status__c = 'ERROR';
+                SYS_Helper.flagLogForRetry(logResp.Id);
             }
             if (Schema.sObjectType.SYS_IntegrationLog__c.fields.SYS_Http_Status__c.isCreateable()) {
                 logresp.SYS_Http_Status__c = integer.valueOf(resp.getStatusCode());
