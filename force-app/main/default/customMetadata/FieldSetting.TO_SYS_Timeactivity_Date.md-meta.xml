@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-    <label>Opportunityline_Request_Digest</label>
+    <label>TO SYS_Timeactivity Date</label>
     <protected>false</protected>
     <values>
         <field>ChildFieldApiName__c</field>
@@ -8,15 +8,15 @@
     </values>
     <values>
         <field>ChildRootElement__c</field>
-        <value xsi:type="xsd:string">Line</value>
+        <value xsi:nil="true"/>
     </values>
     <values>
         <field>Direction__c</field>
-        <value xsi:type="xsd:string">INBOUND</value>
+        <value xsi:type="xsd:string">TWOWAY</value>
     </values>
     <values>
         <field>FieldApiName__c</field>
-        <value xsi:type="xsd:string">SYS_Hash__c</value>
+        <value xsi:type="xsd:string">Date__c</value>
     </values>
     <values>
         <field>Field_Mapping_Handler__c</field>
@@ -24,11 +24,11 @@
     </values>
     <values>
         <field>Get_value_from_Log__c</field>
-        <value xsi:type="xsd:boolean">true</value>
+        <value xsi:type="xsd:boolean">false</value>
     </values>
     <values>
         <field>IsChild__c</field>
-        <value xsi:type="xsd:boolean">true</value>
+        <value xsi:type="xsd:boolean">false</value>
     </values>
     <values>
         <field>Is_Active__c</field>
@@ -36,7 +36,7 @@
     </values>
     <values>
         <field>Is_External_Field__c</field>
-        <value xsi:type="xsd:boolean">true</value>
+        <value xsi:type="xsd:boolean">false</value>
     </values>
     <values>
         <field>Is_Lookup__c</field>
@@ -44,11 +44,11 @@
     </values>
     <values>
         <field>Key__c</field>
-        <value xsi:type="xsd:string">key2</value>
+        <value xsi:type="xsd:string">TxnDate</value>
     </values>
     <values>
         <field>Log_API_for_field_mapping__c</field>
-        <value xsi:type="xsd:string">Request_Digest__c</value>
+        <value xsi:nil="true"/>
     </values>
     <values>
         <field>Lookup_External_Key__c</field>
@@ -60,19 +60,19 @@
     </values>
     <values>
         <field>ObjectApiName__c</field>
-        <value xsi:type="xsd:string">OpportunityLineItem</value>
+        <value xsi:type="xsd:string">SYS_TimeActivity__c</value>
     </values>
     <values>
         <field>ObjectSetting__c</field>
-        <value xsi:type="xsd:string">OpportunityQB</value>
+        <value xsi:type="xsd:string">SYS_QB_TimeActivitys</value>
     </values>
     <values>
         <field>ParentField__c</field>
-        <value xsi:type="xsd:string">OpportunityId</value>
+        <value xsi:nil="true"/>
     </values>
     <values>
         <field>RestResource__c</field>
-        <value xsi:type="xsd:string">line</value>
+        <value xsi:type="xsd:string">timeactivity</value>
     </values>
     <values>
         <field>StaticValue__c</field>

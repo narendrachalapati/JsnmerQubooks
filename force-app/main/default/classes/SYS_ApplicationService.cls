@@ -133,7 +133,6 @@ global virtual class SYS_ApplicationService {
         }
         else{
             SYS_DataCache.log.WhatId__c = results[0].getId();
-            system.debug(' SYS_DataCache.log.WhatId__c++'+ SYS_DataCache.log.WhatId__c);
         }
 
         return success;
@@ -163,7 +162,6 @@ global virtual class SYS_ApplicationService {
             System.debug('--MS SYS_DataCache.sObjectApiName in Applicaiton Service:'+SYS_DataCache.sObjectApiName);
             Schema.SObjectField externalIdField = Schema.getGlobalDescribe().get(SYS_DataCache.sObjectApiName).getDescribe().fields.getMap().get(additionalSetting); 
             results = Database.upsert(records, externalIdField, false);
-            system.debug('results*****'+results);
         }
         
         if(!results[0].isSuccess()){
@@ -241,7 +239,6 @@ global virtual class SYS_ApplicationService {
         System.debug(mapping.FieldApiName__c+' +MS+ '+value);
         if(mapping.Get_value_from_Log__c)
             value = SYS_DataCache.log.get(mapping.Log_API_for_field_mapping__c);
-            system.debug('valueGet_value_from_Log__c'+value);
 
         if(mapping.Is_Lookup__c && mapping.Lookup_External_Key__c!=NULL && mapping.Lookup_Object_API_Name__c!=NULL){
             value = getIdFromExternalKey(mapping.Lookup_Object_API_Name__c,mapping.Lookup_External_Key__c,String.valueOf(value));
@@ -279,7 +276,6 @@ global virtual class SYS_ApplicationService {
         }
 
         SYS_debug.log('MS FINAL SOBJ:'+sObj);
-        system.debug('final sobjectfor insert+++***'+sObj);
         return sObj;
     }
 
@@ -304,10 +300,9 @@ global virtual class SYS_ApplicationService {
     global virtual String generateHash(String requestBody,String algo) {
 
         Blob requestBlob = Blob.valueOf(requestBody);
-       
         Blob hashBlob = Crypto.generateDigest(algo,requestBlob);
         String base64EncodedHash = EncodingUtil.base64encode(hashBlob);
-        system.debug('base64EncodedHash====++++'+requestBlob+''+hashBlob+''+base64EncodedHash);
+
         return base64EncodedHash;
     }
 
@@ -344,7 +339,6 @@ global virtual class SYS_ApplicationService {
      */
     global virtual SYS_IntegrationLog__c generateLogForChildRecords(String parentLogId,String resource,String recordsJson,String integrationSetting) {
         SYS_IntegrationLog__c log = SYS_Helper.getLogsToInsert(recordsJson);
-        system.debug('log+++'+log);
 
         String algo = SYS_DataCache.integrationSetting.get(SYS_DataCache.INT_TYPE).Hashing_Algo__c;
         if(algo!=NULL && algo!='')
@@ -354,12 +348,11 @@ global virtual class SYS_ApplicationService {
         log.Parent__c = parentLogId;
         log.Resource__c = resource;
         log.Type__c = 'INBOUND';
-        //Todo
         log.SYS_Operation_Type__c = 'UPSERT';
         log.Flat_Key_for_Resource__c = '';
         log.SYS_IntegrationSettings__c = integrationSetting;
         log.Status__c = 'NEW';//'WAITING_FOR_PARENT';
-       
+
         /**
          * Applies when the child records require parenting after creation
          */
@@ -435,7 +428,6 @@ global virtual class SYS_ApplicationService {
         for(sObject s:sObjectsToDML){
             if(s.Id == NULL){
                 s.Id = SYS_DataCache.log.WhatId__c;
-                system.debug('s.Id==='+ s.Id);
             }
         }
         return sObjectsToDML;
@@ -548,7 +540,6 @@ global virtual class SYS_ApplicationService {
         if(!result){
             
             String errorMessage = 'Error while processing inbound';
-            
             /*
             String errorMessage = 'The following error has occurred.';
             for(Database.Error err : result.getErrors()) {
