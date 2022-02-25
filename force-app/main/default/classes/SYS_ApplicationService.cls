@@ -322,12 +322,11 @@ global virtual class SYS_ApplicationService {
 
         log.Type__c = 'INBOUND';
         log.SYS_Operation_Type__c = getOperationTypeFor(method);
-        log.Flat_Key_for_Resource__c = 'attributes.type';
+        log.Flat_Key_for_Resource__c = SYS_DataCache.integrationSetting.get(SYS_DataCache.INT_TYPE).Flat_Key_for_Resource__c;
         log.SYS_IntegrationSettings__c = SYS_DataCache.INT_TYPE;
         log.Status__c = 'NEW';
-        //log.External_Id_Field_API_Name__c = 'SYS_Key__c';
         log.How_to_process__c = 'use_custom_apex_handler';
-        log.Custom_Apex_Handler__c = 'SYS_ApplicationService';
+        log.Custom_Apex_Handler__c = SYS_DataCache.integrationSetting.get(SYS_DataCache.INT_TYPE).Inbound_Custom_Apex_Handler__c;
 
         return log;
     }
@@ -362,7 +361,7 @@ global virtual class SYS_ApplicationService {
 
         //log.External_Id_Field_API_Name__c = 'SYS_Child_Key__c';
         log.How_to_process__c = 'use_custom_apex_handler';
-        log.Custom_Apex_Handler__c = 'SYS_ApplicationService';
+        log.Custom_Apex_Handler__c = SYS_DataCache.integrationSetting.get(SYS_DataCache.INT_TYPE).Inbound_Custom_Apex_Handler__c;
 
         return log;
     }
@@ -478,7 +477,7 @@ global virtual class SYS_ApplicationService {
         
         List<HttpHeaders__mdt> httpHeader = SYS_DataCache.headerSetting;
         for(HttpHeaders__mdt head:httpHeader){
-            SYS_debug.log('header is = '+head.header_name__c + ''+head.Value__c);
+            SYS_debug.log('header is = '+head.header_name__c +' '+head.Value__c);
             req.setHeader(String.valueOf(head.header_name__c), String.valueOf(head.Value__c));       
         }
         
@@ -504,6 +503,7 @@ global virtual class SYS_ApplicationService {
         
         req.setEndpoint(getHttpRequestEndpoint());
         req.setMethod(getHttpRequestMethod());
+        System.debug('Final method set in buildOutboundHttpRequest() is:'+req.getMethod());
         setHttpRequestHeaders(req);
  
         return req;
@@ -518,11 +518,13 @@ global virtual class SYS_ApplicationService {
         Http http = new Http();
         HttpRequest req = buildOutboundHttpRequest(log);
 
-        String body = SYS_Helper.getDataFrom(log); 
-
-        body = preprocessJSONForOutbound(log,body);
-        req.setBody(body);
-        SYS_debug.log('body:'+body);
+        if(req.getMethod()!='GET'){
+            String body = SYS_Helper.getDataFrom(log); 
+            body = preprocessJSONForOutbound(log,body);
+            req.setBody(body);
+            SYS_debug.log('body:'+body);
+        }
+        
          
         HttpResponse response = http.send(req);
         SYS_debug.log('Outbound Request:'+req);
@@ -660,91 +662,52 @@ global virtual class SYS_ApplicationService {
     global virtual SYS_IntegrationLog__c generatelogForOutboundResult(HttpResponse resp,SYS_IntegrationLog__c log){
 
         SYS_IntegrationLog__c logResp = SYS_Helper.getLogsToInsert(resp.getBody());
+
         if(resp.getStatusCode() != 201 && resp.getStatusCode() != 200){
+
             SYS_debug.log('#### resp status: '+resp.getStatus());
             SYS_debug.log('#### resp code: '+resp.getStatusCode()); 
             SYS_debug.log('#### resp: '+resp.getBody());
 
+            log.Status__c = 'FAIL';
+            log.retry__c = true;
+
+            logResp.Status__c = 'ERROR';
+            //SYS_Helper.flagLogForRetry(log.Id);
             
-            if (Schema.sObjectType.SYS_IntegrationLog__c.fields.Status__c.isCreateable()) {
-                logResp.Status__c = 'ERROR';
-                SYS_Helper.flagLogForRetry(logResp.Id);
-            }
-            if (Schema.sObjectType.SYS_IntegrationLog__c.fields.SYS_Http_Status__c.isCreateable()) {
-                logresp.SYS_Http_Status__c = integer.valueOf(resp.getStatusCode());
-            }
-            if (Schema.sObjectType.SYS_IntegrationLog__c.fields.SYS_RequestId__c.isCreateable()) {
-                logResp.SYS_RequestId__c = log.Id;
-            }
-            if (Schema.sObjectType.SYS_IntegrationLog__c.fields.WhatId__c.isCreateable()) {
-                logResp.WhatId__c = log.WhatId__c;
-            }
-            
-            if (Schema.sObjectType.SYS_IntegrationLog__c.fields.Type__c.isCreateable()) {
-                logResp.Type__c = 'INBOUND';
-            }
-            if (Schema.sObjectType.SYS_IntegrationLog__c.fields.SYS_Operation_Type__c.isCreateable()) {
-                logResp.SYS_Operation_Type__c = 'RESPONSE';
-            }
-            if (Schema.sObjectType.SYS_IntegrationLog__c.fields.How_To_Process__c.isCreateable()) {
-                logResp.How_To_Process__c = 'ignore_log';
-                
-            }
-            if (Schema.sObjectType.SYS_IntegrationLog__c.fields.SYS_Operation_Type__c.isCreateable()) {
-                logResp.SYS_IntegrationSettings__c = SYS_DataCache.INT_TYPE;
-            }
+            logresp.SYS_Http_Status__c = Integer.valueOf(resp.getStatusCode());
+            logResp.WhatId__c = log.WhatId__c;
+            logResp.Type__c = 'RESPONSE';
+            logResp.How_To_Process__c = 'ignore_log';
+            logResp.SYS_IntegrationSettings__c = SYS_DataCache.INT_TYPE;
             
         }
         else{
+            log.Status__c = 'DONE';
 
+            if(log.SYS_Operation_Type__c == 'INSERT'){
+                logResp.Status__c = 'NEW';
+                logResp.SYS_Operation_Type__c = 'UPDATE';
+                logResp.Resource__c = SYS_DataCache.fieldSettingMappingUsingObjSetting[0].RestResource__c;
+                logResp.How_To_Process__c = 'use_custom_apex_handler';
+                logResp.Custom_Apex_Handler__c = SYS_DataCache.integrationSetting.get(SYS_DataCache.INT_TYPE).Inbound_Custom_Apex_Handler__c;
+            }
+            else{
+                logResp.Status__c = 'DONE';
+                logResp.How_To_Process__c = 'ignore_log';
 
-            if (Schema.sObjectType.SYS_IntegrationLog__c.fields.Status__c.isCreateable()) {
-                
-                if(log.SYS_Operation_Type__c == 'INSERT'){
-                    logResp.Status__c = 'NEW';
-                }
-                else{
-                    logResp.Status__c = 'DONE';
-                }
             }
-            
-            if (Schema.sObjectType.SYS_IntegrationLog__c.fields.SYS_Http_Status__c.isCreateable()) {
-                logresp.SYS_Http_Status__c = Integer.valueOf(resp.getStatusCode());
-            }
-            if (Schema.sObjectType.SYS_IntegrationLog__c.fields.SYS_RequestId__c.isCreateable()) {
-                logResp.SYS_RequestId__c = log.Id;
-            }
-            if (Schema.sObjectType.SYS_IntegrationLog__c.fields.WhatId__c.isCreateable()) {
-                logResp.WhatId__c = log.WhatId__c;
-            }
-            if (Schema.sObjectType.SYS_IntegrationLog__c.fields.Type__c.isCreateable()) {
-                logResp.Type__c = 'INBOUND';
-            }
-            if (Schema.sObjectType.SYS_IntegrationLog__c.fields.SYS_Operation_Type__c.isCreateable()) {
-                logResp.SYS_IntegrationSettings__c = SYS_DataCache.INT_TYPE;
-            }
-            if (Schema.sObjectType.SYS_IntegrationLog__c.fields.How_To_Process__c.isCreateable()) {
-                if(log.SYS_Operation_Type__c == 'INSERT'){
-                    logResp.How_To_Process__c = 'use_custom_apex_handler';
-                    logResp.Custom_Apex_Handler__c = 'SYS_ApplicationService';
-                }
-                else{
-                    logResp.How_To_Process__c = 'ignore_log';
-                }
-            }
-            if (Schema.sObjectType.SYS_IntegrationLog__c.fields.SYS_Operation_Type__c.isCreateable()) {
-                if(log.SYS_Operation_Type__c == 'INSERT'){
-                    logResp.SYS_Operation_Type__c = 'UPDATE';
-                    logResp.Resource__c = SYS_DataCache.fieldSettingMappingUsingObjSetting[0].RestResource__c;
-                    //SYS_DataCache.objectSettingMap.get(SYS_DataCache.OBJ_TYPE).ResourcePath__c;
-                }
-                else{
-                    logResp.SYS_Operation_Type__c = 'RESPONSE';
-                }
-            }
+        
+            logresp.SYS_Http_Status__c = Integer.valueOf(resp.getStatusCode());
+            logResp.WhatId__c = log.WhatId__c;
+            logResp.Type__c = 'RESPONSE';
+            logResp.SYS_IntegrationSettings__c = SYS_DataCache.INT_TYPE;
+               
             
         }
-        
+
+        doDML(new List<SYS_IntegrationLog__c>{log}, 'UPSERT', '') ;
+        logResp.SYS_RequestId__c = log.Id;
 
         return logResp;
     }

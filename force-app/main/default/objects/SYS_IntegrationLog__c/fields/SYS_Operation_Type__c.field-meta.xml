@@ -27,16 +27,6 @@
                 <label>UPSERT</label>
             </value>
             <value>
-                <fullName>RESPONSE</fullName>
-                <default>false</default>
-                <label>RESPONSE</label>
-            </value>
-            <value>
-                <fullName>CDC</fullName>
-                <default>false</default>
-                <label>CDC</label>
-            </value>
-            <value>
                 <fullName>INSERT</fullName>
                 <default>false</default>
                 <label>INSERT</label>
@@ -45,6 +35,18 @@
                 <fullName>UPDATE</fullName>
                 <default>false</default>
                 <label>UPDATE</label>
+            </value>
+            <value>
+                <fullName>CDC</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>CDC</label>
+            </value>
+            <value>
+                <fullName>RESPONSE</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>RESPONSE</label>
             </value>
         </valueSetDefinition>
     </valueSet>

@@ -23,6 +23,8 @@
 		<members>SYS_Transformer</members>
 		<members>SYS_Webservice</members>
 		<members>SYS_debug</members>
+
+		<members>SYS_ForceSync_Controller</members>
 		<name>ApexClass</name>
 	</types>
 	<types>
@@ -31,6 +33,7 @@
 	</types>
 	<types>
 		<members>SYS_Aura_JWTAuthFlow</members>
+		<members>SYS_Aura_ForceSync</members>
 		<name>AuraDefinitionBundle</name>
 	</types>
 	<types>

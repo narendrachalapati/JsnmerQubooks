@@ -8,6 +8,7 @@ public class SYS_Override_ApplicationService extends SYS_ApplicationService{
         return super.doOutbound(log);
     }
 
+    /*
     public override SYS_IntegrationLog__c generatelogForOutboundResult(HttpResponse resp,SYS_IntegrationLog__c log){
 
         SYS_IntegrationLog__c logResp = SYS_Helper.getLogsToInsert(resp.getBody());
@@ -26,17 +27,18 @@ public class SYS_Override_ApplicationService extends SYS_ApplicationService{
                 logresp.SYS_Http_Status__c = integer.valueOf(resp.getStatusCode());
             }
             if (Schema.sObjectType.SYS_IntegrationLog__c.fields.SYS_RequestId__c.isCreateable()) {
-                logResp.SYS_RequestId__c = log.Id;
+                SYS_IntegrationLog__c tempLog = new SYS_IntegrationLog__c(UUID__c = log.UUID__c);
+                logResp.SYS_RequestId__r = tempLog;
             }
             if (Schema.sObjectType.SYS_IntegrationLog__c.fields.WhatId__c.isCreateable()) {
                 logResp.WhatId__c = log.WhatId__c;
             }
             
             if (Schema.sObjectType.SYS_IntegrationLog__c.fields.Type__c.isCreateable()) {
-                logResp.Type__c = 'INBOUND';
+                logResp.Type__c = 'RESPONSE';
             }
             if (Schema.sObjectType.SYS_IntegrationLog__c.fields.SYS_Operation_Type__c.isCreateable()) {
-                logResp.SYS_Operation_Type__c = 'RESPONSE';
+                //No operation when there is an HTTP Error logResp.SYS_Operation_Type__c = 'RESPONSE';
             }
             if (Schema.sObjectType.SYS_IntegrationLog__c.fields.How_To_Process__c.isCreateable()) {
                 logResp.How_To_Process__c = 'ignore_log';
@@ -66,13 +68,14 @@ public class SYS_Override_ApplicationService extends SYS_ApplicationService{
                 logresp.SYS_Http_Status__c = Integer.valueOf(resp.getStatusCode());
             }
             if (Schema.sObjectType.SYS_IntegrationLog__c.fields.SYS_RequestId__c.isCreateable()) {
-                logResp.SYS_RequestId__c = log.Id;
+                SYS_IntegrationLog__c tempLog = new SYS_IntegrationLog__c(UUID__c = log.UUID__c);
+                logResp.SYS_RequestId__r = tempLog;
             }
             if (Schema.sObjectType.SYS_IntegrationLog__c.fields.WhatId__c.isCreateable()) {
                 logResp.WhatId__c = log.WhatId__c;
             }
             if (Schema.sObjectType.SYS_IntegrationLog__c.fields.Type__c.isCreateable()) {
-                logResp.Type__c = 'INBOUND';
+                logResp.Type__c = 'RESPONSE';
             }
             if (Schema.sObjectType.SYS_IntegrationLog__c.fields.SYS_Operation_Type__c.isCreateable()) {
                 logResp.SYS_IntegrationSettings__c = SYS_DataCache.INT_TYPE;
@@ -92,14 +95,12 @@ public class SYS_Override_ApplicationService extends SYS_ApplicationService{
                     logResp.Resource__c = SYS_DataCache.fieldSettingMappingUsingObjSetting[0].RestResource__c;
                     //SYS_DataCache.objectSettingMap.get(SYS_DataCache.OBJ_TYPE).ResourcePath__c;
                 }
-                else{
-                    logResp.SYS_Operation_Type__c = 'RESPONSE';
-                }
             }
         }
     
         return logResp;
     }
+    */
 
     public override HttpRequest buildOutboundHttpRequest(SYS_IntegrationLog__c log){
 
