@@ -64,11 +64,10 @@ public class SYS_IntegrationLogInboundImmediate{
                 Boolean dmlResult = appService.doInbound(log);
                 
                 inboundResultLogs.add(appService.generatelogForInboundResult(dmlResult,log));
-                System.debug('MS log result size for Log:'+SYS_DataCache.log.Request_Digest__c+':'+inboundResultLogs.size());
+                System.debug('--MS Log final check #'+log.Id+' has WhatId: '+log.WhatId__c);
 
             }catch(Exception e){
                 System.debug('MS Exception Digest check:'+SYS_DataCache.log.Request_Digest__c+':'+e.getMessage());
-
                 SYS_Helper.logException(log, e.getStackTraceString()+'\n'+e.getMessage());
             }
 
@@ -76,7 +75,18 @@ public class SYS_IntegrationLogInboundImmediate{
 
         System.debug('MS log result size for Log:'+SYS_DataCache.log.Request_Digest__c+':'+inboundResultLogs.size());
         if(inboundResultLogs.size()>0){
-            new SYS_ApplicationService().doDML(inboundResultLogs,'UPSERT','');  
+            for(sObject log2:inboundResultLogs){
+                SYS_IntegrationLog__c l = (SYS_IntegrationLog__c)log2;
+                //l.WhatId__c = 'a025f000006QN4FAAW';
+                System.debug('--MS Log final compilation ###'+l.Id+' has WhatId: '+l.WhatId__c);
+            }
+            //new SYS_ApplicationService().doDML(inboundResultLogs,'UPSERT','');  
+            upsert inboundResultLogs;
+
+            for(sObject log2:inboundResultLogs){
+                SYS_IntegrationLog__c l = (SYS_IntegrationLog__c)log2;
+                System.debug('--MS Log after upsert ==='+l.Id+' has WhatId: '+l.WhatId__c);
+            }
         }
 
     

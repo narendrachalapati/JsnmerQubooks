@@ -90,7 +90,7 @@ global virtual class SYS_ApplicationService {
      * Argument: Database.Error[]. Relies on Integration Setting in DataCache
      * Override if custom handler is required when there are errors in DMLs
      */
-    global virtual void handleDMLErrors(Database.Error[] errors){
+    global virtual void handleDMLErrors(Database.Error[] errors,SYS_IntegrationLog__c log){
         String errMsg='The following error has occurred while performing DML: ';
         for(Database.Error err : errors) {
             errMsg+= err.getStatusCode() + ': ' + err.getMessage() + '. Fields affected are: ' + err.getFields()+'\n';
@@ -98,7 +98,7 @@ global virtual class SYS_ApplicationService {
             SYS_debug.log(err.getStatusCode() + ': ' + err.getMessage());
             SYS_debug.log('Fields affected are: ' + err.getFields());
         }
-        SYS_Helper.logException(SYS_DataCache.log, errMsg);
+        SYS_Helper.logException(log, errMsg);
     }
 
     /**
@@ -108,92 +108,76 @@ global virtual class SYS_ApplicationService {
      * Relies on Integration Setting in DataCache
      * Override if custom handler is required for any DML
      */
-    global virtual Boolean doInsert(List<sObject> records){
+    global virtual Boolean doInsert(List<sObject> records,SYS_IntegrationLog__c log){
         Database.SaveResult[] results;
         Boolean success = true;
         results = Database.insert(records, false);
         if(!results[0].isSuccess()){
             success = false;
-            handleDMLErrors(results[0].getErrors());
+            handleDMLErrors(results[0].getErrors(),log);
         }
         else{
-            SYS_DataCache.log.WhatId__c = results[0].getId();
+            log.WhatId__c = results[0].getId();
         }
 
         return success;
     }
 
-    global virtual Boolean doUpdate(List<sObject> records){
+    global virtual Boolean doUpdate(List<sObject> records,SYS_IntegrationLog__c log){
         Database.SaveResult[] results;
         Boolean success = true;
         results = Database.update(records, false);
         if(!results[0].isSuccess()){
             success = false;
-            handleDMLErrors(results[0].getErrors());
+            handleDMLErrors(results[0].getErrors(),log);
         }
         else{
-            SYS_DataCache.log.WhatId__c = results[0].getId();
+            log.WhatId__c = results[0].getId();
         }
 
         return success;
     }
 
-    global virtual Boolean doDelete(List<sObject> records){
+    global virtual Boolean doDelete(List<sObject> records,SYS_IntegrationLog__c log){
         Database.DeleteResult[] results;
         Boolean success = true;
         results = Database.delete(records, false);
         if(!results[0].isSuccess()){
             success = false;
-            handleDMLErrors(results[0].getErrors());
+            handleDMLErrors(results[0].getErrors(),log);
         }
         else{
-            SYS_DataCache.log.WhatId__c = results[0].getId();
+            log.WhatId__c = results[0].getId();
         }
 
         return success;
     }
 
-    global virtual Boolean doUpsert(List<sObject> records,String additionalSetting){
+    global virtual Boolean doUpsert(List<sObject> records,String additionalSetting,SYS_IntegrationLog__c log){
         Database.UpsertResult[] results;
         Boolean success = true;
         if(additionalSetting=='')
             results = Database.upsert(records, false);
         else{
-            System.debug('--MS SYS_DataCache.sObjectApiName in Applicaiton Service:'+SYS_DataCache.sObjectApiName);
+            System.debug('--MS externalIdField for:'+records[0]);
+            //Schema.SObjectField externalIdField = Schema.getGlobalDescribe().get(SYS_DataCache.sObjectApiName).getDescribe().fields.getMap().get(additionalSetting); 
+            
             Schema.SObjectField externalIdField = records[0].getSObjectType().getDescribe().fields.getMap().get(additionalSetting); 
+            System.debug('--MS externalIdField in doUpsert:'+externalIdField);
+            
             results = Database.upsert(records, externalIdField, false);
         }
         
+        System.debug('--MS Log check # '+log.Id+' has WhatId: '+results[0].getId());
+
         if(!results[0].isSuccess()){
             success = false;
-            handleDMLErrors(results[0].getErrors());
+            handleDMLErrors(results[0].getErrors(),log);
         }
         else{
-            SYS_DataCache.log.WhatId__c = results[0].getId();
+            log.WhatId__c = results[0].getId();
         }
-
-        return success;
-    }
-
-    //Overloaded
-    global virtual Boolean doUpsert(List<sObject> records,String additionalSetting,String sObjectApiName){
-        Database.UpsertResult[] results;
-        Boolean success = true;
-        if(additionalSetting=='')
-            results = Database.upsert(records, false);
-        else{
-            System.debug('--MS sObjectApiName in Applicaiton Service OVERLOADED:'+sObjectApiName);
-            Schema.SObjectField externalIdField = Schema.getGlobalDescribe().get(sObjectApiName).getDescribe().fields.getMap().get(additionalSetting); 
-            results = Database.upsert(records, externalIdField, false);
-        }
-        
-        if(!results[0].isSuccess()){
-            success = false;
-            handleDMLErrors(results[0].getErrors());
-        }
-        else{
-            SYS_DataCache.log.WhatId__c = results[0].getId();
-        }
+        System.debug('--MS Log re-check # '+log.Id+' has WhatId: '+log.WhatId__c);
 
         return success;
     }
@@ -446,10 +430,10 @@ global virtual class SYS_ApplicationService {
 
     /* ------------------------------------------------------------------------ */
 
-    global virtual List<sObject> getMissingIdForUpdate(List<sObject> sObjectsToDML) {
+    global virtual List<sObject> getMissingIdForUpdate(List<sObject> sObjectsToDML,SYS_IntegrationLog__c log) {
         for(sObject s:sObjectsToDML){
             if(s.Id == NULL){
-                s.Id = SYS_DataCache.log.WhatId__c;
+                s.Id = log.WhatId__c;
             }
         }
         return sObjectsToDML;
@@ -474,7 +458,7 @@ global virtual class SYS_ApplicationService {
         String externalIdFieldAPIName = SYS_DataCache.externalKeyByResourceMap.get(resource);
         //String externalIdFieldAPIName = log.External_Id_Field_API_Name__c!=NULL?log.External_Id_Field_API_Name__c:'';
                
-        return doDML(sObjectsToDML,log.SYS_Operation_Type__c,externalIdFieldAPIName);
+        return doDML(sObjectsToDML,log.SYS_Operation_Type__c,externalIdFieldAPIName,log);
     }
     /* ------------------------------------------------------------------------ */
 
@@ -561,9 +545,7 @@ global virtual class SYS_ApplicationService {
     global virtual SYS_IntegrationLog__c generatelogForInboundResult(Boolean result,SYS_IntegrationLog__c log){
 
         SYS_IntegrationLog__c logResp = new SYS_IntegrationLog__c();
-        logResp = SYS_DataCache.log;
-        logResp.ObjectSettingId__c = SYS_DataCache.OBJ_TYPE;
-
+        
         System.debug('Beginning. Log status for:'+logResp.Request_Digest__c+'='+logResp.Status__c);
 
 
@@ -607,7 +589,9 @@ global virtual class SYS_ApplicationService {
             
             
             //ID jobID = System.enqueueJob(new SYS_ParentChildRecordsQueueable(log,SYS_DataCache.INT_TYPE));
-            
+            logResp = log;
+            logResp.ObjectSettingId__c = SYS_DataCache.OBJ_TYPE;
+
             //logResp.Status__c = 'DONE';
 
             /**
@@ -617,15 +601,20 @@ global virtual class SYS_ApplicationService {
             System.debug('MS totalChildRecords B4:'+SYS_QueueableForInboundChild.totalChildRecords);
             SYS_QueueableForInboundChild.totalChildRecords--;
             System.debug('MS totalChildRecords After:'+SYS_QueueableForInboundChild.totalChildRecords);
-            System.debug('MS Condition chck for Parenting:'+SYS_DataCache.log.Requires_process_on_complete__c);
+           
+            System.debug('MS Condition chck for Parenting:'+log.Requires_process_on_complete__c);
             System.debug('MS Condition chck for Parenting:'+(SYS_QueueableForInboundChild.totalChildRecords==0));
-            System.debug('MS Condition chck for Parenting:'+SYS_DataCache.log.Status__c);
+            System.debug('MS Condition chck for Parenting:'+log.Status__c);
 
 
-            if(SYS_DataCache.log.Requires_process_on_complete__c 
-                && (SYS_QueueableForInboundChild.totalChildRecords==0 || SYS_DataCache.log.Status__c=='READY_FOR_PROCESSING'))
+            /**
+             * If the log is for either a parent or the LAST sibling of n children or a child
+             * being processed as part of retry. Therefore in  else we again need to make checks for parent vs. child
+             * and set the Status accordingly.
+             */
+            if(log.Requires_process_on_complete__c 
+                && (SYS_QueueableForInboundChild.totalChildRecords==0 || log.Status__c=='READY_FOR_PROCESSING'))
             {
-                System.debug('In if? Log status for:'+logResp.Request_Digest__c+'='+logResp.Status__c);
                 System.debug('MS Queueable Jobs in queue:'+Limits.getQueueableJobs());
                 System.debug('MS Queueable Allowed:'+Limits.getLimitQueueableJobs());
 
@@ -633,20 +622,22 @@ global virtual class SYS_ApplicationService {
                 SYS_Helper.flagLogForRetry(logResp.Id);
 
                 if(!(Limits.getQueueableJobs() + 1 > Limits.getLimitQueueableJobs())){
-                    System.enqueueJob(new SYS_ParentingQueueable(String.valueOf(SYS_DataCache.log.Parent__c),SYS_DataCache.INT_TYPE,SYS_DataCache.log));
+                    System.enqueueJob(new SYS_ParentingQueueable(String.valueOf(log.Parent__c),SYS_DataCache.INT_TYPE,log));
 
                 }
             }
             else{
 
-                System.debug('In Else? Log status for:'+logResp.Request_Digest__c+'='+logResp.Status__c);
-                logResp.Message__c = 'Record created/updated successfully';
-                logResp.Status__c = 'DONE';
-                System.debug('In Else? After Log status for:'+logResp.Request_Digest__c+'='+log.Status__c);
-                
+                //One of the sibling of n children. Save as pending parent
+                if(log.Requires_process_on_complete__c){
+                    logResp.Status__c = 'PENDING_PARENT';
+                }
+                else{
+                    logResp.Message__c = 'Record created/updated successfully';
+                    logResp.Status__c = 'DONE';
+                }
 
             }
-            System.debug('Final Log status for:'+logResp.Request_Digest__c+'='+logResp.Status__c);
             
         }
 
@@ -655,7 +646,7 @@ global virtual class SYS_ApplicationService {
 
     global virtual void fixParent(String parentLogId,SYS_IntegrationLog__c childLog){
 
-        SYS_DataCache.log = childLog;
+        //SYS_DataCache.log = childLog;
         List<FieldSetting__mdt> fsm = new List<FieldSetting__mdt>();
         fsm = [SELECT FieldApiName__c,
                         ObjectApiName__c 
@@ -668,11 +659,12 @@ global virtual class SYS_ApplicationService {
         List<sObject> childRecords = new List<sObject>();
         List<String> dupeCheckList = new List<String>();
         
-        for(SYS_IntegrationLog__c cLog:[SELECT Id,WhatId__c,Parent__r.WhatId__c FROM SYS_IntegrationLog__c WHERE Parent__c = :parentLogId /*AND Status__c='PENDING_PARENT'*/])
+        for(SYS_IntegrationLog__c cLog:[SELECT Id,WhatId__c,Parent__r.WhatId__c FROM SYS_IntegrationLog__c WHERE Parent__c = :parentLogId AND Status__c='PENDING_PARENT'])
         {
             System.debug('MS dupeCheckList:'+dupeCheckList);
 
-            if(!dupeCheckList.contains(cLog.WhatId__c) && cLog.WhatId__c!=NULL){
+            if(!dupeCheckList.contains(cLog.WhatId__c) && cLog.WhatId__c!=null){
+                childRecords.clear();
                 sObject sObj = Schema.getGlobalDescribe().get(fsm[0].ObjectApiName__c).newSObject();
                 System.debug('MS cLog:'+cLog);
                 System.debug('MS cLog.Parent__r.WhatId__c:'+cLog.Parent__r.WhatId__c);
@@ -680,19 +672,17 @@ global virtual class SYS_ApplicationService {
                 sObj.put(fsm[0].FieldApiName__c,cLog.Parent__r.WhatId__c);
                 childRecords.add(sObj);
                 dupeCheckList.add(String.valueOf(sObj.get('Id')));
+
+                //TODO Add Limit check. This is to make sure each log is processed separately and thereby avoid overriding of log properties
+                if(doDML(childRecords, 'UPDATE', '',cLog)){
+                    cLog.Status__c ='DONE';
+                    cLog.retry__c =false;
+                    update cLog;
+                }
             }
         }
-        System.debug('MS Child Records for Parenting:'+childRecords);
-       
-        //childLog.Status__c ='DONE';
-        //childRecords.add(childLog);
-        if(doDML(childRecords, 'UPDATE', '')){
-            childLog.Status__c ='DONE';
-            childRecords.clear();
-            childRecords.add(childLog);
-            doDML(childRecords, 'UPDATE', '');
-        }
-        
+        //System.debug('MS Child Records for Parenting:'+childRecords);
+
 
     }
 
@@ -745,7 +735,8 @@ global virtual class SYS_ApplicationService {
             
         }
 
-        doDML(new List<SYS_IntegrationLog__c>{log}, 'UPSERT', '') ;
+        //doDML(new List<SYS_IntegrationLog__c>{log}, 'UPSERT', '') ;
+        upsert log;
         logResp.SYS_RequestId__c = log.Id;
 
         return logResp;
@@ -766,7 +757,35 @@ global virtual class SYS_ApplicationService {
 
      /* ------------------------------------------------------------------------ */
 
-     public Boolean doDML(List<sObject> records,String dmlType,String additionalSetting) {
+     //OVERLOADED
+     public Boolean doDML(List<sObject> records,String dmlType,String additionalSetting,SYS_IntegrationLog__c log) {
+
+        System.debug('MS DML for Log:'+SYS_DataCache.log.Request_Digest__c+':'+SYS_DataCache.log.Status__c);
+        
+        switch on dmlType.toUpperCase() {
+            when 'INSERT'{
+                return doInsert(records,log);
+            }
+            when 'UPSERT'{
+                return doUpsert(records, additionalSetting,log);
+            }
+            when 'UPDATE'{
+                return doUpdate(getMissingIdForUpdate(records,log),log);
+            }
+            when 'DELETE'{
+                return doDelete(records,log);
+            }
+            when else {
+                SYS_debug.log('Invalid DML Operation specified in log record:'+dmlType);
+                return false;
+            }
+            
+        }
+
+    }
+
+    /* ------------------------------------------------------------------------
+    public Boolean doDML_DEPRECATED(List<sObject> records,String dmlType,String additionalSetting) {
 
         System.debug('MS DML for Log:'+SYS_DataCache.log.Request_Digest__c+':'+SYS_DataCache.log.Status__c);
         
@@ -800,7 +819,7 @@ global virtual class SYS_ApplicationService {
             //TODO check if result is success/error and take action
 
             if(!result.isSuccess()){
-                handleDMLErrors(result.getErrors());
+                handleDMLErrors(result.getErrors(),log);
             }
             else{
                 setSuccessHttpResponse();
