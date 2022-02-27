@@ -8,7 +8,7 @@
     </values>
     <values>
         <field>ChildRootElement__c</field>
-        <value xsi:type="xsd:string">children</value>
+        <value xsi:nil="true"/>
     </values>
     <values>
         <field>Direction__c</field>
@@ -68,7 +68,7 @@
     </values>
     <values>
         <field>ParentField__c</field>
-        <value xsi:type="xsd:string">Custom_Parent__c</value>
+        <value xsi:nil="true"/>
     </values>
     <values>
         <field>RestResource__c</field>

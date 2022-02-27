@@ -93,6 +93,8 @@ public class SYS_Helper {
         
         log.Status__c = 'FAIL';
         log.Message__c = stackTrace;
+
+        System.debug('------: Log'+log);
         
         upsert log;
     }

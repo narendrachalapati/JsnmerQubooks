@@ -526,8 +526,28 @@ public virtual class SYS_Transformer {
                         System.debug('MS condition for Key: '+key+' = '+(SYS_DataCache.externalKeyByResourceMap.containsKey(key.toLowerCase())));
                         
                         //AP-106
-                        if(SYS_DataCache.externalKeyByResourceMap.containsKey(key.toLowerCase()))
+                        if( SYS_DataCache.externalKeyByResourceMap.containsKey(key.toLowerCase()) && 
+                                    Limits.getQueueableJobs() + 1 < Limits.getLimitQueueableJobs()
+                        )
+                        {
                             ID jobID = System.enqueueJob(new SYS_QueueableForInboundChild(SYS_DataCache.log,childRecList,key,SYS_DataCache.INT_TYPE));
+                        }
+                        else{
+                            SYS_ApplicationService appService = (SYS_ApplicationService)Type.forName(SYS_DataCache.integrationSetting.get(SYS_DataCache.INT_TYPE).ApexHandler__c).newInstance();
+
+                            List<SYS_IntegrationLog__c> childRecordsToInsert = new List<SYS_IntegrationLog__c>();
+        
+                            for(String singleChildJSON : childRecList){
+                                if(Limits.getDmlStatements() < Limits.getLimitDmlStatements() - 1){
+                                    SYS_IntegrationLog__c newlog = appService.generateLogForChildRecords(SYS_DataCache.log.Id,key,singleChildJSON,SYS_DataCache.INT_TYPE);
+                                    if(newlog!=NULL)
+                                        childRecordsToInsert.add(newlog);
+                                }
+                            }
+                            if(!childRecordsToInsert.isEmpty()){
+                                appService.doDML(childRecordsToInsert, 'INSERT', '');
+                            }
+                        }
                         //System.debug('job id is==='+jobID);
                     }
                 }

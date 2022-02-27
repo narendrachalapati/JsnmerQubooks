@@ -64,12 +64,17 @@ public class SYS_IntegrationLogInboundImmediate{
                 Boolean dmlResult = appService.doInbound(log);
                 
                 inboundResultLogs.add(appService.generatelogForInboundResult(dmlResult,log));
+                System.debug('MS log result size for Log:'+SYS_DataCache.log.Request_Digest__c+':'+inboundResultLogs.size());
+
             }catch(Exception e){
+                System.debug('MS Exception Digest check:'+SYS_DataCache.log.Request_Digest__c+':'+e.getMessage());
+
                 SYS_Helper.logException(log, e.getStackTraceString()+'\n'+e.getMessage());
             }
 
         }// For loop ends
 
+        System.debug('MS log result size for Log:'+SYS_DataCache.log.Request_Digest__c+':'+inboundResultLogs.size());
         if(inboundResultLogs.size()>0){
             new SYS_ApplicationService().doDML(inboundResultLogs,'UPSERT','');  
         }

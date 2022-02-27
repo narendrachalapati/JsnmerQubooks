@@ -77,8 +77,29 @@ public class SYS_DataCache {
 
     /******* NEW VARIABLES START*******/
 
-    public static String INT_TYPE;
-    public static String OBJ_TYPE;
+    private static String currentIntegrationSetting;
+    public static String INT_TYPE{
+        get{
+            return currentIntegrationSetting;
+        }
+        set{
+            if(currentIntegrationSetting == NULL){
+                currentIntegrationSetting = value;
+            }
+        }
+    }
+
+    private static String currentObjectSetting;
+    public static String OBJ_TYPE{
+        get{
+            return currentObjectSetting;
+        }
+        set{
+            if(currentObjectSetting == NULL){
+                currentObjectSetting = value;
+            }
+        }
+    }
     
     private static Map<String, String> external_key;
     public static Map<String, String> externalKeyByResourceMap {
