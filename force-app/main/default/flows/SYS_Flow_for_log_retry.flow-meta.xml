@@ -172,7 +172,6 @@
         </filters>
         <object>SYS_IntegrationLog__c</object>
         <recordTriggerType>CreateAndUpdate</recordTriggerType>
-        <scheduledPaths/>
         <scheduledPaths>
             <name>Time_based</name>
             <connector>
