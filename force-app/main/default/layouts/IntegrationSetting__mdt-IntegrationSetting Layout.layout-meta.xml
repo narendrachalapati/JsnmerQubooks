@@ -62,7 +62,7 @@
                 <field>Flat_Key_for_Resource__c</field>
             </layoutItems>
             <layoutItems>
-                <behavior>Edit</behavior>
+                <behavior>Required</behavior>
                 <field>Inbound_Custom_Apex_Handler__c</field>
             </layoutItems>
         </layoutColumns>

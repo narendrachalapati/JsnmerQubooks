@@ -20,8 +20,8 @@
     <assignments>
         <name>Increment_retry_count</name>
         <label>Increment retry count</label>
-        <locationX>779</locationX>
-        <locationY>273</locationY>
+        <locationX>677</locationX>
+        <locationY>322</locationY>
         <assignmentItems>
             <assignToReference>FlowRetryCount</assignToReference>
             <operator>Add</operator>
@@ -52,12 +52,12 @@
     <decisions>
         <name>Is_retry_count_NULL</name>
         <label>Is retry count NULL</label>
-        <locationX>274</locationX>
+        <locationX>263</locationX>
         <locationY>363</locationY>
         <defaultConnector>
             <targetReference>Assign_log_count_to_flow_var</targetReference>
         </defaultConnector>
-        <defaultConnectorLabel>Retry count is not null</defaultConnectorLabel>
+        <defaultConnectorLabel>Retry count is not NULL</defaultConnectorLabel>
         <rules>
             <name>Set_retry_count</name>
             <conditionLogic>and</conditionLogic>
@@ -71,14 +71,14 @@
             <connector>
                 <targetReference>Set_retry_count_flow_var</targetReference>
             </connector>
-            <label>Set retry count</label>
+            <label>Retry count is NULL</label>
         </rules>
     </decisions>
     <decisions>
         <name>Reset_Retry_Flag_if_retry_count_is_over_threshold</name>
         <label>Reset Retry Flag if retry count is over threshold</label>
-        <locationX>1025</locationX>
-        <locationY>384</locationY>
+        <locationX>891</locationX>
+        <locationY>260</locationY>
         <defaultConnector>
             <targetReference>Reset_Retry_Flag_Max_retries_reached</targetReference>
         </defaultConnector>
@@ -171,7 +171,7 @@
             </value>
         </filters>
         <object>SYS_IntegrationLog__c</object>
-        <recordTriggerType>Update</recordTriggerType>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
         <scheduledPaths>
             <pathType>AsyncAfterCommit</pathType>
         </scheduledPaths>

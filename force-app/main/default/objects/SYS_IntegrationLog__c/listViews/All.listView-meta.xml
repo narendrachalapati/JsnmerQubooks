@@ -7,6 +7,7 @@
     <columns>Status__c</columns>
     <columns>SYS_Operation_Type__c</columns>
     <columns>Type__c</columns>
+    <columns>OBJECT_ID</columns>
     <columns>WhatId__c</columns>
     <columns>LAST_UPDATE</columns>
     <columns>Retry_Count__c</columns>
