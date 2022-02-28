@@ -143,6 +143,42 @@ public override SYS_IntegrationLog__c generatelogForOutboundResult(HttpResponse 
 
         return log;
     }
+
+    public override String preprocessJSONForOutbound(SYS_IntegrationLog__c log,String jsonBody) {
+        System.debug('custom preprocessJSONForOutbound called');
+        system.debug('RestResource__c++++===='+SYS_DataCache.AllFieldSettingMappings[0].RestResource__c);
+        if(SYS_DataCache.OBJ_TYPE=='SYS_QB_Payments'){
+            list<SYS_Payments__c> oppQuickIdList = [Select  Id,SYS_Payments__c.Quickbooks_Id__c from  SYS_Payments__c where Id IN log.whatid__c ];
+            system.debug('oppQuickId+++++==='+oppQuickIdList);
+                Object payment = JSON.deserializeUntyped(jsonBody);
+                Decimal paidVal = 0.00;
+             
+                    paidVal = (Decimal)((Map<String, Object>)payment).get('TotalAmt');
+                    cls_LinkedTxn txn = new cls_LinkedTxn(); 
+                    txn.TxnId = oppQuickIdList[0];
+                    txn.TxnType = 'Invoice';
+                    cls_Line line = new cls_Line();
+                    line.Amount = paidVal;
+                    line.LinkedTxn = new List<cls_LinkedTxn>{txn};
+                    ((Map<String, Object>)payment).put('Line', ((Object)new List<cls_Line>{line}));
+                    jsonBody = JSON.serialize(payment);
+                    system.debug('jsonBody+++==='+jsonBody);
+                
+            }
+
+        
+        return jsonBody;
+
+    }
+    class cls_Line {
+		public Decimal Amount;	//200
+		public cls_LinkedTxn[] LinkedTxn;
+	}
+	class cls_LinkedTxn {
+		public sobject TxnId;	//458
+		public String TxnType;	//Invoice
+	}
    }
+   
 
  
