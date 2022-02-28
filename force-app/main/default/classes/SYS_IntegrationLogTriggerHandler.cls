@@ -9,7 +9,7 @@ public class SYS_IntegrationLogTriggerHandler {
                 system.debug('newOutboundLogIds'+newOutboundLogIds);
             }
 
-            if(log.Type__c == 'INBOUND' && log.Status__c == 'NEW'){
+            if((log.Type__c == 'INBOUND' || log.Type__c == 'RESPONSE') && log.Status__c == 'NEW'){
                 newInboundLogIds.add(log.Id);
                 system.debug('newInboundLogIds'+newInboundLogIds);
             }
@@ -33,7 +33,7 @@ public class SYS_IntegrationLogTriggerHandler {
                 system.debug('newOutboundLogIds==++'+newOutboundLogIds);
             }
 
-            if(log.Type__c == 'INBOUND' && log.Status__c == 'READY_FOR_PROCESSING'){
+            if((log.Type__c == 'INBOUND' || log.Type__c == 'RESPONSE') && log.Status__c == 'READY_FOR_PROCESSING'){
                 newInboundLogIds.add(log.Id);
                 system.debug('newOutboundLogIds==++'+newOutboundLogIds);
             }
