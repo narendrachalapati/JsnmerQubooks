@@ -30,7 +30,7 @@
             <value>
                 <fullName>ERROR</fullName>
                 <default>false</default>
-                <label>ERROR</label>
+                <label>CALLOUT ERROR</label>
             </value>
             <value>
                 <fullName>PENDING_PARENT</fullName>
@@ -39,6 +39,11 @@
             </value>
             <value>
                 <fullName>READY_FOR_PROCESSING</fullName>
+                <default>false</default>
+                <label>READY FOR PROCESSING</label>
+            </value>
+            <value>
+                <fullName>ENQUEUED_FOR_RETRY</fullName>
                 <default>false</default>
                 <label>ENQUEUED FOR RETRY</label>
             </value>
