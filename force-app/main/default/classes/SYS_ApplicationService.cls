@@ -390,8 +390,26 @@ global virtual class SYS_ApplicationService {
         return jsonBody;
     }
 
-    global virtual String preprocessJSONForOutbound(SYS_IntegrationLog__c log,String jsonBody) {
+    global virtual String preprocessJSONForOutbound(SYS_IntegrationLog__c log,String jsonBody,HttpRequest req) {
         System.debug('Default preprocessJSONForOutbound called');
+        
+        if(req.getHeader('content-type') == 'application/x-www-form-urlencoded'){
+            String formUrlEncodedBody=''; 
+            Map<String,Object> jsonobj = (Map<String,Object>)JSON.deserializeUntyped(jsonBody);
+            List<String> reqkeymap = new List<String>(jsonobj.keySet());
+            reqkeymap.sort();
+            Integer i=0;
+            for (String key: reqkeymap) {
+                if (!String.isBlank(key) && jsonobj.get(key) != '' && (jsonobj.get(key)) instanceOf String)
+                if(i==0){
+                    formUrlEncodedBody += '?' + key.toLowerCase() + '=' + jsonobj.get(key);
+                } else {
+                    formUrlEncodedBody += '&' + key.toLowerCase() + '=' + jsonobj.get(key);
+                }
+                i++;
+            }
+            jsonBody = formUrlEncodedBody;
+        }
         return jsonBody;
     }
 
@@ -470,12 +488,14 @@ global virtual class SYS_ApplicationService {
         String baseEndpoint = SYS_DataCache.integrationSetting.get(SYS_Datacache.INT_TYPE).BaseAPIEndPoint__c;
         String resourceUrl = 
             baseEndpoint+
-            SYS_DataCache.objectSettingMap.get(SYS_DataCache.OBJ_TYPE).ResourcePath__c+'/';
+            SYS_DataCache.objectSettingMap.get(SYS_DataCache.OBJ_TYPE).ResourcePath__c;
         String urlParams='';
         if(SYS_DataCache.objectSettingMap.get(SYS_DataCache.OBJ_TYPE).url_params__c != NULL)
                 urlParams = SYS_DataCache.objectSettingMap.get(SYS_DataCache.OBJ_TYPE).url_params__c;
-            
-        resourceUrl+=urlParams;
+        if(urlParams!=''){
+            resourceUrl+='/'+urlParams;
+        }
+        
         return resourceUrl;
     }
 
@@ -531,12 +551,11 @@ global virtual class SYS_ApplicationService {
 
         if(req.getMethod()!='GET'){
             String body = SYS_Helper.getDataFrom(log); 
-            body = preprocessJSONForOutbound(log,body);
+            body = preprocessJSONForOutbound(log,body,req);
             req.setBody(body);
             SYS_debug.log('body:'+body);
         }
-        
-         
+ 
         HttpResponse response = http.send(req);
         SYS_debug.log('Outbound Request:'+req);
         SYS_debug.log('Outbound Response:'+response.getBody());
@@ -718,7 +737,7 @@ global virtual class SYS_ApplicationService {
         else{
             log.Status__c = 'DONE';
 
-            if(log.SYS_Operation_Type__c == 'INSERT'){
+            if(log.SYS_Operation_Type__c == 'INSERT' || log.Force_Sync__c){
                 logResp.Status__c = 'NEW';
                 logResp.SYS_Operation_Type__c = 'UPDATE';
                 logResp.Resource__c = SYS_DataCache.fieldSettingMappingUsingObjSetting[0].RestResource__c;

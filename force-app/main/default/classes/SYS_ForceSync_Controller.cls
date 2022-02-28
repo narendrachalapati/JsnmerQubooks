@@ -67,6 +67,8 @@ global class SYS_ForceSync_Controller extends SYS_ApplicationService {
                         newSysLog.How_to_process__c = 'use_custom_apex_handler';
                         newSysLog.Custom_Apex_Handler__c = apexHandler;
                         newSysLog.ObjectSettingId__c = SYS_DataCache.OBJ_TYPE;
+                        newSysLog.Force_Sync__c = true;
+
                         
                         log = newSysLog;
                         insertSysLog.add(newSysLog);
@@ -87,6 +89,7 @@ global class SYS_ForceSync_Controller extends SYS_ApplicationService {
                 newSysLog.How_to_process__c = 'use_custom_apex_handler';
                 newSysLog.Custom_Apex_Handler__c = apexHandler;
                 newSysLog.ObjectSettingId__c = SYS_DataCache.OBJ_TYPE;
+                newSysLog.Force_Sync__c = true;
 
                 log = newSysLog;
 
