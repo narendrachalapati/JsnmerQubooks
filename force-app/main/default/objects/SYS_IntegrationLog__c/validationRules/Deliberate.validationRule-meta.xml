@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
-    <fullName>Deliberate</fullName>
-    <active>false</active>
-    <errorConditionFormula>PRIORVALUE(WhatId__c) == &apos;a025f000006QN4FAAW&apos;</errorConditionFormula>
-    <errorMessage>Hold</errorMessage>
-</ValidationRule>
