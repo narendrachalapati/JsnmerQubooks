@@ -92,10 +92,10 @@ public virtual class SYS_Transformer {
             System.debug('\n\n -------------- \n Object check:'+mapping.ObjectApiName__c +' vs. '+primaryObj+'\n -------------- \n\n');
             if(mapping.ObjectApiName__c == primaryObj){
                 System.debug('\n\n -------------- \n Object check:'+mapping.ObjectApiName__c +' vs. '+mapping.FieldApiName__c+'\n -------------- \n\n');
-                if(primaryObjFieldsMap.get(mapping.ObjectApiName__c) == null) {
-                    primaryObjFieldsMap.put(mapping.ObjectApiName__c, new List<String>()); 
+                if(primaryObjFieldsMap.get(mapping.ObjectApiName__c.toLowerCase()) == null) {
+                    primaryObjFieldsMap.put(mapping.ObjectApiName__c.toLowerCase(), new List<String>()); 
                 }
-				primaryObjFieldsMap.get(mapping.ObjectApiName__c).add(mapping.FieldApiName__c);
+				primaryObjFieldsMap.get(mapping.ObjectApiName__c.toLowerCase()).add(mapping.FieldApiName__c);
             }
             
             if(mapping.ParentField__c != null) {
@@ -123,22 +123,24 @@ public virtual class SYS_Transformer {
         
         //TODO put this behind if condition
         //now query child objects
-        
+        System.debug('MS objsList='+objsList);
         List<String> parentIds = new List<String>();
         for(sObject obj : objsList) {
+            System.debug('MS obj from objsList='+obj);
         	parentIds.add((String)obj.get('Id'));
         }
 		
-        
+        System.debug('MS check 101:');
         //Dynamically fetch all metadata fields for the primary object
         List<sObject> objs = new List<sObject>();
         if(primaryObjFieldsMap.size()>0){
+            System.debug('MS check 101 2:'+primaryObj+' ');
             String qry = 'Select Id, '+ 
-                     String.join(primaryObjFieldsMap.get(primaryObj), ',') +
+                     String.join(primaryObjFieldsMap.get(primaryObj.toLowerCase()), ',') +
                      ' from ' + 
                      primaryObj + 
                      ' where Id in :parentIds';
-                    
+            
             System.debug('query res@@=='+qry);
        
         	objs = Database.query(qry);

@@ -48,7 +48,7 @@
                 var errors = response.getError();
                 if (errors) {
                     if (errors[0] && errors[0].message) {
-                        component.set("v.message", 'Error wrong while creating log record: '+errors[0].message);
+                        component.set("v.message", 'Error while creating log record: '+errors[0].message);
                     }
                 }
                 else{

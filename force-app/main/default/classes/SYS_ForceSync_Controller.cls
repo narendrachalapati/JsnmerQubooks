@@ -45,8 +45,12 @@ global class SYS_ForceSync_Controller extends SYS_ApplicationService {
 
             if(direction == 'OUT'){
                 
+                System.debug('=========:'+SYS_DataCache.INT_TYPE+'['+recList+']');
+
                 SYS_ApplicationService appService = (SYS_ApplicationService)Type.forName(SYS_DataCache.objectSettingMap.get(SYS_DataCache.OBJ_TYPE).ApexHandler__c).newInstance();
                 Map<Id, String> jsonListForOutbound = appService.transformSObjectToJson(recList);
+
+                System.debug('=========:'+jsonListForOutbound);
                 
                 if(jsonListForOutbound.values().size() > 0){
                     for(Id jsonRecordId:jsonListForOutbound.keyset()){ 
