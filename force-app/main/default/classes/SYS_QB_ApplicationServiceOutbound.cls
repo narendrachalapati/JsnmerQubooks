@@ -2,7 +2,7 @@ public class SYS_QB_ApplicationServiceOutbound extends SYS_ApplicationService {
     public SYS_QB_ApplicationServiceOutbound() {
 
     }
-    //We are removing the root of the json to make the inbound and outbound mappings are same
+    //We are removing the root of the json to make sure that inbound and outbound mappings are same
     public override List<sObject> transformJsonToSObject(String jsonBody,String resource) {
         Object responseType = JSON.deserializeUntyped(jsonBody);
         Object JSONwithoutrootkey ;
@@ -18,100 +18,7 @@ public class SYS_QB_ApplicationServiceOutbound extends SYS_ApplicationService {
         return SYS_Transformer.getSObjectsToUpsert(new List<String>{jsonBody},resource);
     }
   
-public override SYS_IntegrationLog__c generatelogForOutboundResult(HttpResponse resp,SYS_IntegrationLog__c log){
-         SYS_IntegrationLog__c logResp = SYS_Helper.getLogsToInsert(resp.getBody());
-         system.debug('logResp++'+logResp);
-        if(resp.getStatusCode() != 201 && resp.getStatusCode() != 200){
-            SYS_debug.log('#### resp status: '+resp.getStatus());
-            SYS_debug.log('#### resp code: '+resp.getStatusCode()); 
-            SYS_debug.log('#### resp: '+resp.getBody());
-    
-            
-            if (Schema.sObjectType.SYS_IntegrationLog__c.fields.Status__c.isCreateable()) {
-                logResp.Status__c = 'ERROR';
-            }
-            if (Schema.sObjectType.SYS_IntegrationLog__c.fields.SYS_Http_Status__c.isCreateable()) {
-                logresp.SYS_Http_Status__c = integer.valueOf(resp.getStatusCode());
-            }
-            if (Schema.sObjectType.SYS_IntegrationLog__c.fields.SYS_RequestId__c.isCreateable()) {
-                logResp.SYS_RequestId__c = log.Id;
-            }
-            if (Schema.sObjectType.SYS_IntegrationLog__c.fields.WhatId__c.isCreateable()) {
-                logResp.WhatId__c = log.WhatId__c;
-            }
-            
-            if (Schema.sObjectType.SYS_IntegrationLog__c.fields.Type__c.isCreateable()) {
-                logResp.Type__c = 'INBOUND';
-            }
-            if (Schema.sObjectType.SYS_IntegrationLog__c.fields.SYS_Operation_Type__c.isCreateable()) {
-                logResp.SYS_Operation_Type__c = 'RESPONSE';
-            }
-            if (Schema.sObjectType.SYS_IntegrationLog__c.fields.How_To_Process__c.isCreateable()) {
-                logResp.How_To_Process__c = 'ignore_log';
-                
-            }
-            if (Schema.sObjectType.SYS_IntegrationLog__c.fields.SYS_Operation_Type__c.isCreateable()) {
-                logResp.SYS_IntegrationSettings__c = SYS_DataCache.INT_TYPE;
-            }
-            
-        }
-        else{
-    
-    
-            //--EX
-            // logResp = new SYS_IntegrationLog__c();
-            // List<SYS_IntegrationLog__c> exLogs = [Select Id,data0__c from SYS_IntegrationLog__c WHERE Id=:log.Id];
-            // system.debug('exLogs===='+exLogs);
-            // logResp = exLogs[0].clone(false,true,true,false);
-            //EX--
-    
-            if (Schema.sObjectType.SYS_IntegrationLog__c.fields.Status__c.isCreateable()) {
-                //--EX logResp.Status__c = 'DONE';
-                logResp.Status__c = 'NEW';
-            }
-            
-            if (Schema.sObjectType.SYS_IntegrationLog__c.fields.SYS_Http_Status__c.isCreateable()) {
-                logresp.SYS_Http_Status__c = Integer.valueOf(resp.getStatusCode());
-            }
-            if (Schema.sObjectType.SYS_IntegrationLog__c.fields.SYS_RequestId__c.isCreateable()) {
-                logResp.SYS_RequestId__c = log.Id;
-            }
-            if (Schema.sObjectType.SYS_IntegrationLog__c.fields.WhatId__c.isCreateable()) {
-                logResp.WhatId__c = log.WhatId__c;
-            }
-            if (Schema.sObjectType.SYS_IntegrationLog__c.fields.Type__c.isCreateable()) {
-                logResp.Type__c = 'INBOUND';
-            }
-            if (Schema.sObjectType.SYS_IntegrationLog__c.fields.SYS_Operation_Type__c.isCreateable()) {
-                logResp.SYS_IntegrationSettings__c = SYS_DataCache.INT_TYPE;
-            }
-            if (Schema.sObjectType.SYS_IntegrationLog__c.fields.How_To_Process__c.isCreateable()) {
-                //todo
-             logResp.How_To_Process__c = 'use_object_setting';
-                // logResp.How_To_Process__c = 'use_object_setting';
-            }
-            // if (Schema.sObjectType.SYS_IntegrationLog__c.fields.How_To_Process__c.isCreateable()) {
-            //     //--EX logResp.How_To_Process__c = 'ignore_log';
-            //     logResp.External_Id_Field_API_Name__c = 'Quickbooks_Id__c';
-            // }
-            
-            if (Schema.sObjectType.SYS_IntegrationLog__c.fields.SYS_Operation_Type__c.isCreateable()) {
-                System.debug('MS log.SYS_Operation_Type__c:'+log.Parent__r.SYS_Operation_Type__c);
-                if(log.SYS_Operation_Type__c == 'INSERT'){
-                    logResp.SYS_Operation_Type__c = 'UPDATE';
-                }
-                else{
-                    logResp.SYS_Operation_Type__c = log.SYS_Operation_Type__c;
-                }
-            }
-            //logResp.Custom_Apex_Handler__c = 'SYS_ApplicationService';
-           // logResp.Flat_Key_for_Resource__c = 'attributes.type'; //not required if JSON has root
-           logResp.Resource__c = SYS_DataCache.objectSettingMap.get(SYS_DataCache.OBJ_TYPE).ResourcePath__c;
-                       logResp.Custom_Field_Value__c = 'false';
-        }
 
-        return logResp;
-    }
     public override SYS_IntegrationLog__c generateLogForChildRecords(String parentLogId,String resource,String recordsJson,String integrationSetting) {
         SYS_IntegrationLog__c log = SYS_Helper.getLogsToInsert(recordsJson);
         system.debug('log+++'+log);
@@ -144,40 +51,7 @@ public override SYS_IntegrationLog__c generatelogForOutboundResult(HttpResponse 
         return log;
     }
 
-    public override String preprocessJSONForOutbound(SYS_IntegrationLog__c log,String jsonBody) {
-        System.debug('custom preprocessJSONForOutbound called');
-        system.debug('RestResource__c++++===='+SYS_DataCache.AllFieldSettingMappings[0].RestResource__c);
-        if(SYS_DataCache.OBJ_TYPE=='SYS_QB_Payments'){
-            list<SYS_Payments__c> oppQuickIdList = [Select  Id,SYS_Payments__c.Quickbooks_Id__c from  SYS_Payments__c where Id IN log.whatid__c ];
-            system.debug('oppQuickId+++++==='+oppQuickIdList);
-                Object payment = JSON.deserializeUntyped(jsonBody);
-                Decimal paidVal = 0.00;
-             
-                    paidVal = (Decimal)((Map<String, Object>)payment).get('TotalAmt');
-                    cls_LinkedTxn txn = new cls_LinkedTxn(); 
-                    txn.TxnId = oppQuickIdList[0];
-                    txn.TxnType = 'Invoice';
-                    cls_Line line = new cls_Line();
-                    line.Amount = paidVal;
-                    line.LinkedTxn = new List<cls_LinkedTxn>{txn};
-                    ((Map<String, Object>)payment).put('Line', ((Object)new List<cls_Line>{line}));
-                    jsonBody = JSON.serialize(payment);
-                    system.debug('jsonBody+++==='+jsonBody);
-                
-            }
-
-        
-        return jsonBody;
-
-    }
-    class cls_Line {
-		public Decimal Amount;	//200
-		public cls_LinkedTxn[] LinkedTxn;
-	}
-	class cls_LinkedTxn {
-		public sobject TxnId;	//458
-		public String TxnType;	//Invoice
-	}
+   
    }
    
 

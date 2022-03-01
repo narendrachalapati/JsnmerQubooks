@@ -70,7 +70,7 @@ public class SYS_QB_ApplicationServiceinbound extends SYS_ApplicationService {
         log.Status__c = 'NEW';
         log.External_Id_Field_API_Name__c = 'Quickbooks_Id__c';
         log.How_to_process__c = 'use_custom_apex_handler';
-        log.Custom_Apex_Handler__c = 'SYS_QB_ApplicationServiceinbound';
+        log.Custom_Apex_Handler__c = SYS_DataCache.integrationSetting.get(SYS_DataCache.INT_TYPE).Inbound_Custom_Apex_Handler__c;
         //todo
         log.Custom_Field_Value__c = 'false';
         log.Requires_process_on_complete__c = true;
@@ -129,38 +129,9 @@ public class SYS_QB_ApplicationServiceinbound extends SYS_ApplicationService {
     }
    
     
-    public override SYS_IntegrationLog__c generateLogForChildRecords(String parentLogId,String resource,String recordsJson,String integrationSetting) {
-        SYS_IntegrationLog__c log = SYS_Helper.getLogsToInsert(recordsJson);
-        system.debug('log+++'+log);
-
-        String algo = SYS_DataCache.integrationSetting.get(SYS_DataCache.INT_TYPE).Hashing_Algo__c;
-        if(algo!=NULL && algo!='')
-            log.Request_Digest__c = generateHash(recordsJson,algo);
-
-        SYS_debug.log('MS SYS_DataCache.log in generate child log:'+SYS_DataCache.log.Id);
-        log.Parent__c = parentLogId;
-        log.Resource__c = resource;
-        log.Type__c = 'INBOUND';
-        //Todo
-        log.SYS_Operation_Type__c = 'INSERT';
-        log.Flat_Key_for_Resource__c = '';
-        log.SYS_IntegrationSettings__c = integrationSetting;
-        log.Status__c = 'NEW';//'WAITING_FOR_PARENT';
-       
-        /**
-         * Applies when the child records require parenting after creation
-         */
-        log.Requires_process_on_complete__c = true;
-        log.On_Complete_Handler__c = 'SYS_QB_ApplicationServiceinbound';
-        /** */
-
-        //log.External_Id_Field_API_Name__c = 'SYS_Child_Key__c';
-        log.How_to_process__c = 'use_custom_apex_handler';
-        log.Custom_Apex_Handler__c = 'SYS_QB_ApplicationServiceinbound';
-
-        return log;
-    }
+    //We are overriden this class because we need to delete the child records before inserting into the salesforce
     public override virtual void fixParent(String parentLogId,SYS_IntegrationLog__c childLog){
+        if(SYS_DataCache.OBJ_TYPE=='OpportunityQB'){
         list<SYS_IntegrationLog__c> parentlog = [SELECT Parent__r.WhatId__c FROM SYS_IntegrationLog__c WHERE Parent__c = :parentLogId AND Status__c='DONE'];
         list <OpportunityLineItem>opp = [select id from OpportunityLineItem WHERE OpportunityId=:parentlog[0].Parent__r.WhatId__c];
        system.debug('opp++++*******'+opp);
@@ -169,24 +140,44 @@ public class SYS_QB_ApplicationServiceinbound extends SYS_ApplicationService {
         Boolean success = true;
         results = Database.delete(opp, false);
          }
+        }
+        //SYS_DataCache.log = childLog;
         List<FieldSetting__mdt> fsm = new List<FieldSetting__mdt>();
-        fsm = [SELECT FieldApiName__c,ParentField__c,ObjectApiName__c FROM FieldSetting__mdt WHERE RestResource__c = :childLog.Resource__c AND Is_Lookup__c=true];
+        fsm = [SELECT FieldApiName__c,
+                        ObjectApiName__c 
+                        FROM FieldSetting__mdt 
+                        WHERE RestResource__c = :childLog.Resource__c 
+                        AND Is_Lookup__c=true 
+                        AND Lookup_External_Key__c=NULL 
+                        AND Lookup_Object_API_Name__c=NULL];
         System.debug('MS Fixing Relationship:'+fsm);
         List<sObject> childRecords = new List<sObject>();
+        List<String> dupeCheckList = new List<String>();
         
-        for(SYS_IntegrationLog__c cLog:[SELECT Id,WhatId__c,Parent__r.WhatId__c FROM SYS_IntegrationLog__c WHERE Parent__c = :parentLogId AND Status__c='DONE'])
+        for(SYS_IntegrationLog__c cLog:[SELECT Id,WhatId__c,Parent__r.WhatId__c FROM SYS_IntegrationLog__c WHERE Parent__c = :parentLogId AND Status__c='PENDING_PARENT'])
         {
-            sObject sObj = Schema.getGlobalDescribe().get(fsm[0].ObjectApiName__c).newSObject();
-            System.debug('MS cLog:'+cLog);
-            System.debug('MS cLog.Parent__r.WhatId__c:'+cLog.Parent__r.WhatId__c);
-            sObj.put('Id',cLog.WhatId__c);
-            sObj.put(fsm[0].FieldApiName__c,cLog.Parent__r.WhatId__c);
-            childRecords.add(sObj);
+            System.debug('MS dupeCheckList:'+dupeCheckList);
+
+            if(!dupeCheckList.contains(cLog.WhatId__c) && cLog.WhatId__c!=null){
+                childRecords.clear();
+                sObject sObj = Schema.getGlobalDescribe().get(fsm[0].ObjectApiName__c).newSObject();
+                System.debug('MS cLog:'+cLog);
+                System.debug('MS cLog.Parent__r.WhatId__c:'+cLog.Parent__r.WhatId__c);
+                sObj.put('Id',cLog.WhatId__c);
+                sObj.put(fsm[0].FieldApiName__c,cLog.Parent__r.WhatId__c);
+                childRecords.add(sObj);
+                dupeCheckList.add(String.valueOf(sObj.get('Id')));
+
+                //TODO Add Limit check. This is to make sure each log is processed separately and thereby avoid overriding of log properties
+                if(doDML(childRecords, 'UPDATE', '',cLog)){
+                    cLog.Status__c ='DONE';
+                    cLog.retry__c =false;
+                    update cLog;
+                }
+            }
         }
-        System.debug('MS Child Records for Parenting:'+childRecords);
-       
-        doDML(childRecords, 'UPDATE', '');
-        
+        //System.debug('MS Child Records for Parenting:'+childRecords);
+
 
     }
     class QBResponse {
