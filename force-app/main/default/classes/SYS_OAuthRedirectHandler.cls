@@ -45,8 +45,7 @@ global class SYS_OAuthRedirectHandler {
                                 '&code='+EncodingUtil.urlEncode(code,'UTF-8')+
                                 '&state='+EncodingUtil.urlEncode(state,'UTF-8')+
                                 '&grant_type=authorization_code'+
-                                '&redirect_uri='+EncodingUtil.urlEncode(redirect_uri ,'UTF-8')+
-                                '&scope='+EncodingUtil.urlEncode(configs[0].Scope__c ,'UTF-8');
+                                '&redirect_uri='+EncodingUtil.urlEncode(redirect_uri ,'UTF-8');
             
             req.setBody(payload);
             System.debug('----- Token Request Body:'+req.getBody());

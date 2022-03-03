@@ -87,7 +87,7 @@ public class SYS_DataCache {
         get {
             if(external_key == null) {
                 external_key = new Map<String, String>();
-                for(FieldSetting__mdt fs : FieldMappingOutbound){
+                for(FieldSetting__mdt fs : FieldMappingInbound){
                     if(fs.Is_External_Field__c)
                         external_key.put(fs.RestResource__c,fs.FieldApiName__c);
                 }
@@ -193,26 +193,26 @@ public class SYS_DataCache {
         get{
             if(mappings == null){
                 mappings = new List<FieldSetting__mdt>();
-                System.debug('Field Settings #### 1:'+mappings);
-                mappings = [Select Id,Log_API_for_field_mapping__c, Lookup_External_Key__c, Lookup_Object_API_Name__c,Is_External_Field__c,Is_Lookup__c, Get_value_from_Log__c,ChildFieldApiName__c,ObjectSetting__r.DeveloperName,masterlabel,Field_Mapping_Handler__c, ObjectSetting__r.masterlabel , StaticValue__c,IsChild__c, ObjectSetting__r.ObjectApiName__c, ObjectApiName__c, FieldApiName__c , Key__c, RestResource__c, Direction__c, ParentField__c, ChildRootElement__c,
+                
+                mappings = [Select Id,Level__c,Log_API_for_field_mapping__c, Lookup_External_Key__c, Lookup_Object_API_Name__c,Is_External_Field__c,Is_Lookup__c, Get_value_from_Log__c,ChildFieldApiName__c,ObjectSetting__r.DeveloperName,masterlabel,Field_Mapping_Handler__c, ObjectSetting__r.masterlabel , StaticValue__c,IsChild__c, ObjectSetting__r.ObjectApiName__c, ObjectApiName__c, FieldApiName__c , Key__c, RestResource__c, Direction__c, ParentField__c, ChildRootElement__c,
                             ObjectSetting__r.Direction__c,ObjectSetting__r.Trigger_Condition__c,ObjectSetting__r.TriggerEvents__c, ObjectSetting__r.ResourcePath__c,ObjectSetting__r.url_params__c , ObjectSetting__r.ApexHandler__c 
                             from FieldSetting__mdt WHERE Is_Active__c=true  
                             AND ObjectSetting__r.IntegrationType__r.developername = : SYS_DataCache.INT_TYPE AND Direction__c != 'INBOUND'];
-                System.debug('Field Settings #### 2:'+mappings);
+                
                 for(FieldSetting__mdt item : mappings) {
-                    System.debug('Field Settings #### 3:'+item);
+                    
                     item.FieldApiName__c = item.FieldApiName__c != null ? item.FieldApiName__c.replace(SYS_DataCache.ESCAPE_CHAR, SYS_DataCache.namespacePrefix) :item.FieldApiName__c ;
                     item.ObjectApiName__c = item.ObjectApiName__c != null ? item.ObjectApiName__c.replace(SYS_DataCache.ESCAPE_CHAR, SYS_DataCache.namespacePrefix) :item.ObjectApiName__c ;
                 } 
-                System.debug('Field Settings #### 4:');
+                
             }
-            System.debug('Field Settings ####:'+mappings);
+            
             return mappings;
         }
         
     }
     private static List<FieldSetting__mdt> mappingOut; 
-    public static List<FieldSetting__mdt> FieldMappingOutbound { 
+    public static List<FieldSetting__mdt> FieldMappingInbound { 
         get {
             if(mappingOut == null) { 
                 mappingOut = new List<FieldSetting__mdt>();
@@ -226,7 +226,7 @@ public class SYS_DataCache {
                 ' from FieldSetting__mdt '+
                 ' WHERE ObjectSetting__r.IntegrationType__r.developername =\''+SYS_DataCache.INT_TYPE+'\' AND Direction__c != \'OUTBOUND\' AND Is_Active__c = true'; 
                 
-                System.debug('----WS FieldMappingOutbound Query:'+query);
+                System.debug('----WS FieldMappingInbound Query:'+query);
                 mappingOut = Database.query(query);
                 for(FieldSetting__mdt item : mappingOut) {
                     // system.debug('before replace==='+item.FieldApiName__c);

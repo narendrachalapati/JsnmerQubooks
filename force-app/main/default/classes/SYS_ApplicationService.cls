@@ -792,7 +792,9 @@ global virtual class SYS_ApplicationService {
             if(log.SYS_Operation_Type__c == 'INSERT' || log.Force_Sync__c){
                 logResp.Status__c = 'NEW';
                 logResp.SYS_Operation_Type__c = 'UPDATE';
-                logResp.Resource__c = SYS_DataCache.fieldSettingMappingUsingObjSetting[0].RestResource__c;
+                logResp.Flat_Key_for_Resource__c = SYS_DataCache.integrationSetting.get(SYS_DataCache.INT_TYPE).Flat_Key_for_Resource__c;
+
+                //logResp.Resource__c = SYS_DataCache.fieldSettingMappingUsingObjSetting[0].RestResource__c;
                 logResp.How_To_Process__c = 'use_custom_apex_handler';
                 logResp.Custom_Apex_Handler__c = SYS_DataCache.integrationSetting.get(SYS_DataCache.INT_TYPE).ApexHandler__c;
             }
