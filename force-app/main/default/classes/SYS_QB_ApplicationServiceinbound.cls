@@ -72,9 +72,16 @@ public class SYS_QB_ApplicationServiceinbound extends SYS_ApplicationService {
         log.How_to_process__c = 'use_custom_apex_handler';
         log.Custom_Apex_Handler__c = SYS_DataCache.integrationSetting.get(SYS_DataCache.INT_TYPE).Inbound_Custom_Apex_Handler__c;
         //todo
+        if(SYS_DataCache.OBJ_TYPE=='AccountQB'){
+            log.Requires_process_on_complete__c = false;
+        }
+        else if (SYS_DataCache.OBJ_TYPE=='SYS_QB_Transfer') {
+            log.Requires_process_on_complete__c = false;
+        }else {
+            log.Requires_process_on_complete__c = true;   
+        }
+        
         log.Custom_Field_Value__c = 'false';
-        log.Requires_process_on_complete__c = true;
-         
         return log;
     }
   
@@ -126,6 +133,57 @@ public class SYS_QB_ApplicationServiceinbound extends SYS_ApplicationService {
     }
         return sobjlist;
     
+    }
+    public override sObject processFieldMapping(FieldSetting__mdt mapping,sObject sObj,Object value, String sObjectApiName){
+
+        System.debug(mapping.FieldApiName__c+' +MS+ '+value);
+        if(mapping.Get_value_from_Log__c)
+            value = SYS_DataCache.log.get(mapping.Log_API_for_field_mapping__c);
+
+        if(mapping.Is_Lookup__c && mapping.Lookup_External_Key__c!=NULL && mapping.Lookup_Object_API_Name__c!=NULL){
+            value = getIdFromExternalKey(mapping.Lookup_Object_API_Name__c,mapping.Lookup_External_Key__c,String.valueOf(value));
+        }
+
+        if(mapping.StaticValue__c != NULL)
+            value = mapping.StaticValue__c;
+            
+
+        if(value==NULL) return sObj;
+
+        SObjectType r = ((SObject)(Type.forName('Schema.'+sObjectApiName).newInstance())).getSObjectType();
+        DescribeSObjectResult d = r.getDescribe();
+                
+        String fieldType = d.fields
+                            .getMap()
+                            .get(mapping.FieldApiName__c)
+                            .getDescribe()
+                            .getType()+'';
+
+        
+        //TODO add other field types
+        // if(mapping.FieldApiName__c == 'StartTime__c'&& value!=Null){
+        //     sObj.put(mapping.FieldApiName__c, Time.valueof(value));
+        //      }
+        //      if(mapping.FieldApiName__c == 'EndTime__c'&& value!=Null){
+        //         sObj.put(mapping.FieldApiName__c, Time.valueof(value));
+        //          }
+
+        if(fieldType=='DATE'){
+            sObj.put(mapping.FieldApiName__c, date.valueOf((String)value));
+        }else if (fieldType == 'STRING') {
+            sObj.put(mapping.FieldApiName__c, String.valueof(value));
+        }else if (fieldType == 'BOOLEAN') {
+            sObj.put(mapping.FieldApiName__c, Boolean.valueof(value));
+        }
+    // else if (fieldType == 'Time') {
+    //     sObj.put(mapping.FieldApiName__c, TimeZone.valueof(value));
+    // }
+        else{
+            sObj.put(mapping.FieldApiName__c, value);
+        }
+
+        SYS_debug.log('MS FINAL SOBJ:'+sObj);
+        return sObj;
     }
    
     

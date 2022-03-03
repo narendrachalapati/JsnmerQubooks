@@ -37,16 +37,14 @@
                 <label>UPDATE</label>
             </value>
             <value>
-                <fullName>CDC</fullName>
-                <default>false</default>
-                <isActive>false</isActive>
-                <label>CDC</label>
-            </value>
-            <value>
                 <fullName>RESPONSE</fullName>
                 <default>false</default>
-                <isActive>false</isActive>
                 <label>RESPONSE</label>
+            </value>
+            <value>
+                <fullName>CDC</fullName>
+                <default>false</default>
+                <label>CDC</label>
             </value>
         </valueSetDefinition>
     </valueSet>
