@@ -528,7 +528,7 @@ public virtual class SYS_Transformer {
                         System.debug('MS condition for Key: '+key+' = '+(SYS_DataCache.externalKeyByResourceMap.containsKey(key.toLowerCase())));
                         
                         //AP-106
-                        if( SYS_DataCache.externalKeyByResourceMap.containsKey(key.toLowerCase()) && 
+                        if( /*SYS_DataCache.externalKeyByResourceMap.containsKey(key.toLowerCase()) &&*/
                                     Limits.getQueueableJobs() + 1 < Limits.getLimitQueueableJobs()
                         )
                         {
