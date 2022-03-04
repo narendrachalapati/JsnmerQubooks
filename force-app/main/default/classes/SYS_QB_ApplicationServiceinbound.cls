@@ -60,29 +60,17 @@ public class SYS_QB_ApplicationServiceinbound extends SYS_ApplicationService {
         //if(algo!=NULL && algo!='')
         // log.Request_Digest__c = generateHash(requestBody,algo);
 
+        String algo = SYS_DataCache.integrationSetting.get(SYS_DataCache.INT_TYPE).Hashing_Algo__c;
+        if(algo!=NULL && algo!='')
+        log.Request_Digest__c = generateHash(requestBody,algo);
+
         log.Type__c = 'INBOUND';
-      
-          log.SYS_Operation_Type__c = 'UPSERT';   
-      
-          //log.SYS_Operation_Type__c = 'UPDATE'; 
-        log.Flat_Key_for_Resource__c = '';
+        log.SYS_Operation_Type__c = getOperationTypeFor(method);
+        log.Flat_Key_for_Resource__c = SYS_DataCache.integrationSetting.get(SYS_DataCache.INT_TYPE).Flat_Key_for_Resource__c;
         log.SYS_IntegrationSettings__c = SYS_DataCache.INT_TYPE;
         log.Status__c = 'NEW';
-        log.External_Id_Field_API_Name__c = 'Quickbooks_Id__c';
         log.How_to_process__c = 'use_custom_apex_handler';
-        log.Custom_Apex_Handler__c = SYS_DataCache.integrationSetting.get(SYS_DataCache.INT_TYPE).Inbound_Custom_Apex_Handler__c;
-        //todo
-        if(SYS_DataCache.OBJ_TYPE=='AccountQB'){
-            log.Requires_process_on_complete__c = false;
-        }
-        else if (SYS_DataCache.OBJ_TYPE=='SYS_QB_Transfer') {
-            log.Requires_process_on_complete__c = false;
-        }else {
-            log.Requires_process_on_complete__c = true;   
-        }
-        
-        log.Custom_Field_Value__c = 'false';
-        return log;
+        log.Custom_Apex_Handler__c = SYS_DataCache.integrationSetting.get(SYS_DataCache.INT_TYPE).ApexHandler__c;return log;
     }
   
     //when we removed the root key it not returing the restresorce that path so it not identifying the sobject so thats why 
@@ -121,10 +109,16 @@ public class SYS_QB_ApplicationServiceinbound extends SYS_ApplicationService {
       List<sObject> sobjlist= SYS_Transformer.getSObjectsToUpsert(new List<String>{jsonBody},resource);
       system.debug('sobjlist+++++=='+sobjlist);
       for(sObject sobj : sobjlist){
-        if( parentId!=Null){
+       if( parentId!=Null && SYS_DataCache.OBJ_TYPE='OpportunityQB'){
         String oldDesc = (String)sobj.put('OpportunityId', parentId);
         system.debug('oldDesc+++'+oldDesc);
       }
+                           
+      if( parentId!=Null && SYS_DataCache.OBJ_TYPE='SYS_QB_Bill'){
+        String oldDesc = (String)sobj.put('SYS_BillId__c', parentId);
+        system.debug('oldDesc+++'+oldDesc);
+      }
+                           
     //   String priceId = Label.SYS_StandardPriceBookID;
     //    if(objapiname=='Opportunity' ){
     //      String oldDesc = (String)sobj.put('Pricebook2Id', priceId);     
@@ -134,111 +128,49 @@ public class SYS_QB_ApplicationServiceinbound extends SYS_ApplicationService {
         return sobjlist;
     
     }
-    public override sObject processFieldMapping(FieldSetting__mdt mapping,sObject sObj,Object value, String sObjectApiName){
+    public override SYS_IntegrationLog__c generateLogForChildRecords(String parentLogId,String resource,String recordsJson,String integrationSetting) {
+        SYS_IntegrationLog__c log = SYS_Helper.getLogsToInsert(recordsJson);
 
-        System.debug(mapping.FieldApiName__c+' +MS+ '+value);
-        if(mapping.Get_value_from_Log__c)
-            value = SYS_DataCache.log.get(mapping.Log_API_for_field_mapping__c);
+        String algo = SYS_DataCache.integrationSetting.get(SYS_DataCache.INT_TYPE).Hashing_Algo__c;
+        if(algo!=NULL && algo!='')
+            log.Request_Digest__c = generateHash(recordsJson,algo);
 
-        if(mapping.Is_Lookup__c && mapping.Lookup_External_Key__c!=NULL && mapping.Lookup_Object_API_Name__c!=NULL){
-            value = getIdFromExternalKey(mapping.Lookup_Object_API_Name__c,mapping.Lookup_External_Key__c,String.valueOf(value));
-        }
-
-        if(mapping.StaticValue__c != NULL)
-            value = mapping.StaticValue__c;
-            
-
-        if(value==NULL) return sObj;
-
-        SObjectType r = ((SObject)(Type.forName('Schema.'+sObjectApiName).newInstance())).getSObjectType();
-        DescribeSObjectResult d = r.getDescribe();
-                
-        String fieldType = d.fields
-                            .getMap()
-                            .get(mapping.FieldApiName__c)
-                            .getDescribe()
-                            .getType()+'';
-
+        SYS_debug.log('MS SYS_DataCache.log in generate child log:'+SYS_DataCache.log.Id);
+        log.Parent__c = parentLogId;
         
-        //TODO add other field types
-        // if(mapping.FieldApiName__c == 'StartTime__c'&& value!=Null){
-        //     sObj.put(mapping.FieldApiName__c, Time.valueof(value));
-        //      }
-        //      if(mapping.FieldApiName__c == 'EndTime__c'&& value!=Null){
-        //         sObj.put(mapping.FieldApiName__c, Time.valueof(value));
-        //          }
-
-        if(fieldType=='DATE'){
-            sObj.put(mapping.FieldApiName__c, date.valueOf((String)value));
-        }else if (fieldType == 'STRING') {
-            sObj.put(mapping.FieldApiName__c, String.valueof(value));
-        }else if (fieldType == 'BOOLEAN') {
-            sObj.put(mapping.FieldApiName__c, Boolean.valueof(value));
+        log.Type__c = 'INBOUND';
+        if(SYS_DataCache.OBJ_TYPE == 'SYS_QB_Refundreceipt'){
+            log.SYS_Operation_Type__c = 'UPDATE';
+        }else{
+        log.SYS_Operation_Type__c = 'UPSERT';
         }
-    // else if (fieldType == 'Time') {
-    //     sObj.put(mapping.FieldApiName__c, TimeZone.valueof(value));
-    // }
+        /**
+         * If Flat key to identify resource for child records is defined on Integration Setting, consider that
+         * Else take the root key as Resource that is passed on while processing parent record
+         */
+        String flat_key_for_child = SYS_DataCache.integrationSetting.get(SYS_DataCache.INT_TYPE).Flat_Key_for_Resource_Child__c;
+        if(flat_key_for_child != NULL && flat_key_for_child!='')
+            log.Flat_Key_for_Resource__c = flat_key_for_child;
         else{
-            sObj.put(mapping.FieldApiName__c, value);
+            log.Resource__c = resource;
+            log.Flat_Key_for_Resource__c = '';
         }
+        log.SYS_IntegrationSettings__c = integrationSetting;
+        log.Status__c = 'NEW';
+        /**
+         * Applies when the child records require parenting after creation
+         */
+        log.Requires_process_on_complete__c = true;
+        log.On_Complete_Handler__c = SYS_DataCache.integrationSetting.get(SYS_DataCache.INT_TYPE).ApexHandler__c;
+        /** */
 
-        SYS_debug.log('MS FINAL SOBJ:'+sObj);
-        return sObj;
+        log.How_to_process__c = 'use_custom_apex_handler';
+        log.Custom_Apex_Handler__c = SYS_DataCache.integrationSetting.get(SYS_DataCache.INT_TYPE).ApexHandler__c;
+
+        return log;
     }
-   
-    
-    //We are overriden this class because we need to delete the child records before inserting into the salesforce
-    public override virtual void fixParent(String parentLogId,SYS_IntegrationLog__c childLog){
-        if(SYS_DataCache.OBJ_TYPE=='OpportunityQB'){
-        list<SYS_IntegrationLog__c> parentlog = [SELECT Parent__r.WhatId__c FROM SYS_IntegrationLog__c WHERE Parent__c = :parentLogId AND Status__c='DONE'];
-        list <OpportunityLineItem>opp = [select id from OpportunityLineItem WHERE OpportunityId=:parentlog[0].Parent__r.WhatId__c];
-       system.debug('opp++++*******'+opp);
-         if(opp !=NULL){
-            Database.DeleteResult[] results;
-        Boolean success = true;
-        results = Database.delete(opp, false);
-         }
-        }
-        //SYS_DataCache.log = childLog;
-        List<FieldSetting__mdt> fsm = new List<FieldSetting__mdt>();
-        fsm = [SELECT FieldApiName__c,
-                        ObjectApiName__c 
-                        FROM FieldSetting__mdt 
-                        WHERE RestResource__c = :childLog.Resource__c 
-                        AND Is_Lookup__c=true 
-                        AND Lookup_External_Key__c=NULL 
-                        AND Lookup_Object_API_Name__c=NULL];
-        System.debug('MS Fixing Relationship:'+fsm);
-        List<sObject> childRecords = new List<sObject>();
-        List<String> dupeCheckList = new List<String>();
-        
-        for(SYS_IntegrationLog__c cLog:[SELECT Id,WhatId__c,Parent__r.WhatId__c FROM SYS_IntegrationLog__c WHERE Parent__c = :parentLogId AND Status__c='PENDING_PARENT'])
-        {
-            System.debug('MS dupeCheckList:'+dupeCheckList);
-
-            if(!dupeCheckList.contains(cLog.WhatId__c) && cLog.WhatId__c!=null){
-                childRecords.clear();
-                sObject sObj = Schema.getGlobalDescribe().get(fsm[0].ObjectApiName__c).newSObject();
-                System.debug('MS cLog:'+cLog);
-                System.debug('MS cLog.Parent__r.WhatId__c:'+cLog.Parent__r.WhatId__c);
-                sObj.put('Id',cLog.WhatId__c);
-                sObj.put(fsm[0].FieldApiName__c,cLog.Parent__r.WhatId__c);
-                childRecords.add(sObj);
-                dupeCheckList.add(String.valueOf(sObj.get('Id')));
-
-                //TODO Add Limit check. This is to make sure each log is processed separately and thereby avoid overriding of log properties
-                if(doDML(childRecords, 'UPDATE', '',cLog)){
-                    cLog.Status__c ='DONE';
-                    cLog.retry__c =false;
-                    update cLog;
-                }
-            }
-        }
-        //System.debug('MS Child Records for Parenting:'+childRecords);
-
-
-    }
-    class QBResponse {
+  
+   class QBResponse {
         public cls_eventNotifications[] eventNotifications;
     }
     class cls_eventNotifications {

@@ -488,9 +488,10 @@ global virtual class SYS_ApplicationService {
         
         jsonBody = preprocessJSONForInbound(log,jsonBody);
         String resource = getResourceFromJSON(log,jsonBody);
+        SYS_debug.log('\n\n ------------------------------- \n\n Application Service resource:'+resource);
         List<sObject> sObjectsToDML = transformJsonToSObject(jsonBody, resource);
 
-        SYS_debug.log('\n\n ------------------------------- \n\n Application Service resource:'+resource);
+       
         SYS_debug.log('\n\n ------------------------------- \n\n Application Service sObjects to DML:'+sObjectsToDML);
         SYS_debug.log('\n\n ------------------------------- \n\n Application Service externalKeyByResourceMap:'+SYS_DataCache.externalKeyByResourceMap);
 
