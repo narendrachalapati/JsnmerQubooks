@@ -109,16 +109,11 @@ public class SYS_QB_ApplicationServiceinbound extends SYS_ApplicationService {
       List<sObject> sobjlist= SYS_Transformer.getSObjectsToUpsert(new List<String>{jsonBody},resource);
       system.debug('sobjlist+++++=='+sobjlist);
       for(sObject sobj : sobjlist){
-       if( parentId!=Null && SYS_DataCache.OBJ_TYPE='OpportunityQB'){
+       if( parentId!=Null){
         String oldDesc = (String)sobj.put('OpportunityId', parentId);
         system.debug('oldDesc+++'+oldDesc);
       }
-                           
-      if( parentId!=Null && SYS_DataCache.OBJ_TYPE='SYS_QB_Bill'){
-        String oldDesc = (String)sobj.put('SYS_BillId__c', parentId);
-        system.debug('oldDesc+++'+oldDesc);
-      }
-                           
+                                               
     //   String priceId = Label.SYS_StandardPriceBookID;
     //    if(objapiname=='Opportunity' ){
     //      String oldDesc = (String)sobj.put('Pricebook2Id', priceId);     
