@@ -271,8 +271,12 @@ global virtual class SYS_ApplicationService {
         
         //TODO add other field types
         if(fieldType=='DATE'){
-            sObj.put(mapping.FieldApiName__c, date.valueOf((String)value));
-        }else if (fieldType == 'STRING') {
+            sObj.put(mapping.FieldApiName__c, Date.valueOf((String)value));
+        }
+        else if(fieldType=='DATETIME'){
+            sObj.put(mapping.FieldApiName__c,Datetime.valueOfGmt((String)value));
+        }
+        else if (fieldType == 'STRING') {
             sObj.put(mapping.FieldApiName__c, String.valueof(value));
         }else if (fieldType == 'BOOLEAN') {
             sObj.put(mapping.FieldApiName__c, Boolean.valueof(value));
@@ -343,7 +347,13 @@ global virtual class SYS_ApplicationService {
      * Override if custom log generation is required
      */
     global virtual SYS_IntegrationLog__c generateLogForChildRecords(String parentLogId,String resource,String recordsJson,String integrationSetting) {
+
+        List<SYS_IntegrationLog__c> parentLog = 
+        Database.query('SELECT '+SYS_Helper.getAllFieldsFor('SYS_IntegrationLog__c')+', Parent__r.WhatId__c, Parent__r.SYS_Operation_Type__c FROM SYS_IntegrationLog__c WHERE Id in (' + '\'' + parentLogId + '\')');
+
         SYS_IntegrationLog__c log = SYS_Helper.getLogsToInsert(recordsJson);
+
+        log.ObjectSettingId__c = parentLog[0].ObjectSettingId__c;
 
         String algo = SYS_DataCache.integrationSetting.get(SYS_DataCache.INT_TYPE).Hashing_Algo__c;
         if(algo!=NULL && algo!='')
@@ -793,7 +803,9 @@ global virtual class SYS_ApplicationService {
             if(log.SYS_Operation_Type__c == 'INSERT' || log.Force_Sync__c){
                 logResp.Status__c = 'NEW';
                 logResp.SYS_Operation_Type__c = 'UPDATE';
-                logResp.Resource__c = SYS_DataCache.fieldSettingMappingUsingObjSetting[0].RestResource__c;
+                logResp.Flat_Key_for_Resource__c = SYS_DataCache.integrationSetting.get(SYS_DataCache.INT_TYPE).Flat_Key_for_Resource__c;
+
+                //logResp.Resource__c = SYS_DataCache.fieldSettingMappingUsingObjSetting[0].RestResource__c;
                 logResp.How_To_Process__c = 'use_custom_apex_handler';
                 logResp.Custom_Apex_Handler__c = SYS_DataCache.integrationSetting.get(SYS_DataCache.INT_TYPE).ApexHandler__c;
             }
