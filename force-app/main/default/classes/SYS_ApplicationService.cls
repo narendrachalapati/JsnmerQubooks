@@ -347,7 +347,13 @@ global virtual class SYS_ApplicationService {
      * Override if custom log generation is required
      */
     global virtual SYS_IntegrationLog__c generateLogForChildRecords(String parentLogId,String resource,String recordsJson,String integrationSetting) {
+
+        List<SYS_IntegrationLog__c> parentLog = 
+        Database.query('SELECT '+SYS_Helper.getAllFieldsFor('SYS_IntegrationLog__c')+', Parent__r.WhatId__c, Parent__r.SYS_Operation_Type__c FROM SYS_IntegrationLog__c WHERE Id in (' + '\'' + parentLogId + '\')');
+
         SYS_IntegrationLog__c log = SYS_Helper.getLogsToInsert(recordsJson);
+
+        log.ObjectSettingId__c = parentLog[0].ObjectSettingId__c;
 
         String algo = SYS_DataCache.integrationSetting.get(SYS_DataCache.INT_TYPE).Hashing_Algo__c;
         if(algo!=NULL && algo!='')

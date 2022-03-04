@@ -315,7 +315,7 @@ public virtual class SYS_Transformer {
         System.debug('jsonList=='+jsonList); 
         
         for(FieldSetting__mdt item : SYS_DataCache.FieldMappingInbound) { 
-            if(resource.equals(item.RestResource__c) /*&& item.ChildRootElement__c == null*/) {
+            if(resource.equals(item.RestResource__c.toLowerCase()) /*&& item.ChildRootElement__c == null*/) {
                 mappings.add(item);
                 String newKey = item.Key__c;//--M .replace( SYS_DataCache.ESCAPE_CHAR, '.'); 
                 mapOfPaths.put(newKey, item);
