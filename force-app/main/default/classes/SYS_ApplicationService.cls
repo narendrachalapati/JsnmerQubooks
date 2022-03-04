@@ -271,8 +271,12 @@ global virtual class SYS_ApplicationService {
         
         //TODO add other field types
         if(fieldType=='DATE'){
-            sObj.put(mapping.FieldApiName__c, date.valueOf((String)value));
-        }else if (fieldType == 'STRING') {
+            sObj.put(mapping.FieldApiName__c, Date.valueOf((String)value));
+        }
+        else if(fieldType=='DATETIME'){
+            sObj.put(mapping.FieldApiName__c,Datetime.valueOfGmt((String)value));
+        }
+        else if (fieldType == 'STRING') {
             sObj.put(mapping.FieldApiName__c, String.valueof(value));
         }else if (fieldType == 'BOOLEAN') {
             sObj.put(mapping.FieldApiName__c, Boolean.valueof(value));
