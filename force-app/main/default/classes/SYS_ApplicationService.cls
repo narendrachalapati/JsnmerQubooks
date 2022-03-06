@@ -333,7 +333,7 @@ global virtual class SYS_ApplicationService {
         log.Type__c = 'INBOUND';
         log.SYS_Operation_Type__c = getOperationTypeFor(method);
         log.Flat_Key_for_Resource__c = SYS_DataCache.integrationSetting.get(SYS_DataCache.INT_TYPE).Flat_Key_for_Resource__c;
-        log.SYS_IntegrationSettings__c = SYS_DataCache.INT_TYPE;
+        log.Integration_Setting__c = SYS_DataCache.INT_TYPE;
         log.Status__c = 'NEW';
         log.How_to_process__c = 'use_custom_apex_handler';
         log.Custom_Apex_Handler__c = SYS_DataCache.integrationSetting.get(SYS_DataCache.INT_TYPE).ApexHandler__c;
@@ -376,7 +376,7 @@ global virtual class SYS_ApplicationService {
             log.Resource__c = resource;
             log.Flat_Key_for_Resource__c = '';
         }
-        log.SYS_IntegrationSettings__c = integrationSetting;
+        log.Integration_Setting__c = integrationSetting;
         log.Status__c = 'NEW';
         /**
          * Applies when the child records require parenting after creation
@@ -793,7 +793,7 @@ global virtual class SYS_ApplicationService {
             logResp.WhatId__c = log.WhatId__c;
             logResp.Type__c = 'RESPONSE';
             logResp.How_To_Process__c = 'ignore_log';
-            logResp.SYS_IntegrationSettings__c = SYS_DataCache.INT_TYPE;
+            logResp.Integration_Setting__c = SYS_DataCache.INT_TYPE;
             
         }
         else{
@@ -817,7 +817,7 @@ global virtual class SYS_ApplicationService {
             logresp.SYS_Http_Status__c = Integer.valueOf(resp.getStatusCode());
             logResp.WhatId__c = log.WhatId__c;
             logResp.Type__c = 'RESPONSE';
-            logResp.SYS_IntegrationSettings__c = SYS_DataCache.INT_TYPE;
+            logResp.Integration_Setting__c = SYS_DataCache.INT_TYPE;
                
             
         }

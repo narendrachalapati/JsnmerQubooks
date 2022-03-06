@@ -62,7 +62,7 @@ public with sharing class SYS_JWTAuth_ApplicationService extends SYS_Application
                     SYS_IntegrationLog__c  newSysLog = SYS_Helper.getLogsToInsert(finalJsonForOutbound);
                     newSysLog.Status__c = 'DONE';
                     newSysLog.Type__c = 'OUTBOUND';
-                    newSysLog.SYS_IntegrationSettings__c = SYS_DataCache.INT_TYPE;
+                    newSysLog.Integration_Setting__c = SYS_DataCache.INT_TYPE;
                     newSysLog.SYS_Operation_Type__c = 'INSERT';
                     newSysLog.whatid__c = jsonRecordId;
                     newSysLog.How_to_process__c = 'use_object_setting';
