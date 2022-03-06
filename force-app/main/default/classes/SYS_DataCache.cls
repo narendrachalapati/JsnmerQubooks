@@ -235,9 +235,16 @@ public class SYS_DataCache {
                 return ObjectSettingToFieldSettingsMap_IB.get(SYS_DataCache.OBJ_TYPE);
             }
             else {
+                /**
+                 *  If Object Settings is still not set it means the Transformer isn't processing records in child context. So FS marked as child should be skipper
+                 *  This is to prevent conflict when a resource is confgiured as both individual object setting and child to another object setting
+                 */
                 List<FieldSetting__mdt> allMappings = new List<FieldSetting__mdt>();
                 for(List<FieldSetting__mdt> fsList:ObjectSettingToFieldSettingsMap_IB.values()){
-                    allMappings.addAll(fsList);
+                    for(FieldSetting__mdt fs:fsList){
+                        if(!fs.isChild__c)
+                            allMappings.add(fs);
+                    }
                 }
                 return allMappings;
             }
@@ -338,7 +345,6 @@ public class SYS_DataCache {
                     }
                 }
             }
-            //System.debug('Object=='+SYS_Constants.OBJ_TYPE+'--'+ObjectSettingToFieldSettingsMap_OB.get(SYS_Constants.OBJ_TYPE));
             return ObjectSettingToFieldSettingsMap_OB.get(SYS_DataCache.OBJ_TYPE);
         }
     }

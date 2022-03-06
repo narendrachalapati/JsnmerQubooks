@@ -48,7 +48,7 @@
     </values>
     <values>
         <field>Level__c</field>
-        <value xsi:nil="true"/>
+        <value xsi:type="xsd:string">0</value>
     </values>
     <values>
         <field>Log_API_for_field_mapping__c</field>
