@@ -28,7 +28,7 @@
     </values>
     <values>
         <field>Flat_Key_for_Resource__c</field>
-        <value xsi:nil="true"/>
+        <value xsi:type="xsd:string">attributes.type</value>
     </values>
     <values>
         <field>Hashing_Algo__c</field>

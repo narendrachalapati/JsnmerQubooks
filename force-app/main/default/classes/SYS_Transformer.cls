@@ -47,7 +47,7 @@ public virtual class SYS_Transformer {
         String primaryObj = JSON.serialize(objectType.getDescribe().getName()).replace('\"','');
         
         System.debug('hbdebug objectType.getDescribe().getName() '+ primaryObj);
-        System.debug('hbdebug mappings '+ JSON.serialize(SYS_DataCache.fieldSettingMappingUsingObjSetting));
+        System.debug('hbdebug mappings '+ JSON.serialize(SYS_DataCache.FieldMappingOutbound));
 
         Map<Id, Map<String, List<sObject>>> parentChildObjMap = new Map<Id, Map<String, List<sObject>>>();
         Map<String, List<FieldSetting__mdt>> childMappingsMap = new Map<String, List<FieldSetting__mdt>>();
@@ -59,7 +59,7 @@ public virtual class SYS_Transformer {
 		
         
         
-        for(FieldSetting__mdt mapping : SYS_DataCache.fieldSettingMappingUsingObjSetting) {
+        for(FieldSetting__mdt mapping : SYS_DataCache.FieldMappingOutbound) {
 
             //TODO check if below if condition is really required
             if(mapping.FieldApiName__c == NULL) {
@@ -147,7 +147,7 @@ public virtual class SYS_Transformer {
 
         //objs will have only record
         for(sObject obj : objs) {
-            jsonMapObject = getRequestJsonSingle(parentLevel,obj,SYS_DataCache.fieldSettingMappingUsingObjSetting, parentChildObjMap);
+            jsonMapObject = getRequestJsonSingle(parentLevel,obj,SYS_DataCache.FieldMappingOutbound, parentChildObjMap);
            
             String objId = (String)obj.get('Id');
             
@@ -209,16 +209,19 @@ public virtual class SYS_Transformer {
                     //TODO mapping.FieldApiName__c can be parent queries on standard/custom
                     if(mapping.FieldApiName__c==NULL){
 
+                        System.debug('MS PBE If 1');
                         jsonMapObject.put(nodeList[0], mapping.StaticValue__c);
 
                     } else if (mapping.ObjectApiName__c != mapping.ObjectSetting__r.ObjectApiName__c && mapping.IsChild__c == false) {
                         
+                        System.debug('MS PBE If 2');
                         System.debug('inequality executed??' + mapVal.get(obj.Id).get(mapping.ObjectApiName__c)+'obj api anme=='+mapping.ObjectApiName__c );
                         System.debug('inequality executed??' + mapVal.get(obj.Id).get(mapping.ObjectApiName__c)[0].get(mapping.FieldApiName__c));
 
                         jsonMapObject.put(nodeList[0], mapVal.get(obj.Id).get(mapping.ObjectApiName__c)[0].get(mapping.FieldApiName__c));
                     }
                     else {
+                        System.debug('MS PBE If 3');
                         //-- SP jsonMapObject.put(nodeList[0], obj.get(mapping.FieldApiName__c));
                         String fieldMappingHandler = 'SYS_ApplicationService';
                         if(mapping.Field_Mapping_Handler__c != '' && mapping.Field_Mapping_Handler__c != NULL){
