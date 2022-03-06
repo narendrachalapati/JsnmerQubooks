@@ -96,30 +96,12 @@ public class SYS_QB_ApplicationServiceinbound extends SYS_ApplicationService {
         }
 
     }
-    Id parentId;
-    string objapiname;
-    if(SYS_DataCache.log.Parent__c!=Null){
-      parentId =  SYS_DataCache.log.Parent__r.WhatId__c;
-      system.debug('parentId+++==='+parentId);
-      objapiname = parentId.getSObjectType().getDescribe().getName();
-      system.debug('objapiname+++'+objapiname);
-    }
-    system.debug('parentId'+parentId);
+  
+  
       system.debug('jsonBody++++===='+jsonBody);
       List<sObject> sobjlist= SYS_Transformer.getSObjectsToUpsert(new List<String>{jsonBody},resource);
       system.debug('sobjlist+++++=='+sobjlist);
-      for(sObject sobj : sobjlist){
-       if( parentId!=Null){
-        String oldDesc = (String)sobj.put('OpportunityId', parentId);
-        system.debug('oldDesc+++'+oldDesc);
-      }
-                                               
-    //   String priceId = Label.SYS_StandardPriceBookID;
-    //    if(objapiname=='Opportunity' ){
-    //      String oldDesc = (String)sobj.put('Pricebook2Id', priceId);     
-                 
-    //   }
-    }
+      
         return sobjlist;
     
     }
