@@ -221,10 +221,10 @@ global virtual class SYS_ApplicationService {
             return ((Decimal)obj.get(fieldAPIName)) == 0.00 ? 'null' : obj.get(fieldAPIName);  
         }
         */
-        //else if(obj.get(fieldAPIName)!=null){
+        else if(obj.get(fieldAPIName)!=null){
             return obj.get(fieldAPIName);
-       // }
-       // return fvalue;
+        }
+        return fvalue;
     }
 
     //TODO Test coverage
