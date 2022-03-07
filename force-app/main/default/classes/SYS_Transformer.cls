@@ -334,7 +334,7 @@ public virtual class SYS_Transformer {
         if(/*!SYS_Transformer.isChild &&*/ mappings.size()>0){
             // sObjectApiName = mappings[0].ObjectSetting__r.Object__r.QualifiedAPIName;
             sObjectApiName = mappings[0].ObjectApiName__c;
-            SYS_DataCache.sObjectApiName = sObjectApiName;
+            SYS_DataCache.sObjectApiName = sObjectApiName; // NOT USED
             SYS_DataCache.OBJ_TYPE = mappings[0].ObjectSetting__r.DeveloperName;
             
         }
@@ -373,9 +373,16 @@ public virtual class SYS_Transformer {
             flatKeyMap.put(casedKey.toLowerCase(),flatKeyMapWithCaseSensitiveKeys.get(casedKey));
         }
         // MS Added to avoid dependency on Casing of key in JSON ]
-
-        System.debug('SYS_DataCache.sObjectApiName in parseJsonToObject:'+sObjectApiName);
-        sObject sObj = Schema.getGlobalDescribe().get(sObjectApiName).newSObject();
+        sObject sObj;
+        try{
+            System.debug('SYS_DataCache.sObjectApiName in parseJsonToObject:'+sObjectApiName);
+            sObj = Schema.getGlobalDescribe().get(sObjectApiName).newSObject();
+        }
+        catch(Exception e){
+            e.setMessage('\nSYS EXCEPTION: Could not identify the resource from JSON or there is no field setting for the given resource');
+            throw e;
+        }
+        
         
         //We are processing array so identify obj name from flatkeymap
         if(sObjectApiName ==null && flatKeyMap.size()>0) {

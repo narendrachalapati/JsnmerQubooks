@@ -499,9 +499,9 @@ global virtual class SYS_ApplicationService {
         jsonBody = preprocessJSONForInbound(log,jsonBody);
         String resource = getResourceFromJSON(log,jsonBody);
         SYS_debug.log('\n\n ------------------------------- \n\n Application Service resource:'+resource);
+
         List<sObject> sObjectsToDML = transformJsonToSObject(jsonBody, resource);
 
-       
         SYS_debug.log('\n\n ------------------------------- \n\n Application Service sObjects to DML:'+sObjectsToDML);
         SYS_debug.log('\n\n ------------------------------- \n\n Application Service externalKeyByResourceMap:'+SYS_DataCache.externalKeyByResourceMap);
 
@@ -819,6 +819,7 @@ global virtual class SYS_ApplicationService {
             logResp.WhatId__c = log.WhatId__c;
             logResp.Type__c = 'RESPONSE';
             logResp.Integration_Setting__c = SYS_DataCache.INT_TYPE;
+            logResp.ObjectSettingId__c = log.ObjectSettingId__c;
                
             
         }
