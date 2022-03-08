@@ -199,7 +199,8 @@ public class SYS_DataCache {
                             ObjectSetting__r.Direction__c,ObjectSetting__r.Trigger_Condition__c,ObjectSetting__r.TriggerEvents__c, ObjectSetting__r.ResourcePath__c,ObjectSetting__r.url_params__c , ObjectSetting__r.ApexHandler__c 
                             from FieldSetting__mdt WHERE Is_Active__c=true  
                             AND ObjectSetting__r.IntegrationType__r.developername = : SYS_DataCache.INT_TYPE/* AND Direction__c != 'INBOUND'*/];
-                
+                  system.debug('Allfieldmappings+++'+AllFieldSettingsList);
+                 
                 for(FieldSetting__mdt item : AllFieldSettingsList) {
                     
                     item.FieldApiName__c = item.FieldApiName__c != null ? item.FieldApiName__c.replace(SYS_DataCache.ESCAPE_CHAR, SYS_DataCache.namespacePrefix) :item.FieldApiName__c ;
@@ -232,6 +233,7 @@ public class SYS_DataCache {
             }
 
             if(SYS_DataCache.OBJ_TYPE!=NULL){
+                system.debug('objectsettingsapp@@@'+ObjectSettingToFieldSettingsMap_IB.get(SYS_DataCache.OBJ_TYPE));
                 return ObjectSettingToFieldSettingsMap_IB.get(SYS_DataCache.OBJ_TYPE);
             }
             else {
@@ -246,6 +248,7 @@ public class SYS_DataCache {
                             allMappings.add(fs);
                     }
                 }
+                system.debug('allmappings@@@'+allMappings);
                 return allMappings;
             }
         }
@@ -603,6 +606,8 @@ public class SYS_DataCache {
                                      WHERE developername = :SYS_DataCache.INT_TYPE LIMIT 1][0].DebugCheck__c;
             }
             */
+            //system.debug('inte');
+            system.debug('SYS_DataCache.INT_TYPE'+SYS_DataCache.INT_TYPE);
             return integrationSetting.get(SYS_DataCache.INT_TYPE).DebugCheck__c;
             //return true;
         }
