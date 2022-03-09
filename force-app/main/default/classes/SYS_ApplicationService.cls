@@ -29,7 +29,7 @@ global virtual class SYS_ApplicationService {
      * Override if custom handler is required after successful log creation
      */
     global virtual void setSuccessHttpResponse(){
-        if(RestContext.request!=NULL)
+        if(RestContext.response!=NULL)
         RestContext.response.responseBody = Blob.valueOf(RestContext.request.requestBody.toString());
     }
 
@@ -41,6 +41,7 @@ global virtual class SYS_ApplicationService {
      */
     global virtual void setErrorHttpResponse(String stackTrace){
         SYS_debug.log('Webhook Error:'+stackTrace);
+        if(RestContext.response!=NULL)
         RestContext.response.responseBody = Blob.valueOf(stackTrace);
 
     }
@@ -356,7 +357,7 @@ global virtual class SYS_ApplicationService {
         log.ObjectSettingId__c = parentLog[0].ObjectSettingId__c;
 
         /* ------------------------------------ FOR ALL OR NONE HANDLING -------------------------------------- */
-        if(SYS_DataCache.objectSettingMap.get(log.ObjectSettingId__c).All_OR_None__c){
+        if(log.ObjectSettingId__c!=NULL && SYS_DataCache.objectSettingMap.get(log.ObjectSettingId__c).All_OR_None__c){
             log.Custom_Field_Value__c = parentLog[0].WhatId__c;
             log.SYS_Operation_Type__c = 'INSERT';
         }
