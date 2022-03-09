@@ -576,8 +576,9 @@ public virtual class SYS_Transformer {
 
     public static Boolean fieldSettingIsToBeSkipped(sObject sobj, FieldSetting__mdt mapping){
 
-        return false;
-        /*
+        System.debug('MS fieldSettingIsToBeSkipped Mapping: '+mapping+', sobj:'+sobj);
+
+
         List<FieldSetting__mdt> extIdMapping = [SELECT FieldApiName__c 
                                                     FROM FieldSetting__mdt 
                                                     WHERE ObjectSetting__c=:mapping.ObjectSetting__c 
@@ -589,7 +590,6 @@ public virtual class SYS_Transformer {
         String externalIdField = extIdMapping[0].FieldApiName__c;
         String mappingIsAllowedFor = mapping.Mapping_is_for__c;
         
-        System.debug('MS fieldSettingIsToBeSkipped check:'+mappingIsAllowedFor+', '+externalIdField+', '+sobj.get(externalIdField));
         if(mappingIsAllowedFor == NULL|| mappingIsAllowedFor == 'All Records'){
             return false;
         }
@@ -611,7 +611,7 @@ public virtual class SYS_Transformer {
                 return false;
             }
         }
-        */
+        
 
     }
     /* *************************************************************************************************************************** */

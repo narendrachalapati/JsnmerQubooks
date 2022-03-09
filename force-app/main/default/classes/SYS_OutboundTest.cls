@@ -17,8 +17,8 @@ public class SYS_OutboundTest {
         Test.stopTest();
 
         //TODO Assert on key fields on log record
-        //List<SYS_IntegrationLog__c> log = [SELECT Id,Status__c FROM SYS_IntegrationLog__c];
-        //System.assert(log.size()>1);
+        List<SYS_IntegrationLog__c> log = [SELECT Id,Status__c FROM SYS_IntegrationLog__c];
+        System.assert(log.size()>1);
         
         
     }
