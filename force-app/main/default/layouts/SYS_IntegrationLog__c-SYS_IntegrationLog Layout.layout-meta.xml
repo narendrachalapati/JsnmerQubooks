@@ -34,6 +34,10 @@
                 <field>Type__c</field>
             </layoutItems>
             <layoutItems>
+                <behavior>Readonly</behavior>
+                <field>Parent_WhatId__c</field>
+            </layoutItems>
+            <layoutItems>
                 <behavior>Edit</behavior>
                 <field>SYS_Operation_Type__c</field>
             </layoutItems>

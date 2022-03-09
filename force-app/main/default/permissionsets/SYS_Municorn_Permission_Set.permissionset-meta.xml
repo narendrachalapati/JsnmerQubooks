@@ -82,6 +82,11 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
+        <editable>false</editable>
+        <field>SYS_IntegrationLog__c.Parent_WhatId__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
         <editable>true</editable>
         <field>SYS_IntegrationLog__c.Parent__c</field>
         <readable>true</readable>
