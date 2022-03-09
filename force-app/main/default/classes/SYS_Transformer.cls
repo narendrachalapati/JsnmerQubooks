@@ -113,7 +113,7 @@ public virtual class SYS_Transformer {
         List<sObject> objs = new List<sObject>();
         if(primaryObjFieldsMap.size()>0){
             System.debug('MS check 101 2:'+primaryObj+' ');
-            String qry = 'Select Id, '+ SYS_DataCache.objectSettingMap.get(SYS_DataCache.OBJ_TYPE).ExternalFieldApi__c+','+
+            String qry = 'Select Id,'+
                      String.join(primaryObjFieldsMap.get(primaryObj.toLowerCase()), ',') +
                      ' from ' + 
                      primaryObj + 
@@ -127,7 +127,7 @@ public virtual class SYS_Transformer {
          
         
         for(String objectName : childFieldsMap.keySet()) {
-            String query = 'Select Id,'+SYS_DataCache.objectSettingMap.get(SYS_DataCache.OBJ_TYPE).ExternalFieldApi__c+','+ String.join(childFieldsMap.get(objectName), ',').removeEnd(',') +' from ' + objectName + ' where '+ childMappingsMap.get(objectName)[0].ParentField__c +' in :parentIds';
+            String query = 'Select Id,'+ String.join(childFieldsMap.get(objectName), ',').removeEnd(',') +' from ' + objectName + ' where '+ childMappingsMap.get(objectName)[0].ParentField__c +' in :parentIds';
            	System.debug('child query=='+query);
             List<sObject> childObjects = Database.query('Select Id, '+ String.join(childFieldsMap.get(objectName), ',') + ',' +childMappingsMap.get(objectName)[0].ParentField__c +' from ' + objectName + ' where '+ childMappingsMap.get(objectName)[0].ParentField__c +' in :parentIds');
            	
@@ -188,7 +188,7 @@ public virtual class SYS_Transformer {
                 
         for(FieldSetting__mdt mapping : mappings) {
 
-            if(fieldSettingIsToBeSkipped(obj,SYS_DataCache.objectSettingMap.get(SYS_DataCache.OBJ_TYPE).ExternalFieldApi__c,mapping.Mapping_is_for__c))
+            if(fieldSettingIsToBeSkipped(obj,mapping))
                 continue;
 
             String fsLevel = (mapping.Level__c == NULL)?'0':mapping.Level__c;
@@ -574,8 +574,21 @@ public virtual class SYS_Transformer {
 
     /* *************************************************************************************************************************** */
 
-    public static Boolean fieldSettingIsToBeSkipped(sObject sobj, String externalIdField, String mappingIsAllowedFor){
+    public static Boolean fieldSettingIsToBeSkipped(sObject sobj, FieldSetting__mdt mapping){
 
+        return false;
+        /*
+        List<FieldSetting__mdt> extIdMapping = [SELECT FieldApiName__c 
+                                                    FROM FieldSetting__mdt 
+                                                    WHERE ObjectSetting__c=:mapping.ObjectSetting__c 
+                                                    AND Is_Active__c = true 
+                                                    AND Is_External_Field__c = true
+                                                    AND Level__c =:mapping.Level__c
+                                                    ];
+
+        String externalIdField = extIdMapping[0].FieldApiName__c;
+        String mappingIsAllowedFor = mapping.Mapping_is_for__c;
+        
         System.debug('MS fieldSettingIsToBeSkipped check:'+mappingIsAllowedFor+', '+externalIdField+', '+sobj.get(externalIdField));
         if(mappingIsAllowedFor == NULL|| mappingIsAllowedFor == 'All Records'){
             return false;
@@ -598,6 +611,7 @@ public virtual class SYS_Transformer {
                 return false;
             }
         }
+        */
 
     }
     /* *************************************************************************************************************************** */
