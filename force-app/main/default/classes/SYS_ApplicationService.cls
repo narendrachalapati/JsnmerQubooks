@@ -434,8 +434,9 @@ global virtual class SYS_ApplicationService {
             reqkeymap.sort();
 
             for (String key: reqkeymap) {
-                if (!String.isBlank(key) && jsonobj.get(key) != '' /*&& (jsonobj.get(key)) instanceOf String*/){
-                    keyValueList.add(key.toLowerCase() + '=' + EncodingUtil.urlEncode(String.valueOf(jsonobj.get(key)),'UTF-8'));
+                if (!String.isBlank(key) /*&& jsonobj.get(key) != '' && (jsonobj.get(key)) instanceOf String*/){
+                    
+                    keyValueList.add(key.toLowerCase() + '=' + EncodingUtil.urlEncode(String.valueOf(jsonobj.get(key)!=NULL?jsonobj.get(key):''),'UTF-8'));
                 }
             }
             formUrlEncodedBody = String.join(keyValueList,'&');
