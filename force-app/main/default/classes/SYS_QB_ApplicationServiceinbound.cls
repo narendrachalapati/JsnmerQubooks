@@ -4,8 +4,8 @@ public class SYS_QB_ApplicationServiceinbound extends SYS_ApplicationService {
     public SYS_QB_ApplicationServiceinbound() {
 
     }
-    public static final Map<String,String> resourceChildMap = new Map<String,String>{'invoice'=>'line','refundreceipt'=>'salesitemlinedetail'};
-    //ToDo make url dynamic by lowercasing the entityName remove if and else statement
+    public static final Map<String,String> resourceChildMap = new Map<String,String>{'invoice'=>'line','refundreceipt'=>'salesitemlinedetail','bill'=>'billline'};
+    //ToDo make url dynamic by lowercasing the entityName remove if and else statement                 
     
     //QB webhook is not providing the entire json so we need to do the get request and
     // give that response and return the syslog
@@ -165,8 +165,35 @@ public class SYS_QB_ApplicationServiceinbound extends SYS_ApplicationService {
 
         return log;
     }
-  
-   class QBResponse {
+    Public override Boolean doUpsert(List<sObject> records,String additionalSetting,SYS_IntegrationLog__c log){
+        Database.UpsertResult[] results;
+        Boolean success = true;
+        if(additionalSetting==''||additionalSetting==Null)
+            results = Database.upsert(records, false);
+        else{
+            System.debug('--MS externalIdField for:'+records[0]);
+            //Schema.SObjectField externalIdField = Schema.getGlobalDescribe().get(SYS_DataCache.sObjectApiName).getDescribe().fields.getMap().get(additionalSetting); 
+            
+            Schema.SObjectField externalIdField = records[0].getSObjectType().getDescribe().fields.getMap().get(additionalSetting); 
+            System.debug('--MS externalIdField in doUpsert:'+externalIdField);
+            
+            results = Database.upsert(records, externalIdField, false);
+        }
+        
+        System.debug('--MS Log check # '+log.Id+' has WhatId: '+results[0].getId());
+
+        if(!results[0].isSuccess()){
+            success = false;
+            handleDMLErrors(results[0].getErrors(),log);
+        }
+        else{
+            log.WhatId__c = results[0].getId();
+        }
+        System.debug('--MS Log re-check # '+log.Id+' has WhatId: '+log.WhatId__c);
+
+        return success;
+    }
+    class QBResponse {
         public cls_eventNotifications[] eventNotifications;
     }
     class cls_eventNotifications {
