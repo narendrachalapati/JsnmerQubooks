@@ -29,8 +29,10 @@ global virtual class SYS_ApplicationService {
      * Override if custom handler is required after successful log creation
      */
     global virtual void setSuccessHttpResponse(){
-        if(RestContext.request!=NULL)
-        RestContext.response.responseBody = Blob.valueOf(RestContext.request.requestBody.toString());
+        if(RestContext.response!=NULL){
+            RestContext.response.responseBody = Blob.valueOf(RestContext.request.requestBody.toString());
+        }
+        
     }
 
     /**
@@ -41,6 +43,7 @@ global virtual class SYS_ApplicationService {
      */
     global virtual void setErrorHttpResponse(String stackTrace){
         SYS_debug.log('Webhook Error:'+stackTrace);
+        if(RestContext.response!=NULL)
         RestContext.response.responseBody = Blob.valueOf(stackTrace);
 
     }
@@ -355,16 +358,24 @@ global virtual class SYS_ApplicationService {
 
         log.ObjectSettingId__c = parentLog[0].ObjectSettingId__c;
 
+        /* ------------------------------------ FOR ALL OR NONE HANDLING -------------------------------------- */
+        if(log.ObjectSettingId__c!=NULL && SYS_DataCache.objectSettingMap.get(log.ObjectSettingId__c).All_OR_None__c){
+            //log.Custom_Field_Value__c = parentLog[0].WhatId__c;
+            log.SYS_Operation_Type__c = 'INSERT';
+        }
+        else {
+            log.SYS_Operation_Type__c = 'UPSERT';
+        }
+        /* ------------------------------------ FOR ALL OR NONE HANDLING -------------------------------------- */
+
         String algo = SYS_DataCache.integrationSetting.get(SYS_DataCache.INT_TYPE).Hashing_Algo__c;
         if(algo!=NULL && algo!='')
             log.Request_Digest__c = generateHash(recordsJson,algo);
 
         SYS_debug.log('MS SYS_DataCache.log in generate child log:'+SYS_DataCache.log.Id);
-        log.Parent__c = parentLogId;
-        
+        log.Parent__c = parentLogId;       
         log.Type__c = 'INBOUND';
-        log.SYS_Operation_Type__c = 'UPSERT';
-
+ 
         /**
          * If Flat key to identify resource for child records is defined on Integration Setting, consider that
          * Else take the root key as Resource that is passed on while processing parent record
@@ -395,8 +406,8 @@ global virtual class SYS_ApplicationService {
     /* ------------------------------------------------------------------------ */ 
 
     // For Outbound. Called from doInbound() in ApplicationService
-    global virtual List<sObject> transformJsonToSObject(String jsonBody,String resource) {
-        return SYS_Transformer.getSObjectsToUpsert(new List<String>{jsonBody},resource);
+    global virtual List<sObject> transformJsonToSObject(String jsonBody,String resource,SYS_IntegrationLog__c log) {
+        return SYS_Transformer.getSObjectsToUpsert(new List<String>{jsonBody},resource,(log.Type__c=='INBOUND'));
     }
 
     // For Outbound. Called from Invocable Handler
@@ -415,15 +426,17 @@ global virtual class SYS_ApplicationService {
         System.debug('Default preprocessJSONForOutbound called');
         
         if(req.getHeader('content-type') == 'application/x-www-form-urlencoded'){
-            String formUrlEncodedBody=''; 
-            Map<String,Object> jsonobj = (Map<String,Object>)JSON.deserializeUntyped(jsonBody);
+            String formUrlEncodedBody='';
+            //String flatJSON = SYS_Helper.getFlatKeys(jsonBody, 'A[B]');
+            Map<String,Object> jsonobj = SYS_Helper.getFlatKeys(jsonBody, 'A[B]');//(Map<String,Object>)JSON.deserializeUntyped(flatJSON);
             List<String> reqkeymap = new List<String>(jsonobj.keySet());
             List<String> keyValueList = new List<String>();
             reqkeymap.sort();
 
             for (String key: reqkeymap) {
-                if (!String.isBlank(key) && jsonobj.get(key) != '' /*&& (jsonobj.get(key)) instanceOf String*/){
-                    keyValueList.add(key.toLowerCase() + '=' + EncodingUtil.urlEncode(String.valueOf(jsonobj.get(key)),'UTF-8'));
+                if (!String.isBlank(key) /*&& jsonobj.get(key) != '' && (jsonobj.get(key)) instanceOf String*/){
+                    
+                    keyValueList.add(key.toLowerCase() + '=' + EncodingUtil.urlEncode(String.valueOf(jsonobj.get(key)!=NULL?jsonobj.get(key):''),'UTF-8'));
                 }
             }
             formUrlEncodedBody = String.join(keyValueList,'&');
@@ -450,22 +463,27 @@ global virtual class SYS_ApplicationService {
 
         String resource = '';
         if(log.Resource__c!=NULL){
+            System.debug('-- MS Resource defined in Log'+log.Resource__c.toLowerCase());
             return log.Resource__c.toLowerCase();
         }
 
         if(log.Flat_Key_for_Resource__c == NULL || log.Flat_Key_for_Resource__c == ''){
             //Root element identifies Resource
+  
             Object responseType = JSON.deserializeUntyped(jsonBody);
             if(responseType instanceof Map<String,Object>){
                 resource = new List<String>(((Map<String, Object>)responseType).keySet())[0];
             }
+            System.debug('-- MS Root defines resource'+resource.toLowerCase());
         }
         else{
             //Key mentioned in Flat_Key_for_Resource__c identifies Resource
-            Map<String, Object> flatKeyMap = SYS_Helper.getFlatKeys(jsonBody);
+            Map<String, Object> flatKeyMap = SYS_Helper.getFlatKeys(jsonBody,'A.B');
             System.debug('-- MS flatKeyMap in getResourceFromJSON:'+flatKeyMap);
             resource = (String)flatKeyMap.get(log.Flat_Key_for_Resource__c);
         }
+
+        System.debug('-- MS Final identified resource in getResourceFromJSON:'+resource.toLowerCase());
 
         return resource.toLowerCase();
     }
@@ -502,7 +520,7 @@ global virtual class SYS_ApplicationService {
         system.debug('integrationsettings'+SYS_DataCache.INT_TYPE);
         System.debug('\n\n ------------------------------- \n\n Application Service resource:'+resource);
 
-        List<sObject> sObjectsToDML = transformJsonToSObject(jsonBody, resource);
+        List<sObject> sObjectsToDML = transformJsonToSObject(jsonBody, resource, log);
 
    system.debug('\n\n ------------------------------- \n\n Application Service sObjects to DML:'+sObjectsToDML);
         system.debug('\n\n ------------------------------- \n\n Application Service externalKeyByResourceMap:'+SYS_DataCache.externalKeyByResourceMap);
@@ -517,15 +535,19 @@ global virtual class SYS_ApplicationService {
 
     global virtual String getHttpRequestMethod(SYS_IntegrationLog__c log,String externalId){
 
-        if(log.SYS_Operation_Type__c == 'DELETE'){
-            return 'DELETE';
+        String httpMethod;
+        if(log.HTTP_Method__c != NULL){
+            httpMethod = log.HTTP_Method__c;
         }
         else if(externalId != NULL && externalId != ''){
-            return SYS_DataCache.integrationSetting.get(SYS_Datacache.INT_TYPE).UpdateMethod__c;
+            httpMethod =  SYS_DataCache.integrationSetting.get(SYS_Datacache.INT_TYPE).UpdateMethod__c;
         }
         else{
-            return 'POST';
+            httpMethod = 'POST';
         }
+        
+        log.HTTP_Method__c = httpMethod;
+        return httpMethod;
 
     }
     
@@ -552,7 +574,7 @@ global virtual class SYS_ApplicationService {
             resourceUrl+= '/'+ externalId;
         }
         System.debug('====== MS Endpoint check:'+resourceUrl);
-        
+        log.Callout_URL__c = resourceUrl;
         return resourceUrl;
     }
 
@@ -592,11 +614,14 @@ global virtual class SYS_ApplicationService {
                             ' FROM '+SYS_DataCache.objectSettingMap.get(SYS_DataCache.OBJ_TYPE).ObjectApiName__c+
                             ' WHERE Id = \'' + log.WhatId__c + '\'');
  
-        String externalId = String.valueOf(recList[0].get(SYS_DataCache.objectSettingMap.get(SYS_DataCache.OBJ_TYPE).ExternalFieldApi__c));
-        
-        req.setMethod(getHttpRequestMethod(log,externalId));
-        req.setEndpoint(getHttpRequestEndpoint(req,log,externalId));
-        setHttpRequestHeaders(req,log);
+        if(!recList.isEmpty()){
+ 
+            String externalId = String.valueOf(recList[0].get(SYS_DataCache.objectSettingMap.get(SYS_DataCache.OBJ_TYPE).ExternalFieldApi__c));
+            
+            req.setMethod(getHttpRequestMethod(log,externalId));
+            req.setEndpoint(getHttpRequestEndpoint(req,log,externalId));
+            setHttpRequestHeaders(req,log);
+        }
  
         return req;
     }
@@ -635,42 +660,23 @@ global virtual class SYS_ApplicationService {
 
         if(!result){
             
-            String errorMessage = 'Error while processing inbound';
+            //-- Error message is set in handleDmlErrors
+            //String errorMessage = 'Error while processing inbound';
+
+            logResp.Status__c = 'FAIL';
+            SYS_Helper.flagLogForRetry(logResp.Id);
+            
+
             /*
-            String errorMessage = 'The following error has occurred.';
-            for(Database.Error err : result.getErrors()) {
-                errorMessage += err.getStatusCode() + ': ' + err.getMessage();
-                SYS_debug.log('Fields affected are: ' + err.getFields());
-            }
-            errorMessage += 'Fields affected are: ' + err.getFields();
-            */
-
-            if (Schema.sObjectType.SYS_IntegrationLog__c.fields.Status__c.isCreateable()) {
-                logResp.Status__c = 'FAIL';
-                SYS_Helper.flagLogForRetry(logResp.Id);
-            }
-
             if (Schema.sObjectType.SYS_IntegrationLog__c.fields.Message__c.isCreateable()) {
                 logResp.Message__c = errorMessage;
             }
+            */
             
             logResp.Id = log.Id;
             
         }
         else{
-            
-            /**
-             * TODO For Guest user the fields are not creatable. 
-             * This won't cause any error becoz the rest service class is without sharing
-             */
-
-            //if (Schema.sObjectType.SYS_IntegrationLog__c.fields.Status__c.isCreateable()) {
-                
-            //}
-
-            //if (Schema.sObjectType.SYS_IntegrationLog__c.fields.Message__c.isCreateable()) {
-            //}
-            
             
             //ID jobID = System.enqueueJob(new SYS_ParentChildRecordsQueueable(log,SYS_DataCache.INT_TYPE));
             logResp = log;
@@ -719,6 +725,7 @@ global virtual class SYS_ApplicationService {
                 else{
                     logResp.Message__c = 'Record created/updated successfully';
                     logResp.Status__c = 'DONE';
+                    
                 }
 
             }
@@ -739,11 +746,14 @@ global virtual class SYS_ApplicationService {
                         AND Is_Lookup__c=true 
                         AND Lookup_External_Key__c=NULL 
                         AND Lookup_Object_API_Name__c=NULL];
+
         System.debug('MS Fixing Relationship:'+fsm);
+
         List<sObject> childRecords = new List<sObject>();
         List<String> dupeCheckList = new List<String>();
-        
-        for(SYS_IntegrationLog__c cLog:[SELECT Id,WhatId__c,Parent__r.WhatId__c FROM SYS_IntegrationLog__c WHERE Parent__c = :parentLogId AND Status__c='PENDING_PARENT'])
+        List<SYS_IntegrationLog__c> childLogs = [SELECT Id,WhatId__c,Parent__r.WhatId__c FROM SYS_IntegrationLog__c WHERE Parent__c = :parentLogId AND Status__c='PENDING_PARENT'];
+
+        for(SYS_IntegrationLog__c cLog:childLogs)
         {
             System.debug('MS dupeCheckList:'+dupeCheckList);
 
@@ -765,7 +775,35 @@ global virtual class SYS_ApplicationService {
                 }
             }
         }
-        //System.debug('MS Child Records for Parenting:'+childRecords);
+
+
+        /* ------------------------------------ ALL OR NONE HANDLING STARTS -------------------------------------- */
+
+        /**
+         * Check if Object Setting is configured with ALL-OR-NONE checked
+         * If yes, delete the existing child records. To identify the EXISTING child records
+         * on the SAME object to which this child records belong we will take just the first record
+         * generate child log - identify the resource - followed by field setting for lookup
+         * and get the object api name
+         */
+
+
+        if(SYS_DataCache.objectSettingMap.get(childLog.ObjectSettingId__c).All_OR_None__c){
+
+            String qry = 'SELECT Id FROM '+fsm[0].ObjectApiName__c+' WHERE '+fsm[0].FieldApiName__c+'=\''+childLogs[0].Parent__r.WhatId__c+'\''+
+                            ' AND Id NOT IN (\''+ String.join(dupeCheckList,'\',\'')+'\')';  
+            
+            System.debug('MS All or none delete records query:'+qry);
+
+            List<sObject> childRecordsToDelete = new List<sObject>();
+            childRecordsToDelete = Database.query(qry);
+
+            System.debug('MS All or none delete records:'+childRecordsToDelete);
+            if(childRecordsToDelete.size() > 0)
+                delete childRecordsToDelete;
+        }
+
+        /* ------------------------------------ ALL OR NONE HANDLING ENDS ---------------------------------------- */
 
 
     }
@@ -780,6 +818,8 @@ global virtual class SYS_ApplicationService {
         if(algo!=NULL && algo!='')
             logResp.Request_Digest__c = generateHash(resp.getBody(),algo);
 
+        logResp.Force_Sync__c = log.Force_Sync__c;
+
         if(resp.getStatusCode() != 201 && resp.getStatusCode() != 200){
 
             SYS_debug.log('#### resp status: '+resp.getStatus());
@@ -787,7 +827,8 @@ global virtual class SYS_ApplicationService {
             SYS_debug.log('#### resp: '+resp.getBody());
 
             log.Status__c = 'FAIL';
-            log.retry__c = true;
+            if(!log.Force_Sync__c)
+                log.retry__c = true;
 
             logResp.Status__c = 'ERROR';
             //SYS_Helper.flagLogForRetry(log.Id);
@@ -805,7 +846,7 @@ global virtual class SYS_ApplicationService {
             if(log.SYS_Operation_Type__c == 'INSERT' || log.Force_Sync__c){
                 logResp.Status__c = 'NEW';
                 logResp.SYS_Operation_Type__c = 'UPDATE';
-                logResp.Flat_Key_for_Resource__c = SYS_DataCache.integrationSetting.get(SYS_DataCache.INT_TYPE).Flat_Key_for_Resource__c;
+                logResp.Flat_Key_for_Resource__c = SYS_DataCache.integrationSetting.get(SYS_DataCache.INT_TYPE).Flat_Key_for_Resource_Response__c;
 
                 //logResp.Resource__c = SYS_DataCache.FieldMappingOutbound[0].RestResource__c;
                 logResp.How_To_Process__c = 'use_custom_apex_handler';
@@ -822,7 +863,6 @@ global virtual class SYS_ApplicationService {
             logResp.Type__c = 'RESPONSE';
             logResp.Integration_Setting__c = SYS_DataCache.INT_TYPE;
             logResp.ObjectSettingId__c = log.ObjectSettingId__c;
-               
             
         }
 
@@ -851,7 +891,6 @@ global virtual class SYS_ApplicationService {
      //OVERLOADED
      public Boolean doDML(List<sObject> records,String dmlType,String additionalSetting,SYS_IntegrationLog__c log) {
 
-        System.debug('MS DML for Log:'+SYS_DataCache.log.Request_Digest__c+':'+SYS_DataCache.log.Status__c);
         
         switch on dmlType.toUpperCase() {
             when 'INSERT'{
@@ -875,35 +914,6 @@ global virtual class SYS_ApplicationService {
 
     }
 
-    /* ------------------------------------------------------------------------
-    public Boolean doDML_DEPRECATED(List<sObject> records,String dmlType,String additionalSetting) {
-
-        System.debug('MS DML for Log:'+SYS_DataCache.log.Request_Digest__c+':'+SYS_DataCache.log.Status__c);
-        
-        switch on dmlType.toUpperCase() {
-            when 'INSERT'{
-                return doInsert(records);
-            }
-            when 'UPSERT'{
-                return doUpsert(records, additionalSetting);
-            }
-            when 'UPDATE'{
-                System.debug('MS getMissingIdForUpdate:'+getMissingIdForUpdate(records));
-                return doUpdate(getMissingIdForUpdate(records));
-            }
-            when 'DELETE'{
-                return doDelete(records);
-            }
-            when else {
-                SYS_debug.log('Invalid DML Operation specified in log record:'+dmlType);
-                return false;
-            }
-            
-        }
-
-    }
-    /* ------------------------------------------------------------------------ */
-
     public void insertWebhookLog(SYS_IntegrationLog__c log){
         system.debug('sysint___++'+SYS_DataCache.INT_TYPE);
         try{
@@ -920,6 +930,8 @@ global virtual class SYS_ApplicationService {
             setErrorHttpResponse(e.getStackTraceString());
         }
     }
+
+    
 
     /************************** C O N C R E T E    M E T H O D S    E N D *****************************/
 
