@@ -2,13 +2,12 @@
 //for inbound processing from webhook 
 public class SYS_QB_ApplicationServiceinbound extends SYS_ApplicationService {
     public SYS_QB_ApplicationServiceinbound() {
-
-    }
+ }
     public static final Map<String,String> resourceChildMap = new Map<String,String>{'invoice'=>'line','refundreceipt'=>'salesitemlinedetail','bill'=>'billline'};
     //ToDo make url dynamic by lowercasing the entityName remove if and else statement                 
     
     //QB webhook is not providing the entire json so we need to do the get request and
-    // give that response and return the syslog
+    // give that response and return the syslog 
     public override SYS_IntegrationLog__c generateLogForWebhookReq(String method) {
         String resource = '';
 
@@ -92,7 +91,7 @@ public class SYS_QB_ApplicationServiceinbound extends SYS_ApplicationService {
      * Default is return the root if it exists or the value of falt key mentioned in Flat_Key_for_Resource__c field on log record
      * Override if custom implementation is required for identifying the resoruce for inbound request
      */
-    public override List<sObject> transformJsonToSObject(String jsonBody,String resource) {
+    public override  List<sObject> transformJsonToSObject(String jsonBody,String resource,SYS_IntegrationLog__c log) {
         Object responseType = JSON.deserializeUntyped(jsonBody);
         system.debug('jsonBody+++===**'+jsonBody);
         Object JSONwithoutrootkey;
@@ -109,34 +108,45 @@ public class SYS_QB_ApplicationServiceinbound extends SYS_ApplicationService {
   
   
       system.debug('jsonBody++++===='+jsonBody);
-      List<sObject> sobjlist= SYS_Transformer.getSObjectsToUpsert(new List<String>{jsonBody},resource);
+      List<sObject> sobjlist=  SYS_Transformer.getSObjectsToUpsert(new List<String>{jsonBody},resource,(log.Type__c=='INBOUND'));
+     
       system.debug('sobjlist+++++=='+sobjlist);
       
         return sobjlist;
     
     }
     public override SYS_IntegrationLog__c generateLogForChildRecords(String parentLogId,String resource,String recordsJson,String integrationSetting) {
-          
+
         List<SYS_IntegrationLog__c> parentLog = 
-        Database.query('SELECT '+SYS_Helper.getAllFieldsFor('SYS_IntegrationLog__c')+', Parent__r.WhatId__c, Parent__r.SYS_Operation_Type__c,Parent__r.Resource__c FROM SYS_IntegrationLog__c WHERE Id in (' + '\'' + parentLogId + '\')');
-          system.debug('parentLog++++=='+parentLog);
+        Database.query('SELECT '+SYS_Helper.getAllFieldsFor('SYS_IntegrationLog__c')+', Parent__r.WhatId__c, Parent__r.SYS_Operation_Type__c FROM SYS_IntegrationLog__c WHERE Id in (' + '\'' + parentLogId + '\')');
+
         SYS_IntegrationLog__c log = SYS_Helper.getLogsToInsert(recordsJson);
-         //storing parent resource invariable
-          string  parentResource   = parentLog[0].Resource__c;
+
+        log.ObjectSettingId__c = parentLog[0].ObjectSettingId__c;
+        //storing parent resource invariable
+        string  parentResource   = parentLog[0].Resource__c;
          
         log.ObjectSettingId__c = parentLog[0].ObjectSettingId__c;
         system.debug('log.ObjectSettingId__c'+log.ObjectSettingId__c);
         system.debug('log.ObjectSettingId__c'+ parentLog[0].Resource__c);
+        /* ------------------------------------ FOR ALL OR NONE HANDLING -------------------------------------- */
+        if(log.ObjectSettingId__c!=NULL && SYS_DataCache.objectSettingMap.get(log.ObjectSettingId__c).All_OR_None__c){
+            //log.Custom_Field_Value__c = parentLog[0].WhatId__c;
+            log.SYS_Operation_Type__c = 'INSERT';
+        }
+        else {
+            log.SYS_Operation_Type__c = 'UPSERT';
+        }
+        /* ------------------------------------ FOR ALL OR NONE HANDLING -------------------------------------- */
+
         String algo = SYS_DataCache.integrationSetting.get(SYS_DataCache.INT_TYPE).Hashing_Algo__c;
         if(algo!=NULL && algo!='')
             log.Request_Digest__c = generateHash(recordsJson,algo);
 
         SYS_debug.log('MS SYS_DataCache.log in generate child log:'+SYS_DataCache.log.Id);
-        log.Parent__c = parentLogId;
-        
+        log.Parent__c = parentLogId;       
         log.Type__c = 'INBOUND';
-        log.SYS_Operation_Type__c = 'UPSERT';
-
+ 
         /**
          * If Flat key to identify resource for child records is defined on Integration Setting, consider that
          * Else take the root key as Resource that is passed on while processing parent record
@@ -144,13 +154,13 @@ public class SYS_QB_ApplicationServiceinbound extends SYS_ApplicationService {
         String flat_key_for_child = SYS_DataCache.integrationSetting.get(SYS_DataCache.INT_TYPE).Flat_Key_for_Resource_Child__c;
         if(flat_key_for_child != NULL && flat_key_for_child!='')
             log.Flat_Key_for_Resource__c = flat_key_for_child;
-        else{
+            else{
            
-            log.Resource__c = resourceChildMap.get(parentResource);
-            system.debug('Resource__c'+resourceChildMap.get(parentResource));
-            log.Flat_Key_for_Resource__c = '';
-        
-        }
+                log.Resource__c = resourceChildMap.get(parentResource);
+                system.debug('Resource__c'+resourceChildMap.get(parentResource));
+                log.Flat_Key_for_Resource__c = '';
+            
+            }
         log.Integration_Setting__c = integrationSetting;
         log.Status__c = 'NEW';
         /**
