@@ -20,6 +20,10 @@
             </layoutItems>
             <layoutItems>
                 <behavior>Required</behavior>
+                <field>Object__c</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Required</behavior>
                 <field>ObjectApiName__c</field>
             </layoutItems>
             <layoutItems>
@@ -32,7 +36,7 @@
             </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
-                <field>Resource_Name__c</field>
+                <field>url_params__c</field>
             </layoutItems>
         </layoutColumns>
         <layoutColumns>
@@ -55,14 +59,6 @@
             <layoutItems>
                 <behavior>Edit</behavior>
                 <field>ExternalFieldApi__c</field>
-            </layoutItems>
-            <layoutItems>
-                <behavior>Edit</behavior>
-                <field>All_OR_None__c</field>
-            </layoutItems>
-            <layoutItems>
-                <behavior>Edit</behavior>
-                <field>url_params__c</field>
             </layoutItems>
         </layoutColumns>
         <style>TwoColumnsTopToBottom</style>

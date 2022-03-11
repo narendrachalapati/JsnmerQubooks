@@ -40,6 +40,11 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
+        <editable>false</editable>
+        <field>SYS_IntegrationLog__c.External_Id_Field_API_Name__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
         <editable>true</editable>
         <field>SYS_IntegrationLog__c.Flat_Key_for_Resource__c</field>
         <readable>true</readable>
@@ -100,6 +105,11 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
+        <editable>false</editable>
+        <field>SYS_IntegrationLog__c.QB_Entity__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
         <editable>true</editable>
         <field>SYS_IntegrationLog__c.Request_Digest__c</field>
         <readable>true</readable>
@@ -123,6 +133,11 @@
         <editable>true</editable>
         <field>SYS_IntegrationLog__c.SYS_Http_Status__c</field>
         <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>SYS_IntegrationLog__c.SYS_IntegrationSettings__c</field>
+        <readable>false</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>

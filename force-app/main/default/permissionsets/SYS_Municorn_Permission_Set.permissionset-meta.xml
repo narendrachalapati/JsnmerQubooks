@@ -57,11 +57,6 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>true</editable>
-        <field>SYS_IntegrationLog__c.Integration_Setting__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
         <editable>false</editable>
         <field>SYS_IntegrationLog__c.Integration_Setting__c</field>
         <readable>false</readable>
@@ -130,6 +125,11 @@
         <editable>true</editable>
         <field>SYS_IntegrationLog__c.SYS_Http_Status__c</field>
         <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>SYS_IntegrationLog__c.SYS_IntegrationSettings__c</field>
+        <readable>false</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
