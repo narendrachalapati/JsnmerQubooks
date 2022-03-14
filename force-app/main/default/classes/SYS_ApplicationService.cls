@@ -224,9 +224,9 @@ global virtual class SYS_ApplicationService {
             return ((Decimal)obj.get(fieldAPIName)) == 0.00 ? 'null' : obj.get(fieldAPIName);  
         }
         */
-        //else if(obj.get(fieldAPIName)!=null){
+       // else if(obj.get(fieldAPIName)!=null){
             return obj.get(fieldAPIName);
-       // }
+      //  }
        // return fvalue;
     }
 
@@ -509,7 +509,6 @@ global virtual class SYS_ApplicationService {
     /* ------------------------------------------------------------------------ */
 
     global virtual Boolean doInbound(SYS_IntegrationLog__c log) {
-        system.debug('integrationsettings@@'+SYS_DataCache.INT_TYPE);
         
         String jsonBody = '';
         
@@ -517,13 +516,12 @@ global virtual class SYS_ApplicationService {
         
         jsonBody = preprocessJSONForInbound(log,jsonBody);
         String resource = getResourceFromJSON(log,jsonBody);
-        system.debug('integrationsettings'+SYS_DataCache.INT_TYPE);
-        System.debug('\n\n ------------------------------- \n\n Application Service resource:'+resource);
+        SYS_debug.log('\n\n ------------------------------- \n\n Application Service resource:'+resource);
 
         List<sObject> sObjectsToDML = transformJsonToSObject(jsonBody, resource, log);
 
-   system.debug('\n\n ------------------------------- \n\n Application Service sObjects to DML:'+sObjectsToDML);
-        system.debug('\n\n ------------------------------- \n\n Application Service externalKeyByResourceMap:'+SYS_DataCache.externalKeyByResourceMap);
+        SYS_debug.log('\n\n ------------------------------- \n\n Application Service sObjects to DML:'+sObjectsToDML);
+        SYS_debug.log('\n\n ------------------------------- \n\n Application Service externalKeyByResourceMap:'+SYS_DataCache.externalKeyByResourceMap);
 
         String externalIdFieldAPIName = SYS_DataCache.externalKeyByResourceMap.get(resource);
         //String externalIdFieldAPIName = log.External_Id_Field_API_Name__c!=NULL?log.External_Id_Field_API_Name__c:'';
@@ -915,7 +913,6 @@ global virtual class SYS_ApplicationService {
     }
 
     public void insertWebhookLog(SYS_IntegrationLog__c log){
-        system.debug('sysint___++'+SYS_DataCache.INT_TYPE);
         try{
             Database.SaveResult result = Database.insert(log,false);
             //TODO check if result is success/error and take action

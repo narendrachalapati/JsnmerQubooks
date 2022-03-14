@@ -20,10 +20,7 @@ public class SYS_QB_ApplicationServiceOutbound extends SYS_ApplicationService {
         
     }
   
-
-  
-   
-   }
+ }
    
 
  
