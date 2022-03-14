@@ -150,7 +150,7 @@ global class SYS_OAuthRedirectHandler extends SYS_ApplicationService{
                 }
             }catch(Exception e){
                 RestContext.response.responseBody = 
-                    Blob.valueOf('Something went wrong while trying to call token url');
+                    Blob.valueOf('Something went wrong while trying to call token url \n'+e.getMessage() + '\n' +e.getStackTraceString());
             }
             
             /*
