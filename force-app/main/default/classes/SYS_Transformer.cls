@@ -121,6 +121,8 @@ public virtual class SYS_Transformer {
                 finalSubQuery = externalIdField +',';
             }
             
+            
+            
             String qry = 'Select Id,'+ finalSubQuery +
                      String.join(primaryObjFieldsMap.get(primaryObj.toLowerCase()), ',') +
                      ' from ' + 
