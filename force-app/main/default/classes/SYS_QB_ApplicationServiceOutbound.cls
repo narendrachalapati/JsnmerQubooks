@@ -14,7 +14,7 @@ public class SYS_QB_ApplicationServiceOutbound extends SYS_ApplicationService {
             jsonBody = JSON.serialize(JSONwithoutrootkey);
               system.debug('jsonBody++++===='+jsonBody);
         }
-      system.debug('jsonBody++++===='+jsonBody);
+      system.debug('jsonBody++++======'+jsonBody);
 
         return SYS_Transformer.getSObjectsToUpsert(new List<String>{jsonBody},resource,(log.Type__c=='INBOUND'));
         
