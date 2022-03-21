@@ -157,8 +157,14 @@
 		<members>OAUTH_CLIENT_CREDS_NC</members>
 		<members>OAUTH_NC</members>
 		<members>OAUTH_PWD_NC</members>
+		<members>QuickBooks</members>
+		       
 		<name>NamedCredential</name>
 	</types>
+	<types>
+        <members>QuickBooksAuth</members>
+        <name>AuthProvider</name>
+    </types>
 	<types>
 		<members>SYS_Municorn_Guest_User_Permission_Set</members>
 		<members>SYS_Municorn_Permission_Set</members>
