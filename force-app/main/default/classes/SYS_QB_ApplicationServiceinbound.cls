@@ -3,7 +3,8 @@
 public class SYS_QB_ApplicationServiceinbound extends SYS_ApplicationService {
     public SYS_QB_ApplicationServiceinbound() {
  }
-    public static final Map<String,String> resourceChildMap = new Map<String,String>{'invoice'=>'line','refundreceipt'=>'salesitemlinedetail','bill'=>'billline'};
+    public static final Map<String,String> resourceChildMap = new Map<String,String>{'invoice'=>'line','refundreceipt'=>'salesitemlinedetail','bill'=>'billline','estimate'=>'estimateline',
+    'purchase'=>'purchaseline','salesreceipt'=>'salesreceiptline','vendorcredit'=>'vendorcreditline','creditmemo'=>'creditmemoline','deposit'=>'depositline','billpayment'=>'billpaymentline','payment'=>'paymentline'};
     //ToDo make url dynamic by lowercasing the entityName remove if and else statement                 
     
     //QB webhook is not providing the entire json so we need to do the get request and
