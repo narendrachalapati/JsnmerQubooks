@@ -6,10 +6,7 @@
         <editHeading>true</editHeading>
         <label>Information</label>
         <layoutColumns>
-            <layoutItems>
-                <behavior>Required</behavior>
-                <field>Inbound_Custom_Apex_Handler__c</field>
-            </layoutItems>
+           
             <layoutItems>
                 <behavior>Required</behavior>
                 <field>MasterLabel</field>

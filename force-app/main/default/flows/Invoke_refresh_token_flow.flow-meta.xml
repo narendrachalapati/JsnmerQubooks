@@ -127,9 +127,7 @@
         </filters>
         <object>SYS_OAuthConfig__c</object>
         <recordTriggerType>CreateAndUpdate</recordTriggerType>
-        <scheduledPaths>
-            <pathType>AsyncAfterCommit</pathType>
-        </scheduledPaths>
+       
         <scheduledPaths>
             <name>Schedule_action_for_Refresh_token_flow</name>
             <connector>
