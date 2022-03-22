@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <AuthProvider xmlns="http://soap.sforce.com/2006/04/metadata">
     <authorizeUrl>https://appcenter.intuit.com/connect/oauth2</authorizeUrl>
-    <consumerKey>ABQBBVlLgK6hrp5JwU68st0we0XmF1YkyhV6Ftl8ZaQ2V3vdZO</consumerKey>
-    <consumerSecret>0DyLWJv4flZb4h5J1zeveNUnTWiM/j7P2gRfPvBTcg1llCPhdl/NUnBBGPdiC2rX</consumerSecret>
+    <consumerKey>ABFqfUASPYPSBV9FEfZw6C7KNyeRXMSa91HZMzAGOPpwG5NUJX</consumerKey>
+    <consumerSecret>fRrtoTIgJByGGaeuEKJYN6znTvU1QLjtlUAeXewH1Yo+JVLV1X5ItXBBGPdiC2rX</consumerSecret>
     <defaultScopes>openid email address com.intuit.quickbooks.accounting</defaultScopes>
     <friendlyName>QuickBooksAuth</friendlyName>
     <idTokenIssuer>https://oauth.platform.intuit.com/op/v1</idTokenIssuer>

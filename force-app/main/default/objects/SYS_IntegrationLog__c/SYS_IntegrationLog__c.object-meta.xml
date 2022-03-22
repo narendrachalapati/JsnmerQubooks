@@ -155,7 +155,6 @@
     <enableSearch>true</enableSearch>
     <enableSharing>true</enableSharing>
     <enableStreamingApi>true</enableStreamingApi>
-    <externalSharingModel>Private</externalSharingModel>
     <label>SYS_IntegrationLog</label>
     <nameField>
         <displayFormat>I-{0000000000}</displayFormat>

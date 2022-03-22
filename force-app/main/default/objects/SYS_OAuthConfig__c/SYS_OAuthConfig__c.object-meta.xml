@@ -158,7 +158,6 @@
     <enableSearch>true</enableSearch>
     <enableSharing>true</enableSharing>
     <enableStreamingApi>true</enableStreamingApi>
-    <externalSharingModel>Private</externalSharingModel>
     <label>SYS_OAuthConfig</label>
     <nameField>
         <label>Client Name</label>
