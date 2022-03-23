@@ -5,21 +5,20 @@
     <columns>DeveloperName</columns>
     <columns>Key__c</columns>
     <columns>FieldApiName__c</columns>
-    <columns>ChildFieldApiName__c</columns>
-    <columns>ChildRootElement__c</columns>
+    <columns>RestResource__c</columns>
     <columns>Direction__c</columns>
     <columns>Is_Active__c</columns>
+    <columns>Level__c</columns>
     <columns>IsChild__c</columns>
     <columns>ObjectApiName__c</columns>
     <columns>ObjectSetting__c</columns>
     <columns>ParentField__c</columns>
-    <columns>RestResource__c</columns>
     <columns>StaticValue__c</columns>
     <filterScope>Everything</filterScope>
     <filters>
-        <field>RestResource__c</field>
+        <field>ObjectApiName__c</field>
         <operation>equals</operation>
-        <value>customer?minorversion=55</value>
+        <value>Account</value>
     </filters>
     <label>Account</label>
 </ListView>

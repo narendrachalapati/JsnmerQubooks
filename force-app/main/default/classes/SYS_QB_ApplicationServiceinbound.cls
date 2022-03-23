@@ -9,7 +9,7 @@ public class SYS_QB_ApplicationServiceinbound extends SYS_ApplicationService {
     
     //QB webhook is not providing the entire json so we need to do the get request and
     // give that response and return the syslog 
-    public override SYS_IntegrationLog__c generateLogForWebhookReq(String method) {
+    /*public override SYS_IntegrationLog__c generateLogForWebhookReq(String method) {
         String resource = '';
 
         String requestBody = RestContext.request.requestBody.toString();
@@ -81,7 +81,7 @@ public class SYS_QB_ApplicationServiceinbound extends SYS_ApplicationService {
         log.Resource__c = entityName;
         
         return log;
-    }
+    }*/
   
     //when we removed the root key it not returing the restresorce that path so it not identifying the sobject so thats why 
     //we overriden the get resource method for identifying the ecaxt resource path 

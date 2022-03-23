@@ -296,7 +296,7 @@ global virtual class SYS_ApplicationService {
     }
 
     global virtual Date getDateValue(FieldSetting__mdt mapping, String value){
-       return Date.valueOf((String)value);
+       return Date.valueOf(value);
     }
 
     global virtual Time getTimeValue(FieldSetting__mdt mapping, String ts){
@@ -360,7 +360,7 @@ global virtual class SYS_ApplicationService {
         
         //TODO add other field types
         if(fieldType=='DATE'){
-            sObj.put(mapping.FieldApiName__c, getDateValue(mapping,(String)value) /*Date.valueOf((String)value)*/);
+            sObj.put(mapping.FieldApiName__c, getDateValue(mapping,String.valueOf(value)) /*Date.valueOf((String)value)*/);
         }
         else if(fieldType=='DATETIME'){
             

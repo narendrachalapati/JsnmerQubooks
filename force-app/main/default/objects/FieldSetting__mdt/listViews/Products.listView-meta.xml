@@ -17,9 +17,9 @@
     <columns>StaticValue__c</columns>
     <filterScope>Everything</filterScope>
     <filters>
-        <field>RestResource__c</field>
+        <field>ObjectSetting__c</field>
         <operation>equals</operation>
-        <value>item</value>
+        <value>Product</value>
     </filters>
     <label>Products</label>
 </ListView>

@@ -6,11 +6,11 @@
     <columns>SYS_Http_Status__c</columns>
     <columns>Parent__c</columns>
     <columns>Type__c</columns>
+    <columns>HTTP_Method__c</columns>
     <columns>Status__c</columns>
     <columns>SYS_Operation_Type__c</columns>
     <columns>WhatId__c</columns>
     <columns>data0__c</columns>
-    <columns>Request_Digest__c</columns>
     <filterScope>Everything</filterScope>
     <label>All</label>
 </ListView>
